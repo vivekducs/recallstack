@@ -207,7 +207,7 @@ export default function SearchPage() {
 
           {results.length === 0 ? (
             <div className="text-center py-20 glass-card">
-              <div className="text-6xl mb-4">🔍</div>
+              <div className="text-xl mb-4 font-mono text-zinc-500 tracking-wider">No Results</div>
               <p style={{ color: 'var(--color-text-muted)' }}>No matching notes found.</p>
               <p className="text-sm mt-2" style={{ color: 'var(--color-text-dim)' }}>Try adjusting your search keywords or filters.</p>
             </div>

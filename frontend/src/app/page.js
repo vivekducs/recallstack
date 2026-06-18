@@ -95,7 +95,7 @@ export default async function HomePage() {
           {/* Subjects Grid */}
           {subjects.length === 0 ? (
             <div className="text-center py-20 fade-in">
-              <div className="text-6xl mb-4">📚</div>
+              <div className="text-xl mb-4 font-mono text-zinc-500 tracking-wider">Empty Catalogue</div>
               <p className="text-lg" style={{ color: 'var(--color-text-muted)' }}>No subjects available yet.</p>
               <p className="text-sm mt-2" style={{ color: 'var(--color-text-dim)' }}>
                 Contact an admin to add subjects and topics.
@@ -106,16 +106,16 @@ export default async function HomePage() {
               {subjects.map((subject, index) => (
                 <Link key={subject.id} href={`/learning/${subject.slug}`}>
                   <div
-                    className={`glass-card p-6 cursor-pointer fade-in fade-in-delay-${Math.min(index + 1, 4)}`}
-                    style={{ '--hover-color': subject.color || '#6c63f1' }}
+                     className={`glass-card p-6 cursor-pointer fade-in fade-in-delay-${Math.min(index + 1, 4)}`}
+                     style={{ '--hover-color': subject.color || '#6c63f1' }}
                   >
                     {/* Icon + Color accent */}
                     <div className="flex items-start justify-between mb-4">
                       <div
-                        className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl"
+                        className="w-14 h-14 rounded-xl flex items-center justify-center font-mono text-sm font-semibold text-zinc-400"
                         style={{ background: `${subject.color || '#6c63f1'}20`, border: `1px solid ${subject.color || '#6c63f1'}30` }}
                       >
-                        {subject.icon || '📚'}
+                        {subject.icon || 'Book'}
                       </div>
                       <div
                         className="w-2 h-2 rounded-full"

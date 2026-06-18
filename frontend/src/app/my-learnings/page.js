@@ -129,7 +129,7 @@ export default function MyLearningsPage() {
 
         {error && (
           <div className="p-4 mb-6 rounded-lg text-sm text-red-400" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-            ⚠️ {error}
+            Error: {error}
           </div>
         )}
 
@@ -161,7 +161,7 @@ export default function MyLearningsPage() {
         {/* Notes catalog */}
         {filteredNotes.length === 0 ? (
           <div className="text-center py-20 glass-card">
-            <div className="text-6xl mb-4">📝</div>
+            <div className="text-xl mb-4 font-mono text-zinc-500 tracking-wider">Empty Workspace</div>
             <h2 className="text-xl font-bold mb-2" style={{ color: 'white' }}>No Notes Found</h2>
             <p className="max-w-md mx-auto mb-6" style={{ color: 'var(--color-text-muted)' }}>
               {activeTab === 'ALL'
@@ -214,7 +214,7 @@ export default function MyLearningsPage() {
                     <span>{note.readingTime || 0} min read</span>
                     {note.status === 'PUBLISHED' && (
                       <span className="flex items-center gap-1">
-                        👁️ {note.views || 0}
+                        Views: {note.views || 0}
                       </span>
                     )}
                   </div>

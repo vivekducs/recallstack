@@ -54,7 +54,7 @@ export default async function SubjectPage({ params }) {
     return (
       <main className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
         <div className="text-center">
-          <div className="text-6xl mb-4">🔍</div>
+          <div className="text-lg font-mono text-zinc-500 mb-4 tracking-wider">Not Found</div>
           <p className="text-xl" style={{ color: 'var(--color-text-muted)' }}>Subject not found.</p>
           <Link href="/" className="inline-block mt-4 text-sm font-medium" style={{ color: 'var(--color-primary)' }}>
             ← Back to Home
@@ -104,10 +104,10 @@ export default async function SubjectPage({ params }) {
           <header className="mb-12 fade-in">
             <div className="flex items-center gap-4 mb-4">
               <div
-                className="w-16 h-16 rounded-xl flex items-center justify-center text-3xl"
+                className="w-16 h-16 rounded-xl flex items-center justify-center font-mono text-sm font-semibold text-zinc-400"
                 style={{ background: `${subject.color || '#6c63f1'}20`, border: `1px solid ${subject.color || '#6c63f1'}30` }}
               >
-                {subject.icon || '📚'}
+                {subject.icon || 'Book'}
               </div>
               <div>
                 <h1 className="text-4xl font-bold" style={{ color: 'white' }}>{subject.name}</h1>

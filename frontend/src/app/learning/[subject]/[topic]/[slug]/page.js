@@ -209,7 +209,7 @@ export default async function NotePage({ params }) {
                     {section.contentType === 'EXAMPLE' && (
                       <div className="rounded-xl p-5" style={{ background: 'rgba(36, 166, 112, 0.08)', borderLeft: '3px solid var(--color-accent)' }}>
                         <div className="flex items-center gap-2 mb-3">
-                          <span className="text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>💡 Example</span>
+                          <span className="text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>Example</span>
                         </div>
                         <div className="whitespace-pre-wrap" style={{ color: 'var(--color-text)' }}>
                           {section.content}

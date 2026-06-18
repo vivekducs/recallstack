@@ -14,6 +14,7 @@ const searchRoutes = require('./routes/search.routes');
 const revisionRoutes = require('./routes/revision.routes');
 const commentRoutes = require('./routes/comment.routes');
 const bookmarkRoutes = require('./routes/bookmark.routes');
+const analyticsRoutes = require('./routes/analytics.routes');
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use('/api/notes/:noteId/revisions', revisionRoutes);
 app.use('/api/notes/:noteId/comments', commentRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Global error handler
 app.use(errorHandler);
@@ -50,8 +52,9 @@ app.use(errorHandler);
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 RecallStack API running on port ${PORT}`);
+  console.log(`RecallStack API running on port ${PORT}`);
   console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
 module.exports = app;
+

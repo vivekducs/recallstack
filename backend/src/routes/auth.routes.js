@@ -109,4 +109,40 @@ router.get('/me', authenticateToken, async (req, res, next) => {
   }
 });
 
+// PUT /api/auth/profile (Protected)
+router.put('/profile', authenticateToken, async (req, res, next) => {
+  try {
+    const { name, bio, avatar } = req.body;
+    const updateData = {};
+    if (name !== undefined) {
+      if (!name.trim()) {
+        return res.status(400).json({ error: 'Name cannot be empty' });
+      }
+      updateData.name = name;
+    }
+    if (bio !== undefined) updateData.bio = bio;
+    if (avatar !== undefined) updateData.avatar = avatar;
+
+    const updated = await prisma.user.update({
+      where: { id: req.user.userId },
+      data: updateData,
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        email: true,
+        avatar: true,
+        bio: true,
+        role: true,
+        createdAt: true
+      }
+    });
+
+    res.json(updated);
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
+

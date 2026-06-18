@@ -62,7 +62,7 @@ export default async function TopicPage({ params }) {
     return (
       <main className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
         <div className="text-center">
-          <div className="text-6xl mb-4">🔍</div>
+          <div className="text-lg font-mono text-zinc-500 mb-4 tracking-wider">Not Found</div>
           <p className="text-xl" style={{ color: 'var(--color-text-muted)' }}>Topic not found.</p>
           <Link href={`/learning/${params.subject}`} className="inline-block mt-4 text-sm font-medium" style={{ color: 'var(--color-primary)' }}>
             ← Back to Subject
@@ -138,7 +138,7 @@ export default async function TopicPage({ params }) {
 
             {notes.length === 0 ? (
               <div className="text-center py-16 glass-card">
-                <div className="text-5xl mb-4">📝</div>
+                <div className="text-xl mb-4 font-mono text-zinc-500 tracking-wider">Empty Topic</div>
                 <p style={{ color: 'var(--color-text-muted)' }}>No notes yet in this topic.</p>
                 <p className="text-sm mt-2" style={{ color: 'var(--color-text-dim)' }}>Be the first to contribute!</p>
               </div>

@@ -72,7 +72,7 @@ export default function BookmarksPage() {
     return (
       <main className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--color-bg)' }}>
         <div className="max-w-md w-full glass-card p-8 text-center">
-          <div className="text-6xl mb-4">🔖</div>
+          <div className="text-xl mb-4 font-mono text-zinc-500 tracking-wider">Bookmarks</div>
           <h2 className="text-2xl font-bold mb-3" style={{ color: 'white' }}>Save Your Learning</h2>
           <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
             Keep track of the most helpful guides, code snippets, and cheat sheets. Sign in to sync bookmarks.
@@ -107,7 +107,7 @@ export default function BookmarksPage() {
 
         {savedNotes.length === 0 ? (
           <div className="text-center py-20 glass-card">
-            <div className="text-6xl mb-4">🌟</div>
+            <div className="text-xl mb-4 font-mono text-zinc-500 tracking-wider">Empty Library</div>
             <h2 className="text-xl font-bold mb-2" style={{ color: 'white' }}>No Bookmarks Yet</h2>
             <p className="max-w-md mx-auto mb-6" style={{ color: 'var(--color-text-muted)' }}>
               Explore subjects and topics, and click the bookmark button inside notes to save them for easy access later.

@@ -45,7 +45,7 @@ function RevisionTimeline() {
   if (!noteId) {
     return (
       <div className="text-center py-20 glass-card">
-        <div className="text-6xl mb-4">📜</div>
+        <div className="text-xl mb-4 font-mono text-zinc-500 tracking-wider">No Selection</div>
         <h2 className="text-xl font-bold mb-2" style={{ color: 'white' }}>No Note Selected</h2>
         <p className="max-w-md mx-auto mb-6" style={{ color: 'var(--color-text-muted)' }}>
           To view a note's revision history timeline, please search for a note first.
@@ -68,7 +68,7 @@ function RevisionTimeline() {
   if (error) {
     return (
       <div className="text-center py-20 glass-card">
-        <div className="text-5xl mb-4">⚠️</div>
+        <div className="text-lg font-mono text-zinc-500 mb-4 tracking-wider">Warning</div>
         <p className="text-red-400 mb-6">{error}</p>
         <Link href="/search" className="btn-secondary inline-block">
           ← Back to Search
@@ -139,7 +139,7 @@ function RevisionTimeline() {
                 <div className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
                   {index === revisions.length - 1 ? (
                     <span className="inline-flex items-center gap-1.5 text-emerald-400">
-                      🌱 Initial compilation & section layout established.
+                      Initial compilation and section layout established.
                     </span>
                   ) : (
                     <span>Note content or sections revised.</span>
