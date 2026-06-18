@@ -2,6 +2,8 @@
 import Link from 'next/link';
 import CodeBlock from '@/components/note/CodeBlock';
 import TableOfContents from '@/components/note/TableOfContents';
+import BookmarkButton from '@/components/note/BookmarkButton';
+import CommentsSection from '@/components/comments/CommentsSection';
 import JsonLd from '@/components/common/JsonLd';
 import { getNoteTitle } from '@/lib/seo';
 
@@ -166,6 +168,7 @@ export default async function NotePage({ params }) {
                       {new Date(note.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </span>
                   )}
+                  <BookmarkButton noteId={note.id} />
                 </div>
 
                 {note.excerpt && (
@@ -228,6 +231,9 @@ export default async function NotePage({ params }) {
                   </section>
                 ))}
               </div>
+
+              {/* Discussion Section */}
+              <CommentsSection noteId={note.id} noteAuthorId={note.authorId} />
             </article>
 
             {/* Sidebar client component for active tracking */}

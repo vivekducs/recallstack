@@ -1,5 +1,5 @@
 // frontend/src/app/learning/[subject]/page.js
-import Link from 'next/js';
+import Link from 'next/link';
 import { getSubjectTitle } from '@/lib/seo';
 import JsonLd from '@/components/common/JsonLd';
 

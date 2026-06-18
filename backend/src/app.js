@@ -12,6 +12,8 @@ const noteRoutes = require('./routes/note.routes');
 const sectionRoutes = require('./routes/section.routes');
 const searchRoutes = require('./routes/search.routes');
 const revisionRoutes = require('./routes/revision.routes');
+const commentRoutes = require('./routes/comment.routes');
+const bookmarkRoutes = require('./routes/bookmark.routes');
 
 const app = express();
 
@@ -38,6 +40,9 @@ app.use('/api/notes/:noteId/sections', sectionRoutes);
 app.use('/api/sections', sectionRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/notes/:noteId/revisions', revisionRoutes);
+app.use('/api/notes/:noteId/comments', commentRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/bookmarks', bookmarkRoutes);
 
 // Global error handler
 app.use(errorHandler);
