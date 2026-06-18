@@ -1,87 +1,71 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+// frontend/src/app/learning/[subject]/[topic]/[slug]/page.js
 import Link from 'next/link';
-import axios from 'axios';
 import CodeBlock from '@/components/note/CodeBlock';
+import TableOfContents from '@/components/note/TableOfContents';
+import JsonLd from '@/components/common/JsonLd';
+import { getNoteTitle } from '@/lib/seo';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://recallstack.com';
 
-export default function NotePage() {
-  const params = useParams();
-  const [note, setNote] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState(null);
+async function getNoteData(subjectSlug, topicSlug, noteSlug) {
+  try {
+    const subjectRes = await fetch(`${API_URL}/subjects/${subjectSlug}`, { next: { revalidate: 60 } });
+    if (!subjectRes.ok) return null;
+    const subject = await subjectRes.json();
 
-  useEffect(() => {
-    async function fetchNote() {
-      try {
-        // Get subject by slug
-        const subjectRes = await axios.get(`${API_URL}/subjects/${params.subject}`);
-        const subject = subjectRes.data;
+    const topic = subject.topics?.find(t => t.slug === topicSlug);
+    if (!topic) return null;
 
-        // Find topic by slug
-        const topic = subject.topics?.find(t => t.slug === params.topic);
-        if (!topic) return;
+    const notesRes = await fetch(`${API_URL}/topics/${topic.id}/notes`, { next: { revalidate: 60 } });
+    if (!notesRes.ok) return null;
+    const notes = await notesRes.json();
+    const foundNote = notes.find(n => n.slug === noteSlug);
+    if (!foundNote) return null;
 
-        // Get notes for topic
-        const notesRes = await axios.get(`${API_URL}/topics/${topic.id}/notes`);
-        const foundNote = notesRes.data.find(n => n.slug === params.slug);
-
-        if (foundNote) {
-          // Get full note details with sections
-          const noteRes = await axios.get(`${API_URL}/notes/${foundNote.id}`);
-          setNote(noteRes.data);
-        }
-      } catch (err) {
-        console.error('Failed to fetch note:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchNote();
-  }, [params.subject, params.topic, params.slug]);
-
-  // Track active section on scroll
-  useEffect(() => {
-    if (!note?.sections?.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      { rootMargin: '-20% 0px -70% 0px' }
-    );
-
-    note.sections.forEach((section) => {
-      const el = document.getElementById(`section-${section.id}`);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [note]);
-
-  const getDifficultyBadge = (difficulty) => {
-    const classes = {
-      EASY: 'badge-easy',
-      MEDIUM: 'badge-medium',
-      HARD: 'badge-hard'
-    };
-    return classes[difficulty] || 'badge-medium';
-  };
-
-  if (loading) {
-    return (
-      <main className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
-        <div className="loading-pulse" style={{ color: 'var(--color-text-muted)' }}>Loading note...</div>
-      </main>
-    );
+    const noteDetailsRes = await fetch(`${API_URL}/notes/${foundNote.id}`, { next: { revalidate: 60 } });
+    if (!noteDetailsRes.ok) return null;
+    return await noteDetailsRes.json();
+  } catch (err) {
+    console.error('Failed to fetch note details on server:', err);
   }
+  return null;
+}
+
+export async function generateMetadata({ params }) {
+  const note = await getNoteData(params.subject, params.topic, params.slug);
+  if (!note) {
+    return { title: 'Note Not Found — RecallStack' };
+  }
+
+  const title = getNoteTitle(note.title, note.topic?.name || params.topic);
+  const description = note.excerpt || `Read details of ${note.title}.`;
+  const url = `${BASE_URL}/learning/${params.subject}/${params.topic}/${params.slug}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'RecallStack',
+      type: 'article',
+      publishedTime: note.publishedAt,
+      modifiedTime: note.updatedAt,
+      authors: [note.author?.name],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+  };
+}
+
+export default async function NotePage({ params }) {
+  const note = await getNoteData(params.subject, params.topic, params.slug);
 
   if (!note) {
     return (
@@ -97,136 +81,162 @@ export default function NotePage() {
     );
   }
 
+  const getDifficultyBadge = (difficulty) => {
+    const classes = {
+      EASY: 'badge-easy',
+      MEDIUM: 'badge-medium',
+      HARD: 'badge-hard'
+    };
+    return classes[difficulty] || 'badge-medium';
+  };
+
+  const noteUrl = `${BASE_URL}/learning/${params.subject}/${params.topic}/${params.slug}`;
+
+  const jsonLdSchema = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: note.title,
+      description: note.excerpt,
+      url: noteUrl,
+      datePublished: note.publishedAt,
+      dateModified: note.updatedAt,
+      author: {
+        '@type': 'Person',
+        name: note.author?.name || 'Unknown',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'RecallStack',
+        url: BASE_URL,
+      },
+      image: `${BASE_URL}/og-default.png`,
+      keywords: note.tags?.join(', ') || '',
+      timeRequired: `PT${note.readingTime || 1}M`,
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: BASE_URL },
+        { '@type': 'ListItem', position: 2, name: note.topic?.subject?.name || params.subject, item: `${BASE_URL}/learning/${params.subject}` },
+        { '@type': 'ListItem', position: 3, name: note.topic?.name || params.topic, item: `${BASE_URL}/learning/${params.subject}/${params.topic}` },
+        { '@type': 'ListItem', position: 4, name: note.title, item: noteUrl },
+      ],
+    },
+  ];
+
   return (
-    <main className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
-      <div className="max-w-6xl mx-auto px-6 py-12">
-        <div className="flex gap-8">
-          {/* Main Content */}
-          <article className="flex-1 min-w-0">
-            {/* Breadcrumb */}
-            <nav className="flex items-center gap-2 text-sm mb-8 fade-in flex-wrap" style={{ color: 'var(--color-text-dim)' }}>
-              <Link href="/" className="hover:underline" style={{ color: 'var(--color-primary)' }}>Home</Link>
-              <span>/</span>
-              <Link href={`/learning/${params.subject}`} className="hover:underline" style={{ color: 'var(--color-primary)' }}>
-                {note.topic?.subject?.name || params.subject}
-              </Link>
-              <span>/</span>
-              <Link href={`/learning/${params.subject}/${params.topic}`} className="hover:underline" style={{ color: 'var(--color-primary)' }}>
-                {note.topic?.name || params.topic}
-              </Link>
-              <span>/</span>
-              <span style={{ color: 'var(--color-text-muted)' }}>{note.title}</span>
-            </nav>
+    <>
+      <JsonLd schema={jsonLdSchema} />
+      <main className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+        <div className="max-w-6xl mx-auto px-6 py-12">
+          <div className="flex gap-8">
+            {/* Main Content */}
+            <article className="flex-1 min-w-0">
+              {/* Breadcrumb */}
+              <nav className="flex items-center gap-2 text-sm mb-8 fade-in flex-wrap" style={{ color: 'var(--color-text-dim)' }} aria-label="Breadcrumb">
+                <Link href="/" className="hover:underline" style={{ color: 'var(--color-primary)' }}>Home</Link>
+                <span>/</span>
+                <Link href={`/learning/${params.subject}`} className="hover:underline" style={{ color: 'var(--color-primary)' }}>
+                  {note.topic?.subject?.name || params.subject}
+                </Link>
+                <span>/</span>
+                <Link href={`/learning/${params.subject}/${params.topic}`} className="hover:underline" style={{ color: 'var(--color-primary)' }}>
+                  {note.topic?.name || params.topic}
+                </Link>
+                <span>/</span>
+                <span style={{ color: 'var(--color-text-muted)' }}>{note.title}</span>
+              </nav>
 
-            {/* Note Header */}
-            <header className="mb-10 fade-in">
-              <h1 className="text-4xl font-bold mb-4" style={{ color: 'white' }}>{note.title}</h1>
+              {/* Note Header */}
+              <header className="mb-10 fade-in">
+                <h1 className="text-4xl font-bold mb-4" style={{ color: 'white' }}>{note.title}</h1>
 
-              <div className="flex items-center gap-4 flex-wrap mb-4">
-                <span className={`badge ${getDifficultyBadge(note.difficulty)}`}>{note.difficulty}</span>
-                <span className="text-sm" style={{ color: 'var(--color-text-dim)' }}>
-                  {note.readingTime || 1} min read
-                </span>
-                <span className="text-sm" style={{ color: 'var(--color-text-dim)' }}>
-                  by {note.author?.name || 'Unknown'}
-                </span>
-                {note.publishedAt && (
+                <div className="flex items-center gap-4 flex-wrap mb-4">
+                  <span className={`badge ${getDifficultyBadge(note.difficulty)}`}>{note.difficulty}</span>
                   <span className="text-sm" style={{ color: 'var(--color-text-dim)' }}>
-                    {new Date(note.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    {note.readingTime || 1} min read
                   </span>
-                )}
-              </div>
-
-              {note.excerpt && (
-                <p className="text-lg" style={{ color: 'var(--color-text-muted)' }}>{note.excerpt}</p>
-              )}
-
-              {note.tags && note.tags.length > 0 && (
-                <div className="flex gap-2 mt-4 flex-wrap">
-                  {note.tags.map((tag, i) => (
-                    <span key={i} className="text-xs px-2.5 py-1 rounded-md" style={{ background: 'var(--color-bg-elevated)', color: 'var(--color-text-dim)', border: '1px solid var(--color-border)' }}>
-                      #{tag}
+                  <span className="text-sm" style={{ color: 'var(--color-text-dim)' }}>
+                    by {note.author?.name || 'Unknown'}
+                  </span>
+                  {note.publishedAt && (
+                    <span className="text-sm" style={{ color: 'var(--color-text-dim)' }}>
+                      {new Date(note.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </span>
-                  ))}
+                  )}
                 </div>
-              )}
-            </header>
 
-            {/* Sections */}
-            <div className="prose-dark">
-              {note.sections && note.sections.map((section, index) => (
-                <section
-                  key={section.id}
-                  id={`section-${section.id}`}
-                  className={`mb-10 fade-in fade-in-delay-${Math.min(index + 1, 4)}`}
-                >
-                  <h2 className="text-2xl font-bold mb-4" style={{ color: 'white' }}>{section.title}</h2>
+                {note.excerpt && (
+                  <p className="text-lg" style={{ color: 'var(--color-text-muted)' }}>{note.excerpt}</p>
+                )}
 
-                  {section.contentType === 'TEXT' && (
-                    <div className="whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--color-text)' }}>
-                      {section.content}
-                    </div>
-                  )}
+                {note.tags && note.tags.length > 0 && (
+                  <div className="flex gap-2 mt-4 flex-wrap">
+                    {note.tags.map((tag, i) => (
+                      <span key={i} className="text-xs px-2.5 py-1 rounded-md" style={{ background: 'var(--color-bg-elevated)', color: 'var(--color-text-dim)', border: '1px solid var(--color-border)' }}>
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </header>
 
-                  {section.contentType === 'CODE' && (
-                    <CodeBlock language={section.language} content={section.content} />
-                  )}
+              {/* Sections */}
+              <div className="prose-dark">
+                {note.sections && note.sections.map((section, index) => (
+                  <section
+                    key={section.id}
+                    id={`section-${section.id}`}
+                    className={`mb-10 fade-in fade-in-delay-${Math.min(index + 1, 4)}`}
+                  >
+                    <h2 className="text-2xl font-bold mb-4" style={{ color: 'white' }}>{section.title}</h2>
 
-                  {section.contentType === 'EXAMPLE' && (
-                    <div className="rounded-xl p-5" style={{ background: 'rgba(36, 166, 112, 0.08)', borderLeft: '3px solid var(--color-accent)' }}>
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>💡 Example</span>
-                      </div>
-                      <div className="whitespace-pre-wrap" style={{ color: 'var(--color-text)' }}>
+                    {section.contentType === 'TEXT' && (
+                      <div className="whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--color-text)' }}>
                         {section.content}
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {section.contentType === 'IMAGE' && (
-                    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--color-border)' }}>
-                      <img src={section.content} alt={section.title} className="w-full" />
-                    </div>
-                  )}
+                    {section.contentType === 'CODE' && (
+                      <CodeBlock language={section.language} content={section.content} />
+                    )}
 
-                  {section.contentType === 'DIAGRAM' && (
-                    <div className="rounded-xl p-5 font-mono text-sm overflow-x-auto" style={{ background: 'var(--color-bg-elevated)', border: '1px solid var(--color-border)' }}>
-                      <pre className="whitespace-pre" style={{ color: 'var(--color-text)' }}>{section.content}</pre>
-                    </div>
-                  )}
-                </section>
-              ))}
-            </div>
-          </article>
+                    {section.contentType === 'EXAMPLE' && (
+                      <div className="rounded-xl p-5" style={{ background: 'rgba(36, 166, 112, 0.08)', borderLeft: '3px solid var(--color-accent)' }}>
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>💡 Example</span>
+                        </div>
+                        <div className="whitespace-pre-wrap" style={{ color: 'var(--color-text)' }}>
+                          {section.content}
+                        </div>
+                      </div>
+                    )}
 
-          {/* Table of Contents Sidebar */}
-          {note.sections && note.sections.length > 1 && (
-            <aside className="hidden lg:block w-64 flex-shrink-0">
-              <div className="sticky top-8">
-                <nav className="glass-card p-5">
-                  <h3 className="text-sm font-bold mb-4 uppercase tracking-wider" style={{ color: 'var(--color-text-dim)' }}>Contents</h3>
-                  <ul className="space-y-2">
-                    {note.sections.map((section) => (
-                      <li key={section.id}>
-                        <a
-                          href={`#section-${section.id}`}
-                          className="block text-sm py-1 px-3 rounded-md transition-colors"
-                          style={{
-                            color: activeSection === `section-${section.id}` ? 'var(--color-primary)' : 'var(--color-text-muted)',
-                            background: activeSection === `section-${section.id}` ? 'rgba(108, 99, 241, 0.1)' : 'transparent',
-                          }}
-                        >
-                          {section.title}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
+                    {section.contentType === 'IMAGE' && (
+                      <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--color-border)' }}>
+                        <img src={section.content} alt={section.title} className="w-full" />
+                      </div>
+                    )}
+
+                    {section.contentType === 'DIAGRAM' && (
+                      <div className="rounded-xl p-5 font-mono text-sm overflow-x-auto" style={{ background: 'var(--color-bg-elevated)', border: '1px solid var(--color-border)' }}>
+                        <pre className="whitespace-pre" style={{ color: 'var(--color-text)' }}>{section.content}</pre>
+                      </div>
+                    )}
+                  </section>
+                ))}
               </div>
-            </aside>
-          )}
+            </article>
+
+            {/* Sidebar client component for active tracking */}
+            {note.sections && note.sections.length > 1 && (
+              <TableOfContents sections={note.sections} />
+            )}
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }

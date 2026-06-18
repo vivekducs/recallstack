@@ -48,9 +48,11 @@ router.post('/', authenticateToken, adminOnly, async (req, res, next) => {
       return res.status(400).json({ error: 'name and slug required' });
     }
 
-    // Verify subject exists
-    const subject = await prisma.subject.findUnique({
-      where: { id: subjectId }
+    // Verify subject exists (supports ID or slug)
+    const subject = await prisma.subject.findFirst({
+      where: {
+        OR: [{ id: subjectId }, { slug: subjectId }]
+      }
     });
     if (!subject) {
       return res.status(404).json({ error: 'Subject not found' });
@@ -58,7 +60,7 @@ router.post('/', authenticateToken, adminOnly, async (req, res, next) => {
 
     // Check slug uniqueness within subject
     const existing = await prisma.topic.findFirst({
-      where: { subjectId, slug }
+      where: { subjectId: subject.id, slug }
     });
     if (existing) {
       return res.status(409).json({ error: 'Topic slug already exists in this subject' });
@@ -71,12 +73,12 @@ router.post('/', authenticateToken, adminOnly, async (req, res, next) => {
           name,
           slug,
           description,
-          subjectId,
+          subjectId: subject.id,
           notesCount: 0
         }
       }),
       prisma.subject.update({
-        where: { id: subjectId },
+        where: { id: subject.id },
         data: { topicsCount: { increment: 1 } }
       })
     ]);

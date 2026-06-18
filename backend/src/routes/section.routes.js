@@ -6,6 +6,28 @@ const prisma = require('../config/database');
 const { authenticateToken } = require('../middleware/auth.middleware');
 const { updateNoteReadingTime } = require('../utils/readingTime');
 
+async function logNoteRevision(noteId, userId) {
+  try {
+    await prisma.$transaction([
+      prisma.revisionHistory.create({
+        data: {
+          noteId,
+          userId
+        }
+      }),
+      prisma.note.update({
+        where: { id: noteId },
+        data: {
+          revisionCount: { increment: 1 },
+          lastRevised: new Date()
+        }
+      })
+    ]);
+  } catch (err) {
+    console.error('Failed to log note revision:', err);
+  }
+}
+
 // POST /api/notes/:noteId/sections (Authenticated)
 router.post('/', authenticateToken, async (req, res, next) => {
   try {
@@ -55,6 +77,9 @@ router.post('/', authenticateToken, async (req, res, next) => {
     // Recalculate reading time for note
     await updateNoteReadingTime(noteId);
 
+    // Log revision
+    await logNoteRevision(noteId, req.user.userId);
+
     res.status(201).json(section);
   } catch (err) {
     next(err);
@@ -94,6 +119,9 @@ router.put('/:id', authenticateToken, async (req, res, next) => {
     // Recalculate reading time
     await updateNoteReadingTime(section.noteId);
 
+    // Log revision
+    await logNoteRevision(section.noteId, req.user.userId);
+
     res.json(updated);
   } catch (err) {
     next(err);
@@ -122,6 +150,9 @@ router.delete('/:id', authenticateToken, async (req, res, next) => {
 
     // Recalculate reading time
     await updateNoteReadingTime(section.noteId);
+
+    // Log revision
+    await logNoteRevision(section.noteId, req.user.userId);
 
     res.json({ deleted: true, id });
   } catch (err) {
@@ -175,6 +206,9 @@ router.patch('/:id/reorder', authenticateToken, async (req, res, next) => {
     );
 
     await prisma.$transaction(updates);
+
+    // Log revision
+    await logNoteRevision(section.noteId, req.user.userId);
 
     const updated = await prisma.section.findUnique({ where: { id } });
     res.json(updated);

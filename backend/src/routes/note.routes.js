@@ -38,6 +38,28 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// GET /api/notes/user/my-notes (Authenticated - get user's own notes)
+router.get('/user/my-notes', authenticateToken, async (req, res, next) => {
+  try {
+    const notes = await prisma.note.findMany({
+      where: { authorId: req.user.userId },
+      include: {
+        topic: {
+          select: {
+            name: true,
+            slug: true,
+            subject: { select: { name: true, slug: true } }
+          }
+        }
+      },
+      orderBy: { updatedAt: 'desc' }
+    });
+    res.json(notes);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // GET /api/notes/:id (Public for published, owner/admin for drafts)
 router.get('/:id', optionalAuth, async (req, res, next) => {
   try {
@@ -254,26 +276,5 @@ router.delete('/:id', authenticateToken, async (req, res, next) => {
   }
 });
 
-// GET /api/notes/user/my-notes (Authenticated - get user's own notes)
-router.get('/user/my-notes', authenticateToken, async (req, res, next) => {
-  try {
-    const notes = await prisma.note.findMany({
-      where: { authorId: req.user.userId },
-      include: {
-        topic: {
-          select: {
-            name: true,
-            slug: true,
-            subject: { select: { name: true, slug: true } }
-          }
-        }
-      },
-      orderBy: { updatedAt: 'desc' }
-    });
-    res.json(notes);
-  } catch (err) {
-    next(err);
-  }
-});
 
 module.exports = router;

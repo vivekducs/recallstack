@@ -9,6 +9,9 @@ const { authenticateToken, adminOnly } = require('../middleware/auth.middleware'
 router.get('/', async (req, res, next) => {
   try {
     const subjects = await prisma.subject.findMany({
+      where: {
+        topicsCount: { gt: 0 }
+      },
       select: {
         id: true,
         name: true,

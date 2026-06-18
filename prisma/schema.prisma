@@ -97,6 +97,10 @@ model Note {
   status      NoteStatus @default(DRAFT)
   publishedAt DateTime?
 
+  // Revision tracking
+  lastRevised DateTime?
+  revisionCount Int @default(0)
+
   // Tracking
   views       Int      @default(0)
   helpfulCount Int     @default(0)
