@@ -48,42 +48,23 @@ recallstack/
 │
 ├── backend/                            # Server application and API layers
 │   ├── .env                            # Environment variables (Database URL, JWT config, PORT)
+│   ├── .env.example                    # Template file for environment variables setup
 │   ├── package.json                    # Backend project dependencies and scripts
 │   ├── package-lock.json               # Locked dependency tree
 │   └── src/
 │       ├── app.js                      # Express application setup, router mounting, global handlers
-│       ├── server.js                   # Entry point for launching the API server
 │       ├── config/                     # Configuration definitions
 │       │   ├── constants.js            # General settings configuration
 │       │   ├── database.js             # Prisma client connection instance
 │       │   ├── email.js                # Mail service provider settings
 │       │   └── jwt.js                  # Token options
-│       ├── controllers/                # Empty placeholder files left for modular structure
-│       │   ├── analytics.controller.js
-│       │   ├── auth.controller.js
-│       │   ├── bookmark.controller.js
-│       │   ├── comment.controller.js
-│       │   ├── note.controller.js
-│       │   ├── revision.controller.js
-│       │   ├── search.controller.js
-│       │   ├── section.controller.js
-│       │   ├── subject.controller.js
-│       │   └── topic.controller.js
 │       ├── middleware/                 # Request validation and guard layers
-│       │   ├── admin.middleware.js     # Restricts access to users with Role ADMIN
 │       │   ├── auth.middleware.js      # Decodes JWT tokens and exposes req.user object
-│       │   ├── cors.middleware.js      # Cross-origin policy controls
 │       │   ├── errorHandler.middleware.js # Express unified error response handler
 │       │   ├── rateLimit.middleware.js # API access rate throttling
 │       │   └── validation.middleware.js # Request payload validator
-│       ├── repositories/               # Direct queries separation logic
-│       │   ├── note.repository.js
-│       │   ├── revision.repository.js
-│       │   ├── section.repository.js
-│       │   └── user.repository.js
 │       ├── routes/                     # Mounts API endpoint logic (containing actual database code)
-│       │   ├── analytics.routes.js     # Analytical metrics routing placeholder
-│       │   ├── auth.routes.js          # Handles registration, login, and profile fetching
+│       │   ├── auth.routes.js          # Handles registration, login, profile updates
 │       │   ├── bookmark.routes.js      # Saves, deletes, and lists user bookmarks
 │       │   ├── comment.routes.js       # Threaded replies, moderation approval, and delete logic
 │       │   ├── note.routes.js          # CRUD operations for drafts, publish, and denormalized syncs
@@ -92,18 +73,6 @@ recallstack/
 │       │   ├── section.routes.js       # Handles section CRUD, reordering, and reading time calls
 │       │   ├── subject.routes.js       # Admin CRUD for subjects and homepage lookups
 │       │   └── topic.routes.js         # Admin CRUD for topics nested under subjects
-│       ├── services/                   # Business layers placeholders (currently handled in routes)
-│       │   ├── analytics.service.js
-│       │   ├── auth.service.js
-│       │   ├── bookmark.service.js
-│       │   ├── comment.service.js
-│       │   ├── email.service.js
-│       │   ├── note.service.js
-│       │   ├── revision.service.js
-│       │   ├── search.service.js
-│       │   ├── section.service.js
-│       │   ├── subject.service.js
-│       │   └── topic.service.js
 │       ├── templates/                  # Mail templates files
 │       │   ├── new-note.html
 │       │   └── welcome-email.html
@@ -121,6 +90,7 @@ recallstack/
 │
 └── frontend/                           # Next.js web application
     ├── .env.local                      # Local settings mapping backend API URL
+    ├── .env.example                    # Template file for Next.js public API URL mapping
     ├── jsconfig.json                   # Path aliases mappings
     ├── next.config.js                  # Next.js router and optimization configs
     ├── package.json                    # Frontend package dependencies
@@ -171,7 +141,6 @@ recallstack/
         │   ├── common/                 # Reusable buttons, badges, loaders, and input fields
         │   ├── editor/                 # Note and section edit workspace builders
         │   ├── home/                   # Main grids and hero sections
-        │   ├── layout/                 # Headers, Footers, and responsive Sidebars
         │   ├── learning/               # Content feeds, topics lists, and note layouts
         │   ├── note/                   # Highlighted code viewers and single note layouts
         │   └── revision/               # Timelines and revisions logs lists
@@ -186,18 +155,17 @@ recallstack/
         │   ├── og-image.js             # Visual meta graph generator
         │   └── seo.js                  # Standard metadata configuration structures
         ├── services/                   # Network configurations
-        │   ├── apiClient.js            # Axios client with interceptor injections
+        │   ├── apiClient.js            # Empty file kept for custom interceptor scaffolding
         │   ├── authService.js          # User requests definitions
         │   ├── noteService.js          # Notes requests definitions
         │   ├── revisionService.js      # Revisions logs requests definitions
         │   ├── sectionService.js       # Sections requests definitions
         │   ├── subjectService.js       # Subjects lists requests definitions
         │   └── topicService.js         # Topics lists requests definitions
-        ├── store/                      # Unused state frameworks placeholders
-        │   ├── authStore.js
-        │   ├── noteStore.js
-        │   └── uiStore.js
         └── utils/                      # Helper settings
+            ├── cn.js                   # Conditional class name merger
+            └── constants.js            # Shared UI labels and values
+```
             ├── cn.js                   # Conditional class name merger
             └── constants.js            # Shared UI labels and values
 ```
