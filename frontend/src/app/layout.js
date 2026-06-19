@@ -10,6 +10,11 @@ export const metadata = {
     description: 'Learn Once. Recall Anytime.',
     type: 'website',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'RecallStack',
+    description: 'Learn Once. Recall Anytime.',
+  }
 };
 
 export default function RootLayout({ children }) {

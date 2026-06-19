@@ -96,7 +96,7 @@ export default function StarRating({ noteId, initialAverage = 0, initialCount = 
       
       <div className="text-xs text-zinc-400">
         <span className="font-semibold text-white">{average.toFixed(1)}</span>
-        <span className="mx-1">&middot;</span>
+        <span className="mx-1">|</span>
         <span>{count} {count === 1 ? 'rating' : 'ratings'}</span>
         
         {!readOnly && !isAuthenticated && (
