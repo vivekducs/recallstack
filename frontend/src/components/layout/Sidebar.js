@@ -60,9 +60,7 @@ export default function Sidebar({ isOpen, onClose }) {
       const activeSubject = subjects.find(s => s.slug === activeSubjectSlug);
       
       if (activeSubject && !expandedSubjects[activeSubject.id]) {
-        // Expand the active subject
         setExpandedSubjects(prev => ({ ...prev, [activeSubject.id]: true }));
-        // Fetch topics for this subject
         fetchTopicsForSubject(activeSubject.id, activeSubject.slug);
       }
     }
@@ -84,13 +82,13 @@ export default function Sidebar({ isOpen, onClose }) {
   const currentTopicSlug = parts[1] === 'learning' ? parts[3] : null;
 
   const renderContent = () => (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xs uppercase tracking-wider font-bold text-zinc-500">Learning Catalog</h2>
+    <div className="flex flex-col h-full select-none">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xs uppercase tracking-wider font-bold text-[var(--color-text-secondary)]">Subjects</h2>
         {onClose && (
           <button 
             onClick={onClose} 
-            className="lg:hidden p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white"
+            className="lg:hidden p-1 rounded bg-[var(--color-bg-secondary)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -100,15 +98,16 @@ export default function Sidebar({ isOpen, onClose }) {
       </div>
 
       {loadingSubjects ? (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-9 w-full bg-zinc-900/60 animate-pulse rounded-lg"></div>
+            <div key={i} className="h-9 w-full bg-[var(--color-bg-secondary)] animate-pulse rounded"></div>
           ))}
         </div>
       ) : subjects.length === 0 ? (
-        <p className="text-xs text-zinc-500">No subjects catalogued yet.</p>
+        <p className="text-xs text-[var(--color-text-secondary)] italic">No subjects available.</p>
       ) : (
-        <div className="flex flex-col gap-1.5 overflow-y-auto pr-1">
+        // Sidebar list spacing: 2px gap
+        <div className="flex flex-col gap-[2px] overflow-y-auto pr-1">
           {subjects.map((subject) => {
             const isSubjectExpanded = !!expandedSubjects[subject.id];
             const isSubjectActive = currentSubjectSlug === subject.slug;
@@ -116,34 +115,36 @@ export default function Sidebar({ isOpen, onClose }) {
             const isTopicLoading = !!loadingTopics[subject.id];
 
             return (
-              <div key={subject.id} className="flex flex-col gap-1">
-                {/* Subject Header Nav */}
+              <div key={subject.id} className="flex flex-col">
+                {/* 
+                  Subject Header Nav: 
+                  - Padding: 12px (py-3 px-4 as per vertical guidelines)
+                  - Text: 14px (text-sm is 14px), 400 weight (font-normal)
+                  - Active: Blue background, white text.
+                  - Hover: Light gray background.
+                */}
                 <button
                   onClick={() => toggleSubject(subject.id, subject.slug)}
                   className={`
-                    w-full flex items-center justify-between px-3 py-2.5 rounded-xl border text-left transition-all duration-150
+                    w-full flex items-center justify-between py-3 px-4 rounded text-left transition-all duration-150 text-[14px] font-normal
                     ${isSubjectActive 
-                      ? 'bg-zinc-900/80 text-white font-semibold' 
-                      : 'bg-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40'
+                      ? 'bg-[var(--color-primary)] text-white font-semibold shadow-sm' 
+                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)]'
                     }
                   `}
-                  style={{ 
-                    borderColor: isSubjectActive ? `${subject.color || '#6c63f1'}30` : 'transparent',
-                    borderLeft: `3px solid ${subject.color || '#6c63f1'}`
-                  }}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="text-sm flex-shrink-0 opacity-70">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-sm flex-shrink-0">
                       {subject.icon || '📚'}
                     </span>
-                    <span className="text-xs truncate">{subject.name}</span>
+                    <span className="truncate">{subject.name}</span>
                   </div>
                   <div className="flex items-center gap-1.5 flex-shrink-0">
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-500 font-mono font-medium">
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${isSubjectActive ? 'bg-white/20 text-white' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)]'}`}>
                       {subject.topicsCount}
                     </span>
                     <svg 
-                      className={`w-3 h-3 text-zinc-500 transition-transform duration-200 ${isSubjectExpanded ? 'rotate-180' : ''}`} 
+                      className={`w-3 h-3 transition-transform duration-200 ${isSubjectExpanded ? 'rotate-180' : ''} ${isSubjectActive ? 'text-white' : 'text-[var(--color-text-secondary)]'}`} 
                       fill="none" 
                       stroke="currentColor" 
                       viewBox="0 0 24 24"
@@ -153,13 +154,13 @@ export default function Sidebar({ isOpen, onClose }) {
                   </div>
                 </button>
 
-                {/* Topics Sub-menu */}
+                {/* Indent sub-items: 16px (pl-4) */}
                 {isSubjectExpanded && (
-                  <div className="pl-4 pr-1 py-1 flex flex-col gap-1 border-l border-zinc-800/80 ml-4 mt-1 mb-2">
+                  <div className="pl-4 pr-1 py-0.5 flex flex-col gap-[2px] mt-[2px] border-l border-[var(--color-border)] ml-5">
                     {isTopicLoading ? (
-                      <div className="h-6 w-full bg-zinc-900/40 animate-pulse rounded-md"></div>
+                      <div className="h-6 w-full bg-[var(--color-bg-secondary)]/50 animate-pulse rounded"></div>
                     ) : subjectTopics.length === 0 ? (
-                      <span className="text-[10px] text-zinc-600 pl-2">No topics found</span>
+                      <span className="text-[11px] text-[var(--color-text-secondary)] pl-2 italic">No topics</span>
                     ) : (
                       subjectTopics.map((topic) => {
                         const isTopicActive = isSubjectActive && currentTopicSlug === topic.slug;
@@ -169,15 +170,15 @@ export default function Sidebar({ isOpen, onClose }) {
                             href={`/learning/${subject.slug}/${topic.slug}`}
                             onClick={onClose}
                             className={`
-                              w-full text-xs text-left py-1.5 px-3 rounded-lg border transition-all duration-150 flex items-center justify-between
+                              w-full text-xs text-left py-2 px-3 rounded transition-all duration-150 flex items-center justify-between
                               ${isTopicActive
-                                ? 'text-violet-400 font-semibold border-violet-900/30 bg-violet-950/10'
-                                : 'text-zinc-500 hover:text-zinc-300 border-transparent hover:bg-zinc-900/30'
+                                ? 'text-[var(--color-primary)] font-semibold bg-[var(--color-bg-secondary)] border-l-2 border-[var(--color-primary)] pl-2.5 rounded-l-none'
+                                : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)]'
                               }
                             `}
                           >
                             <span className="truncate">{topic.name}</span>
-                            <span className="text-[10px] text-zinc-600 font-mono font-medium">{topic.notesCount}</span>
+                            <span className="text-[9px] text-[var(--color-text-secondary)]/60 font-mono font-medium">{topic.notesCount}</span>
                           </Link>
                         );
                       })
@@ -194,22 +195,19 @@ export default function Sidebar({ isOpen, onClose }) {
 
   return (
     <>
-      {/* Desktop view */}
-      <aside className="hidden lg:flex flex-col w-64 sticky top-16 h-[calc(100vh-4rem)] border-r border-zinc-800/80 bg-[#0a0a0f] overflow-y-auto px-4 py-6 flex-shrink-0">
+      {/* Desktop view: Width 240px (w-60), sticky top-14 (since header height is 56px) */}
+      <aside className="hidden lg:flex flex-col w-[240px] sticky top-14 h-[calc(100vh-3.5rem)] border-r border-[var(--color-border)] bg-[var(--color-bg)] overflow-y-auto px-4 py-6 flex-shrink-0">
         {renderContent()}
       </aside>
 
       {/* Mobile/Tablet drawer view */}
       {isOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
-          {/* Backdrop */}
           <div 
             onClick={onClose}
-            className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity duration-300"
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-200"
           ></div>
-          
-          {/* Drawer container */}
-          <div className="relative w-64 max-w-xs bg-[#0a0a0f] border-r border-zinc-800 p-5 flex flex-col h-full z-10 overflow-y-auto">
+          <div className="relative w-[240px] bg-[var(--color-bg)] border-r border-[var(--color-border)] p-4 flex flex-col h-full z-10 overflow-y-auto">
             {renderContent()}
           </div>
         </div>

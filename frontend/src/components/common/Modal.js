@@ -13,7 +13,6 @@ export default function Modal({
 }) {
   const modalRef = useRef(null);
 
-  // Close on Escape key press
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && isOpen) {
@@ -33,42 +32,43 @@ export default function Modal({
   };
 
   return (
+    // Backdrop: semi-transparent black (rgba(0, 0, 0, 0.5))
     <div 
       onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm transition-opacity duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 transition-opacity duration-150"
     >
-      {/* Modal Box */}
+      {/* Modal Box: bg white/dark, border radius 8px, padding 24px, max width 500px, centered */}
       <div 
         ref={modalRef}
-        className={`w-full max-w-lg bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl flex flex-col p-6 max-h-[90vh] ${className}`}
+        className={`w-full max-w-[500px] bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg shadow-xl flex flex-col p-6 max-h-[90vh] ${className}`}
       >
         
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-zinc-850 pb-4 mb-4">
+        {/* Header: title 20px, 600 weight, margin bottom 16px, Close button (X icon) on right */}
+        <div className="flex items-center justify-between mb-4">
           {title && (
-            <h3 className="text-lg font-bold text-white leading-none">
+            <h3 className="text-[20px] font-semibold text-[var(--color-text-primary)] leading-none">
               {title}
             </h3>
           )}
           <button 
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-all hover:bg-zinc-800/80"
+            className="p-1 rounded text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
             aria-label="Close dialog"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto pr-1 text-sm text-zinc-300 py-2 scrollbar-thin">
+        {/* Body: scrollable if content > 400px, padding 16px vertical */}
+        <div className="flex-grow overflow-y-auto py-4 text-sm text-[var(--color-text-secondary)] max-h-[400px] scrollbar-thin">
           {children}
         </div>
 
-        {/* Footer */}
+        {/* Footer: border top, padding 16px top, buttons right-aligned */}
         {footer && (
-          <div className="flex items-center justify-end gap-3 border-t border-zinc-850 pt-4 mt-4">
+          <div className="flex items-center justify-end gap-3 border-t border-[var(--color-border)] pt-4 mt-4">
             {footer}
           </div>
         )}

@@ -5,6 +5,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import useAuth from '@/hooks/useAuth';
+import Card from '@/components/common/Card';
+import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,81 +34,66 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--color-bg)' }}>
-      {/* Ambient glow */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[20%] left-[20%] w-[350px] h-[350px] rounded-full opacity-[0.04]" style={{ background: 'radial-gradient(circle, #6c63f1, transparent 70%)' }}></div>
-      </div>
-
-      <div className="relative w-full max-w-md glass-card p-8">
+    <div className="w-full">
+      <Card variant="standard" className="p-8">
+        
         <header className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tight mb-2" style={{ color: 'white' }}>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-2 text-[var(--color-text-primary)]">
             Welcome Back
           </h1>
-          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="text-xs sm:text-sm text-[var(--color-text-secondary)]">
             Log in to manage bookmarks, edit notes, and comment.
           </p>
         </header>
 
         {error && (
-          <div className="p-4 mb-6 rounded-lg text-sm text-red-400" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+          <div className="p-4 mb-6 rounded-lg text-sm text-[var(--color-error)] border border-[var(--color-error)]/20 bg-[var(--color-error)]/10">
             ⚠️ {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="flex flex-col gap-2">
-            <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-dim)' }}>
-              Email Address
-            </label>
-            <input
-              type="email"
-              required
-              placeholder="e.g. user@recallstack.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="px-4 py-3 rounded-lg text-white outline-none"
-              style={{
-                background: 'var(--color-bg-elevated)',
-                border: '1px solid var(--color-border)',
-              }}
-            />
-          </div>
+          {/* Email input field */}
+          <Input
+            id="login-email"
+            type="email"
+            label="Email Address"
+            placeholder="e.g. user@recallstack.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-          <div className="flex flex-col gap-2">
-            <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-dim)' }}>
-              Password
-            </label>
-            <input
-              type="password"
-              required
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="px-4 py-3 rounded-lg text-white outline-none"
-              style={{
-                background: 'var(--color-bg-elevated)',
-                border: '1px solid var(--color-border)',
-              }}
-            />
-          </div>
+          {/* Password input field */}
+          <Input
+            id="login-password"
+            type="password"
+            label="Password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
-          <button
+          {/* Action button */}
+          <Button
             type="submit"
-            disabled={loading}
-            className="w-full btn-primary py-3.5 mt-2 flex justify-center items-center"
+            loading={loading}
+            variant="primary"
+            className="w-full mt-2"
           >
-            {loading ? 'Logging in...' : 'Sign In'}
-          </button>
+            Sign In
+          </Button>
         </form>
 
-        <footer className="text-center mt-6 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+        <footer className="text-center mt-6 text-xs sm:text-sm text-[var(--color-text-secondary)]">
           Don't have an account?{' '}
-          <Link href="/register" className="hover:underline font-medium" style={{ color: 'var(--color-primary)' }}>
+          <Link href="/register" className="hover:underline font-semibold text-[var(--color-primary)]">
             Create one
           </Link>
         </footer>
-      </div>
-    </main>
+
+      </Card>
+    </div>
   );
 }

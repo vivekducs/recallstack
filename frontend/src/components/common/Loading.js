@@ -3,27 +3,16 @@
 
 export default function Loading({ 
   text = 'Loading...', 
-  fullScreen = false, 
-  size = 'md' 
+  fullScreen = false 
 }) {
-  const sizes = {
-    sm: 'w-4 h-4',
-    md: 'w-6 h-6',
-    lg: 'w-8 h-8'
-  };
-
-  const selectedSize = sizes[size] || sizes.md;
-
   const content = (
-    <div className="flex flex-col items-center justify-center gap-3">
-      {/* Spinner */}
-      <div 
-        className={`${selectedSize} border-zinc-800 border-t-violet-500 rounded-full animate-spin`}
-        style={{ borderWidth: size === 'lg' ? '3px' : '2px' }}
-      ></div>
-      {/* Message text */}
+    <div className="flex flex-col items-center justify-center gap-3 select-none pointer-events-none">
+      {/* Spinner: 20px diameter, blue */}
+      <div className="w-[20px] h-[20px] border-[2px] border-[var(--color-border)] border-t-[var(--color-primary)] rounded-full animate-spin"></div>
+      
+      {/* Text below spinner */}
       {text && (
-        <span className="text-xs font-mono text-zinc-500 tracking-wider loading-pulse">
+        <span className="text-xs font-mono text-[var(--color-text-secondary)] tracking-wider loading-pulse">
           {text}
         </span>
       )}
@@ -32,7 +21,7 @@ export default function Loading({
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0a0f]/80 backdrop-blur-sm pointer-events-none">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-bg)]/90 backdrop-blur-xs pointer-events-none">
         {content}
       </div>
     );

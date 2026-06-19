@@ -6,6 +6,10 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
 import useAuth from '@/hooks/useAuth';
+import Card from '@/components/common/Card';
+import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
+import Breadcrumb from '@/components/common/Breadcrumb';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -89,7 +93,6 @@ export default function CreateNotePage() {
     setLoading(true);
     setError('');
 
-    // Parse comma-separated tags into an array of trimmed strings
     const tags = tagsInput
       .split(',')
       .map(tag => tag.trim())
@@ -111,7 +114,6 @@ export default function CreateNotePage() {
       );
       
       const newNote = res.data;
-      // Redirect to section editor
       router.push(`/my-learnings/${newNote.id}/edit`);
     } catch (err) {
       console.error('Failed to create note:', err);
@@ -122,201 +124,160 @@ export default function CreateNotePage() {
 
   if (authLoading || pageLoading) {
     return (
-      <main className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
-        <div className="loading-pulse" style={{ color: 'var(--color-text-muted)' }}>Loading subjects...</div>
-      </main>
+      <div className="flex flex-col items-center justify-center p-20 min-h-[300px]">
+        <div className="w-[20px] h-[20px] border-2 border-[var(--color-border)] border-t-[var(--color-primary)] rounded-full animate-spin"></div>
+        <span className="text-xs font-mono text-[var(--color-text-secondary)] mt-3 loading-pulse">Loading workspace...</span>
+      </div>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <main className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--color-bg)' }}>
-        <div className="max-w-md w-full glass-card p-8 text-center">
-          <div className="text-6xl mb-4">🔒</div>
-          <h2 className="text-2xl font-bold mb-3" style={{ color: 'white' }}>Authorization Required</h2>
-          <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
+      <div className="w-full max-w-md mx-auto">
+        <Card variant="standard" className="text-center p-8">
+          <div className="text-4xl mb-4 select-none">🔒</div>
+          <h2 className="text-2xl font-bold mb-3 text-[var(--color-text-primary)]">Authorization Required</h2>
+          <p className="text-sm mb-6 text-[var(--color-text-secondary)]">
             Please log in to create note drafts.
           </p>
-          <Link href="/login" className="btn-primary inline-block">
-            Sign In
+          <Link href="/login" className="block">
+            <Button variant="primary" className="w-full">
+              Sign In
+            </Button>
           </Link>
-        </div>
-      </main>
+        </Card>
+      </div>
     );
   }
 
+  const subjectOptions = subjects.map(sub => ({
+    value: sub.id,
+    label: `${sub.icon || '📚'} ${sub.name}`
+  }));
+
+  const topicOptions = topics.length === 0 
+    ? [{ value: '', label: 'No topics in this subject' }]
+    : topics.map(t => ({ value: t.id, label: t.name }));
+
+  const difficultyOptions = [
+    { value: 'EASY', label: 'Easy' },
+    { value: 'MEDIUM', label: 'Medium' },
+    { value: 'HARD', label: 'Hard' }
+  ];
+
   return (
-    <main className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
-      {/* Glow backgrounds */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-20%] left-[-15%] w-[450px] h-[450px] rounded-full opacity-[0.04]" style={{ background: 'radial-gradient(circle, #6c63f1, transparent 75%)' }}></div>
-      </div>
+    <div className="w-full max-w-2xl mx-auto">
+      {/* Navigation Breadcrumb */}
+      <Breadcrumb 
+        items={[
+          { name: 'Home', href: '/' },
+          { name: 'My Learnings', href: '/my-learnings' },
+          { name: 'Create Note' }
+        ]} 
+        className="mb-8"
+      />
 
-      <div className="relative max-w-2xl mx-auto px-6 py-12">
-        {/* Navigation Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm mb-8" style={{ color: 'var(--color-text-dim)' }}>
-          <Link href="/" className="hover:underline" style={{ color: 'var(--color-primary)' }}>Home</Link>
-          <span>/</span>
-          <Link href="/my-learnings" className="hover:underline" style={{ color: 'var(--color-primary)' }}>My Learnings</Link>
-          <span>/</span>
-          <span style={{ color: 'var(--color-text-muted)' }}>Create Note</span>
-        </nav>
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-2">Create New Note Draft</h1>
+        <p className="text-sm text-[var(--color-text-secondary)]">Fill in the metadata. You will add details and sections in the next step.</p>
+      </header>
 
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Create New Note Draft</h1>
-          <p style={{ color: 'var(--color-text-muted)' }}>Fill in the metadata. You will add details and sections in the next step.</p>
-        </header>
+      {error && (
+        <div className="p-4 mb-6 rounded-lg text-sm text-[var(--color-error)] border border-[var(--color-error)]/20 bg-[var(--color-error)]/10">
+          ⚠️ {error}
+        </div>
+      )}
 
-        {error && (
-          <div className="p-4 mb-6 rounded-lg text-sm text-red-400" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-            ⚠️ {error}
-          </div>
-        )}
+      {/* Form Area in Card */}
+      <Card variant="standard" className="p-8">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          
+          {/* Subject dropdown select */}
+          <Input
+            id="note-subject"
+            type="select"
+            label="1. Select Subject"
+            value={selectedSubjectId}
+            onChange={(e) => setSelectedSubjectId(e.target.value)}
+            options={subjectOptions}
+            required
+          />
 
-        <form onSubmit={handleSubmit} className="glass-card p-8 flex flex-col gap-6">
-          {/* Subject Selection */}
-          <div className="flex flex-col gap-2">
-            <label className="text-xs font-semibold text-white uppercase tracking-wider">
-              1. Select Subject
-            </label>
-            <select
-              value={selectedSubjectId}
-              onChange={(e) => setSelectedSubjectId(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg text-white outline-none border focus:border-purple-500 transition-colors"
-              style={{
-                background: 'var(--color-bg-elevated)',
-                borderColor: 'var(--color-border)'
-              }}
-            >
-              {subjects.map(sub => (
-                <option key={sub.id} value={sub.id}>
-                  {sub.icon} {sub.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Topic Selection */}
-          <div className="flex flex-col gap-2">
-            <label className="text-xs font-semibold text-white uppercase tracking-wider">
-              2. Select Topic
-            </label>
-            <select
-              value={selectedTopicId}
-              onChange={(e) => setSelectedTopicId(e.target.value)}
-              disabled={topics.length === 0}
-              className="w-full px-4 py-3 rounded-lg text-white outline-none border focus:border-purple-500 transition-colors disabled:opacity-50"
-              style={{
-                background: 'var(--color-bg-elevated)',
-                borderColor: 'var(--color-border)'
-              }}
-            >
-              {topics.length === 0 ? (
-                <option value="">No topics in this subject</option>
-              ) : (
-                topics.map(t => (
-                  <option key={t.id} value={t.id}>
-                    {t.name}
-                  </option>
-                ))
-              )}
-            </select>
-          </div>
+          {/* Topic dropdown select */}
+          <Input
+            id="note-topic"
+            type="select"
+            label="2. Select Topic"
+            value={selectedTopicId}
+            onChange={(e) => setSelectedTopicId(e.target.value)}
+            disabled={topics.length === 0}
+            options={topicOptions}
+            required
+          />
 
           {/* Title input */}
-          <div className="flex flex-col gap-2">
-            <label htmlFor="title" className="text-xs font-semibold text-white uppercase tracking-wider">
-              3. Note Title
-            </label>
-            <input
-              id="title"
-              type="text"
-              placeholder="e.g. Dijkstra's Algorithm, CSS Flexbox Crash Course..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              className="w-full px-4 py-3 rounded-lg text-white outline-none border focus:border-purple-500 transition-colors"
-              style={{
-                background: 'var(--color-bg-elevated)',
-                borderColor: 'var(--color-border)'
-              }}
-            />
-          </div>
+          <Input
+            id="title"
+            type="text"
+            label="3. Note Title"
+            placeholder="e.g. Dijkstra's Algorithm, CSS Flexbox Crash Course..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
 
-          {/* Excerpt */}
-          <div className="flex flex-col gap-2">
-            <label htmlFor="excerpt" className="text-xs font-semibold text-white uppercase tracking-wider">
-              4. Excerpt / Short Summary
-            </label>
-            <textarea
-              id="excerpt"
-              rows={2}
-              placeholder="Provide a quick overview of what this note covers..."
-              value={excerpt}
-              onChange={(e) => setExcerpt(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg text-white outline-none border focus:border-purple-500 transition-colors resize-none"
-              style={{
-                background: 'var(--color-bg-elevated)',
-                borderColor: 'var(--color-border)'
-              }}
-            />
-          </div>
+          {/* Excerpt textarea */}
+          <Input
+            id="excerpt"
+            type="textarea"
+            label="4. Excerpt / Short Summary"
+            placeholder="Provide a quick overview of what this note covers..."
+            value={excerpt}
+            onChange={(e) => setExcerpt(e.target.value)}
+            rows={2}
+          />
 
           {/* Row: Difficulty and Tags */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="flex flex-col gap-2">
-              <label className="text-xs font-semibold text-white uppercase tracking-wider">
-                5. Difficulty
-              </label>
-              <select
-                value={difficulty}
-                onChange={(e) => setDifficulty(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg text-white outline-none border focus:border-purple-500 transition-colors"
-                style={{
-                  background: 'var(--color-bg-elevated)',
-                  borderColor: 'var(--color-border)'
-                }}
-              >
-                <option value="EASY">Easy</option>
-                <option value="MEDIUM">Medium</option>
-                <option value="HARD">Hard</option>
-              </select>
-            </div>
+            <Input
+              id="difficulty"
+              type="select"
+              label="5. Difficulty"
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value)}
+              options={difficultyOptions}
+              required
+            />
 
-            <div className="flex flex-col gap-2">
-              <label htmlFor="tags" className="text-xs font-semibold text-white uppercase tracking-wider">
-                6. Tags (comma-separated)
-              </label>
-              <input
-                id="tags"
-                type="text"
-                placeholder="e.g. algorithms, graphs, shortest-path"
-                value={tagsInput}
-                onChange={(e) => setTagsInput(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg text-white outline-none border focus:border-purple-500 transition-colors"
-                style={{
-                  background: 'var(--color-bg-elevated)',
-                  borderColor: 'var(--color-border)'
-                }}
-              />
-            </div>
+            <Input
+              id="tags"
+              type="text"
+              label="6. Tags (comma-separated)"
+              placeholder="e.g. algorithms, graphs, shortest-path"
+              value={tagsInput}
+              onChange={(e) => setTagsInput(e.target.value)}
+            />
           </div>
 
           {/* Form Actions */}
           <div className="flex gap-4 mt-4 justify-end">
-            <Link href="/my-learnings" className="btn-secondary">
-              Cancel
+            <Link href="/my-learnings">
+              <Button variant="secondary">
+                Cancel
+              </Button>
             </Link>
-            <button
+            <Button
               type="submit"
               disabled={loading || topics.length === 0}
-              className="btn-primary flex items-center justify-center min-w-[140px] disabled:opacity-50"
+              variant="primary"
+              className="min-w-[140px]"
             >
               {loading ? 'Creating...' : 'Create Draft'}
-            </button>
+            </Button>
           </div>
+
         </form>
-      </div>
-    </main>
+      </Card>
+    </div>
   );
 }

@@ -23,9 +23,8 @@ export default function Navigation({ vertical = false, onItemClick }) {
   }
 
   return (
-    <nav className={vertical ? 'flex flex-col gap-1 w-full' : 'flex items-center gap-6'}>
+    <nav className={vertical ? 'flex flex-col gap-[2px] w-full' : 'flex items-center gap-[24px]'}>
       {links.map((link) => {
-        // Highlight active link
         const isActive = pathname === link.href || (link.href !== '/' && pathname?.startsWith(link.href));
         
         return (
@@ -34,12 +33,20 @@ export default function Navigation({ vertical = false, onItemClick }) {
             href={link.href}
             onClick={onItemClick}
             className={`
-              transition-all duration-150 text-sm px-3 py-2 rounded-lg font-medium
-              ${vertical ? 'w-full block text-left' : 'inline-block'}
-              ${
-                isActive
-                  ? 'text-white font-semibold bg-zinc-800/80 border border-zinc-700/50'
-                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40 border border-transparent'
+              transition-all duration-150 text-[14px]
+              ${vertical 
+                ? 'w-full block text-left py-3 px-3 rounded font-normal' 
+                : 'inline-block px-3 py-1 font-normal'
+              }
+              ${vertical
+                // Vertical (Sidebar): Active: Blue bg, White text. Hover: Light gray bg. Spacing: 2px
+                ? isActive
+                  ? 'bg-[var(--color-primary)] text-white font-semibold shadow-sm'
+                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)]'
+                // Horizontal (Header): Active: Blue text + underline. Hover: Gray background. Spacing: 24px
+                : isActive
+                  ? 'text-[var(--color-primary)] underline underline-offset-4 font-semibold'
+                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)] rounded'
               }
             `}
           >

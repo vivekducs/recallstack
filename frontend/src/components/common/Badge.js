@@ -6,22 +6,22 @@ export default function Badge({
   variant = 'default', 
   className = '' 
 }) {
-  const baseStyle = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border';
+  const baseStyle = 'inline-flex items-center gap-1.5 px-2 py-1 rounded text-[12px] font-semibold uppercase tracking-wider border';
   
   const variants = {
-    // Note status badges
-    PUBLISHED: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-    DRAFT: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-    PENDING: 'bg-zinc-800/80 text-zinc-400 border-zinc-800',
-    ARCHIVED: 'bg-zinc-900/60 text-zinc-500 border-zinc-900',
+    // Status Badges
+    PUBLISHED: 'bg-[var(--color-success)] text-white border-transparent',
+    DRAFT: 'bg-[var(--color-warning)] text-[#1A1A1A] border-transparent',
+    PENDING: 'bg-[var(--color-text-secondary)] text-[#1A1A1A] border-transparent',
+    ARCHIVED: 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] border-[var(--color-border)]',
     
-    // Difficulty badges
-    EASY: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25',
-    MEDIUM: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
-    HARD: 'bg-red-500/15 text-red-400 border-red-500/25',
+    // Difficulty Badges
+    EASY: 'bg-[var(--color-success)]/15 text-[var(--color-success)] border-[var(--color-success)]/20',
+    MEDIUM: 'bg-[var(--color-warning)]/15 text-[var(--color-warning)] border-[var(--color-warning)]/20',
+    HARD: 'bg-[var(--color-error)]/15 text-[var(--color-error)] border-[var(--color-error)]/20',
     
-    // Default fallback
-    default: 'bg-zinc-900/40 text-zinc-300 border-zinc-800/60'
+    // Fallback
+    default: 'bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] border-[var(--color-border)]'
   };
 
   const normalVariant = variant ? variant.toUpperCase() : 'DEFAULT';

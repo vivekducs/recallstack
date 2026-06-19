@@ -5,6 +5,11 @@ import { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
+import Card from '@/components/common/Card';
+import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
+import Badge from '@/components/common/Badge';
+import Breadcrumb from '@/components/common/Breadcrumb';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -44,7 +49,6 @@ function SearchPageContent() {
     }
     const foundSubject = subjects.find(s => s.slug === selectedSubject);
     if (foundSubject) {
-      // Fetch topics for this subject
       async function fetchTopics() {
         try {
           const res = await axios.get(`${API_URL}/subjects/${foundSubject.id}/topics`);
@@ -102,7 +106,6 @@ function SearchPageContent() {
   const handleSearch = (e) => {
     if (e) e.preventDefault();
     
-    // Update URL query string
     const params = new URLSearchParams();
     if (query.trim()) params.set('q', query.trim());
     if (selectedSubject) params.set('subject', selectedSubject);
@@ -112,208 +115,184 @@ function SearchPageContent() {
     router.push(`/search?${params.toString()}`);
   };
 
-  const getDifficultyBadge = (difficulty) => {
-    const classes = {
-      EASY: 'badge-easy',
-      MEDIUM: 'badge-medium',
-      HARD: 'badge-hard'
-    };
-    return classes[difficulty] || 'badge-medium';
-  };
+  // Convert subject options for dropdown select
+  const subjectOptions = [
+    { value: '', label: 'All Subjects' },
+    ...subjects.map(s => ({ value: s.slug, label: s.name }))
+  ];
+
+  // Convert topic options for dropdown select
+  const topicOptions = [
+    { value: '', label: 'All Topics' },
+    ...filteredTopics.map(t => ({ value: t.slug, label: t.name }))
+  ];
+
+  // Convert difficulty options for dropdown select
+  const difficultyOptions = [
+    { value: '', label: 'All Difficulties' },
+    { value: 'EASY', label: 'Easy' },
+    { value: 'MEDIUM', label: 'Medium' },
+    { value: 'HARD', label: 'Hard' }
+  ];
 
   return (
-    <main className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
-      {/* Ambient background glow */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] right-[-10%] w-[400px] h-[400px] rounded-full opacity-[0.04]" style={{ background: 'radial-gradient(circle, #6c63f1, transparent 70%)' }}></div>
-      </div>
+    <div className="w-full">
+      {/* Navigation Breadcrumb */}
+      <Breadcrumb 
+        items={[
+          { name: 'Home', href: '/' },
+          { name: 'Search' }
+        ]} 
+        className="mb-8"
+      />
 
-      <div className="relative max-w-5xl mx-auto px-6 py-12">
-        {/* Navigation Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm mb-8" style={{ color: 'var(--color-text-dim)' }}>
-          <Link href="/" className="hover:underline" style={{ color: 'var(--color-primary)' }}>Home</Link>
-          <span>/</span>
-          <span style={{ color: 'var(--color-text-muted)' }}>Search</span>
-        </nav>
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-2">Search Library</h1>
+        <p className="text-sm text-[var(--color-text-secondary)]">Find notes and learning guides across all subjects and topics.</p>
+      </header>
 
-        <header className="mb-10">
-          <h1 className="text-4xl font-bold mb-2" style={{ color: 'white' }}>Search Library</h1>
-          <p style={{ color: 'var(--color-text-muted)' }}>Find notes and learning guides across all subjects and topics.</p>
-        </header>
-
-        {/* Search Panel */}
-        <section className="glass-card p-6 mb-10">
-          <form onSubmit={handleSearch} className="space-y-6">
-            {/* Query Input Box */}
-            <div className="flex gap-4">
-              <div className="flex-1 relative">
-                <input
-                  type="text"
-                  placeholder="Type keywords (e.g. merge sort, load balancer)..."
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="w-full px-5 py-3.5 rounded-xl text-white outline-none transition-all"
-                  style={{
-                    background: 'var(--color-bg-elevated)',
-                    border: '1px solid var(--color-border)',
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
-                  onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
-                />
-              </div>
-              <button type="submit" className="btn-primary flex items-center gap-2 px-8">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <span>Search</span>
-              </button>
+      {/* Search Panel Card */}
+      <Card variant="standard" className="mb-8">
+        <form onSubmit={handleSearch} className="space-y-6">
+          
+          {/* Query Input Box & Search Button */}
+          <div className="flex flex-col sm:flex-row gap-4 items-end sm:items-center">
+            <div className="flex-1 w-full">
+              <Input
+                id="search-query"
+                type="text"
+                placeholder="Type keywords (e.g. merge sort, load balancer)..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
             </div>
-
-            {/* Filter Dropdowns Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Subject Filter */}
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-dim)' }}>Subject</label>
-                <select
-                  value={selectedSubject}
-                  onChange={(e) => setSelectedSubject(e.target.value)}
-                  className="px-4 py-3 rounded-lg text-white outline-none cursor-pointer"
-                  style={{
-                    background: 'var(--color-bg-elevated)',
-                    border: '1px solid var(--color-border)',
-                  }}
-                >
-                  <option value="">All Subjects</option>
-                  {subjects.map(s => (
-                    <option key={s.id} value={s.slug}>{s.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Topic Filter */}
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-dim)' }}>Topic</label>
-                <select
-                  value={selectedTopic}
-                  onChange={(e) => setSelectedTopic(e.target.value)}
-                  disabled={!selectedSubject}
-                  className="px-4 py-3 rounded-lg text-white outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{
-                    background: 'var(--color-bg-elevated)',
-                    border: '1px solid var(--color-border)',
-                  }}
-                >
-                  <option value="">All Topics</option>
-                  {filteredTopics.map(t => (
-                    <option key={t.id} value={t.slug}>{t.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Difficulty Filter */}
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-dim)' }}>Difficulty</label>
-                <select
-                  value={selectedDifficulty}
-                  onChange={(e) => setSelectedDifficulty(e.target.value)}
-                  className="px-4 py-3 rounded-lg text-white outline-none cursor-pointer"
-                  style={{
-                    background: 'var(--color-bg-elevated)',
-                    border: '1px solid var(--color-border)',
-                  }}
-                >
-                  <option value="">All Difficulties</option>
-                  <option value="EASY">Easy</option>
-                  <option value="MEDIUM">Medium</option>
-                  <option value="HARD">Hard</option>
-                </select>
-              </div>
-            </div>
-          </form>
-        </section>
-
-        {/* Results Section */}
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold" style={{ color: 'white' }}>Results ({results.length})</h2>
-            {loading && <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Searching...</span>}
+            <Button type="submit" variant="primary" className="w-full sm:w-auto h-[38px] px-6">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              Search
+            </Button>
           </div>
 
-          {results.length === 0 ? (
-            <div className="text-center py-20 glass-card">
-              <div className="text-xl mb-4 font-mono text-zinc-500 tracking-wider">No Results</div>
-              <p style={{ color: 'var(--color-text-muted)' }}>No matching notes found.</p>
-              <p className="text-sm mt-2" style={{ color: 'var(--color-text-dim)' }}>Try adjusting your search keywords or filters.</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {results.map((note) => (
-                <Link key={note.id} href={`/learning/${note.topic.subject.slug}/${note.topic.slug}/${note.slug}`}>
-                  <div className="glass-card p-5 cursor-pointer hover:bg-opacity-80 transition-all mb-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 text-xs mb-2" style={{ color: 'var(--color-primary)' }}>
-                          <span>{note.topic.subject.name}</span>
-                          <span>•</span>
-                          <span style={{ color: 'var(--color-text-muted)' }}>{note.topic.name}</span>
-                        </div>
-                        
-                        <h3 className="text-lg font-semibold mb-2" style={{ color: 'white' }}>{note.title}</h3>
-                        {note.excerpt && (
-                          <p className="text-sm mb-4 line-clamp-2" style={{ color: 'var(--color-text-muted)' }}>
-                            {note.excerpt}
-                          </p>
-                        )}
+          {/* Filter Dropdowns Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Subject Filter */}
+            <Input
+              id="filter-subject"
+              type="select"
+              label="Subject"
+              value={selectedSubject}
+              onChange={(e) => setSelectedSubject(e.target.value)}
+              options={subjectOptions}
+            />
 
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <span className={`badge ${getDifficultyBadge(note.difficulty)}`}>
-                            {note.difficulty}
-                          </span>
-                          <span className="text-xs" style={{ color: 'var(--color-text-dim)' }}>
-                            {note.readingTime || 1} min read
-                          </span>
-                          <span className="text-xs" style={{ color: 'var(--color-text-dim)' }}>
-                            by {note.author?.name || 'Unknown'}
-                          </span>
-                          {note.publishedAt && (
-                            <span className="text-xs" style={{ color: 'var(--color-text-dim)' }}>
-                              {new Date(note.publishedAt).toLocaleDateString()}
-                            </span>
-                          )}
-                        </div>
+            {/* Topic Filter */}
+            <Input
+              id="filter-topic"
+              type="select"
+              label="Topic"
+              value={selectedTopic}
+              onChange={(e) => setSelectedTopic(e.target.value)}
+              disabled={!selectedSubject}
+              options={topicOptions}
+            />
 
-                        {note.tags && note.tags.length > 0 && (
-                          <div className="flex gap-2 mt-3 flex-wrap">
-                            {note.tags.map((tag, i) => (
-                              <span key={i} className="text-xs px-2 py-0.5 rounded" style={{ background: 'var(--color-bg-elevated)', color: 'var(--color-text-dim)', border: '1px solid var(--color-border)' }}>
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
+            {/* Difficulty Filter */}
+            <Input
+              id="filter-difficulty"
+              type="select"
+              label="Difficulty"
+              value={selectedDifficulty}
+              onChange={(e) => setSelectedDifficulty(e.target.value)}
+              options={difficultyOptions}
+            />
+          </div>
+
+        </form>
+      </Card>
+
+      {/* Results Section */}
+      <section>
+        <div className="flex items-center justify-between mb-4 select-none">
+          <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
+            Results ({results.length})
+          </h2>
+          {loading && <span className="text-xs text-[var(--color-text-secondary)] animate-pulse">Searching library...</span>}
+        </div>
+
+        {results.length === 0 ? (
+          <Card variant="standard" className="text-center py-16">
+            <h3 className="text-[18px] font-semibold text-[var(--color-text-primary)] mb-1">No Results</h3>
+            <p className="text-sm text-[var(--color-text-secondary)]">No matching notes found.</p>
+            <p className="text-xs text-[var(--color-text-secondary)] mt-1">Try adjusting your search keywords or filters.</p>
+          </Card>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {results.map((note) => (
+              <Link key={note.id} href={`/learning/${note.topic.subject.slug}/${note.topic.slug}/${note.slug}`} className="block">
+                <Card variant="standard" className="hover:border-[var(--color-primary)]">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      
+                      {/* Subject info path */}
+                      <div className="flex items-center gap-1.5 text-[11px] font-mono text-[var(--color-primary)] mb-2">
+                        <span>{note.topic.subject.name}</span>
+                        <span className="opacity-50">/</span>
+                        <span className="text-[var(--color-text-secondary)]">{note.topic.name}</span>
+                      </div>
+                      
+                      {/* Note Title: 4px padding bottom */}
+                      <h3 className="text-[18px] font-semibold text-[var(--color-text-primary)] pb-1 truncate">
+                        {note.title}
+                      </h3>
+
+                      {/* Content: 12px padding top */}
+                      {note.excerpt && (
+                        <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] line-clamp-2 mt-3 mb-4">
+                          {note.excerpt}
+                        </p>
+                      )}
+
+                      {/* Meta stats: 8px top, 12px size, gray */}
+                      <div className="flex items-center gap-3 flex-wrap text-[12px] text-[var(--color-text-secondary)] mt-4">
+                        <Badge variant={note.difficulty}>
+                          {note.difficulty}
+                        </Badge>
+                        <span>•</span>
+                        <span>{note.readingTime || 1} min read</span>
+                        <span>•</span>
+                        <span>by {note.author?.name || 'Unknown'}</span>
+                        {note.publishedAt && (
+                          <>
+                            <span>•</span>
+                            <span>{new Date(note.publishedAt).toLocaleDateString()}</span>
+                          </>
                         )}
                       </div>
 
-                      <svg className="w-5 h-5 mt-1 flex-shrink-0" style={{ color: 'var(--color-text-dim)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
                     </div>
+
+                    <svg className="w-4.5 h-4.5 text-[var(--color-text-secondary)]/50 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
                   </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </section>
-      </div>
-    </main>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
 
 export default function SearchPage() {
   return (
     <Suspense fallback={
-      <main className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
-        <div className="loading-pulse" style={{ color: 'var(--color-text-muted)' }}>Loading search directory...</div>
-      </main>
+      <div className="flex flex-col items-center justify-center p-20 min-h-[300px]">
+        <div className="w-[20px] h-[20px] border-2 border-[var(--color-border)] border-t-[var(--color-primary)] rounded-full animate-spin"></div>
+        <span className="text-xs font-mono text-[var(--color-text-secondary)] mt-3 loading-pulse">Loading search directory...</span>
+      </div>
     }>
       <SearchPageContent />
     </Suspense>

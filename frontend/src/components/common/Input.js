@@ -11,21 +11,22 @@ export default function Input({
   className = '',
   ...props
 }) {
-  const baseInputStyle = 'w-full px-4 py-2.5 rounded-lg bg-zinc-900/60 border border-zinc-800 text-sm text-white placeholder-zinc-500 placeholder:italic outline-none transition-all duration-150 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/25 disabled:opacity-50 disabled:cursor-not-allowed';
+  // Height: 36-40px. Padding: 8-10px horizontal. Border: 1px solid. Border radius: 4px.
+  const baseInputStyle = 'w-full px-2.5 h-[38px] rounded-[4px] bg-[var(--color-bg-secondary)] border border-[var(--color-border)] text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)]/70 placeholder:italic outline-none transition-all duration-150 focus:ring-2 focus:ring-[var(--color-primary)]/50 focus:border-[var(--color-primary)] disabled:opacity-50 disabled:cursor-not-allowed';
   
-  const textareaStyle = 'min-h-[100px] resize-y';
+  const textareaStyle = 'min-h-[100px] h-auto py-2 resize-y';
 
   return (
-    <div className={`flex flex-col gap-1.5 w-full ${className}`}>
-      {/* Label */}
+    <div className={`flex flex-col gap-1 w-full ${className}`}>
+      {/* Label: Above input, 13px semi-bold, 4px margin bottom */}
       {label && (
-        <label htmlFor={id} className="text-xs font-semibold text-zinc-350 tracking-wide">
+        <label htmlFor={id} className="text-[13px] font-semibold text-[var(--color-text-primary)] mb-1 block">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-[var(--color-error)] ml-1">*</span>}
         </label>
       )}
 
-      {/* Input Control element */}
+      {/* Input element */}
       {type === 'textarea' ? (
         <textarea
           id={id}
@@ -39,7 +40,7 @@ export default function Input({
           {...props}
         >
           {options.map((opt) => (
-            <option key={opt.value} value={opt.value} className="bg-zinc-950 text-white">
+            <option key={opt.value} value={opt.value} className="bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)]">
               {opt.label}
             </option>
           ))}
@@ -55,7 +56,7 @@ export default function Input({
 
       {/* Error Message */}
       {error && (
-        <span className="text-xs text-red-400 font-medium">
+        <span className="text-xs text-[var(--color-error)] font-medium mt-1 block">
           {error}
         </span>
       )}
