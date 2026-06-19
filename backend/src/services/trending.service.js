@@ -6,8 +6,8 @@ class TrendingService {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
 
-    // Get analytics for the last X days and group by noteId
-    const trendingData = await prisma.noteAnalyticsDaily.groupBy({
+    // 1. Fetch daily views for all notes within the time period
+    const viewsData = await prisma.noteAnalyticsDaily.groupBy({
       by: ['noteId'],
       where: {
         date: {
@@ -16,42 +16,28 @@ class TrendingService {
       },
       _sum: {
         views: true
-      },
-      orderBy: {
-        _sum: {
-          views: 'desc'
-        }
-      },
-      take: limit
+      }
     });
 
-    if (trendingData.length === 0) {
-      // Fallback: If no recent analytics data, just return most viewed overall
-      return await prisma.note.findMany({
-        where: { status: 'PUBLISHED' },
-        orderBy: { views: 'desc' },
-        take: limit,
-        include: {
-          author: { select: { name: true, username: true } },
-          topic: {
-            select: {
-              name: true,
-              slug: true,
-              subject: { select: { name: true, slug: true } }
-            }
-          }
-        }
-      });
-    }
-
-    // Fetch the actual notes
-    const noteIds = trendingData.map(t => t.noteId);
-    
-    const notes = await prisma.note.findMany({
+    // 2. Fetch all ratings created within the time period
+    const ratingsData = await prisma.noteRating.groupBy({
+      by: ['noteId'],
       where: {
-        id: { in: noteIds },
-        status: 'PUBLISHED'
+        createdAt: {
+          gte: cutoffDate
+        }
       },
+      _count: {
+        rating: true
+      },
+      _avg: {
+        rating: true
+      }
+    });
+
+    // 3. Fetch all published notes to get their helpfulCount and overall fields
+    const notes = await prisma.note.findMany({
+      where: { status: 'PUBLISHED' },
       include: {
         author: { select: { name: true, username: true } },
         topic: {
@@ -64,12 +50,31 @@ class TrendingService {
       }
     });
 
-    // Reorder notes according to the trendingData order
-    const orderedNotes = trendingData
-      .map(t => notes.find(n => n.id === t.noteId))
-      .filter(n => n !== undefined); // Ensure only published notes that exist are returned
+    // 4. Calculate score for each note based on weighting:
+    // views (40%) + ratings (40%) + helpful (20%)
+    const scoredNotes = notes.map(note => {
+      const viewsEntry = viewsData.find(v => v.noteId === note.id);
+      const viewsCount = viewsEntry ? (viewsEntry._sum.views || 0) : 0;
 
-    return orderedNotes;
+      const ratingsEntry = ratingsData.find(r => r.noteId === note.id);
+      const ratingCount = ratingsEntry ? (ratingsEntry._count.rating || 0) : 0;
+      const avgRating = ratingsEntry ? (ratingsEntry._avg.rating || 0) : 0;
+
+      // Score calculation formula:
+      // score = (viewsCount * 0.4) + ((avgRating * ratingCount) * 0.4) + (note.helpfulCount * 0.2)
+      const score = (viewsCount * 0.4) + ((avgRating * ratingCount) * 0.4) + (note.helpfulCount * 0.2);
+
+      return { note, score };
+    });
+
+    // Sort descending by score
+    scoredNotes.sort((a, b) => b.score - a.score);
+
+    // Return the top notes, mapping the trendingScore in the response
+    return scoredNotes.slice(0, limit).map(sn => ({
+      ...sn.note,
+      trendingScore: parseFloat(sn.score.toFixed(2))
+    }));
   }
 }
 
