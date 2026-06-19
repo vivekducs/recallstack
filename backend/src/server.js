@@ -1,4 +1,5 @@
 // backend/src/server.js
+require('dotenv').config();
 const app = require('./app');
 const prisma = require('./config/database');
 
