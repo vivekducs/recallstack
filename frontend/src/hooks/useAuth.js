@@ -44,7 +44,7 @@ export default function useAuth() {
       
       setToken(userToken);
       setUser(profile);
-      return { success: true };
+      return { success: true, user: profile };
     } catch (err) {
       console.error('Login failed:', err);
       return {
@@ -75,7 +75,7 @@ export default function useAuth() {
 
       setToken(userToken);
       setUser(profile);
-      return { success: true };
+      return { success: true, user: profile };
     } catch (err) {
       console.error('Registration failed:', err);
       return {

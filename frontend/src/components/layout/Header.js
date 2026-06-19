@@ -150,6 +150,15 @@ export default function Header() {
                   >
                     Dashboard
                   </Link>
+                  {user?.role === 'ADMIN' && (
+                    <Link 
+                      href="/admin" 
+                      onClick={() => setDropdownOpen(false)}
+                      className="block px-4 py-2 text-[var(--color-text-primary)] hover:bg-[var(--color-border)] font-semibold"
+                    >
+                      Admin Panel
+                    </Link>
+                  )}
                   <Link 
                     href="/bookmarks" 
                     onClick={() => setDropdownOpen(false)}
@@ -315,6 +324,15 @@ export default function Header() {
                 >
                   Dashboard
                 </Link>
+                {user?.role === 'ADMIN' && (
+                  <Link 
+                    href="/admin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full text-left px-3 py-2 rounded hover:bg-[var(--color-bg-secondary)] text-xs text-[var(--color-text-primary)] font-semibold"
+                  >
+                    Admin Panel
+                  </Link>
+                )}
                 <Link 
                   href="/bookmarks"
                   onClick={() => setMobileMenuOpen(false)}

@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import useAuth from '@/hooks/useAuth';
 import Card from '@/components/common/Card';
@@ -20,9 +21,16 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function DashboardPage() {
   const { user, token, getAuthHeaders, isAuthenticated, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!authLoading && user && user.role === 'ADMIN') {
+      router.push('/admin');
+    }
+  }, [user, authLoading, router]);
 
   const fetchDashboardData = async () => {
     if (!token) return;
