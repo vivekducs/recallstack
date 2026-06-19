@@ -2,45 +2,45 @@
 const prisma = require('../config/database');
 
 class SectionRepository {
-  async findById(id, include = {}) {
+  findById(id, include = {}) {
     return prisma.section.findUnique({
       where: { id },
       include
     });
   }
 
-  async findMany(options = {}) {
+  findMany(options = {}) {
     return prisma.section.findMany(options);
   }
 
-  async findFirst(options = {}) {
+  findFirst(options = {}) {
     return prisma.section.findFirst(options);
   }
 
-  async create(data) {
+  create(data) {
     return prisma.section.create({
       data
     });
   }
 
-  async update(id, data) {
+  update(id, data) {
     return prisma.section.update({
       where: { id },
       data
     });
   }
 
-  async delete(id) {
+  delete(id) {
     return prisma.section.delete({
       where: { id }
     });
   }
 
-  async deleteMany(options = {}) {
+  deleteMany(options = {}) {
     return prisma.section.deleteMany(options);
   }
 
-  async createMany(newSections) {
+  createMany(newSections) {
     return prisma.section.createMany({
       data: newSections
     });
@@ -48,3 +48,4 @@ class SectionRepository {
 }
 
 module.exports = new SectionRepository();
+

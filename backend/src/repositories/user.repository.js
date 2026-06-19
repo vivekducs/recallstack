@@ -2,31 +2,31 @@
 const prisma = require('../config/database');
 
 class UserRepository {
-  async findById(id) {
+  findById(id) {
     return prisma.user.findUnique({
       where: { id }
     });
   }
 
-  async findByEmail(email) {
+  findByEmail(email) {
     return prisma.user.findUnique({
       where: { email }
     });
   }
 
-  async findByUsername(username) {
+  findByUsername(username) {
     return prisma.user.findUnique({
       where: { username }
     });
   }
 
-  async create(data) {
+  create(data) {
     return prisma.user.create({
       data
     });
   }
 
-  async updateProfile(id, updateData) {
+  updateProfile(id, updateData) {
     return prisma.user.update({
       where: { id },
       data: updateData,
@@ -44,7 +44,7 @@ class UserRepository {
     });
   }
 
-  async updatePreferences(id, emailPreferences) {
+  updatePreferences(id, emailPreferences) {
     return prisma.user.update({
       where: { id },
       data: { emailPreferences },
@@ -52,27 +52,27 @@ class UserRepository {
     });
   }
 
-  async incrementFollowing(id, incrementValue = 1) {
+  incrementFollowing(id, incrementValue = 1) {
     return prisma.user.update({
       where: { id },
       data: { followingCount: { increment: incrementValue } }
     });
   }
 
-  async incrementFollowers(id, incrementValue = 1) {
+  incrementFollowers(id, incrementValue = 1) {
     return prisma.user.update({
       where: { id },
       data: { followersCount: { increment: incrementValue } }
     });
   }
 
-  async findByResetToken(token) {
+  findByResetToken(token) {
     return prisma.user.findUnique({
       where: { passwordResetToken: token }
     });
   }
 
-  async updateResetToken(id, token, expires) {
+  updateResetToken(id, token, expires) {
     return prisma.user.update({
       where: { id },
       data: {
@@ -82,7 +82,7 @@ class UserRepository {
     });
   }
 
-  async updatePassword(id, passwordHash) {
+  updatePassword(id, passwordHash) {
     return prisma.user.update({
       where: { id },
       data: {
@@ -95,3 +95,4 @@ class UserRepository {
 }
 
 module.exports = new UserRepository();
+

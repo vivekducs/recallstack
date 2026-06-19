@@ -2,17 +2,17 @@
 const prisma = require('../config/database');
 
 class RevisionRepository {
-  async findById(id) {
+  findById(id) {
     return prisma.revisionHistory.findUnique({
       where: { id }
     });
   }
 
-  async findMany(options = {}) {
+  findMany(options = {}) {
     return prisma.revisionHistory.findMany(options);
   }
 
-  async create(data) {
+  create(data) {
     return prisma.revisionHistory.create({
       data
     });
@@ -20,3 +20,4 @@ class RevisionRepository {
 }
 
 module.exports = new RevisionRepository();
+

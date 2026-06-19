@@ -2,28 +2,28 @@
 const prisma = require('../config/database');
 
 class NoteRepository {
-  async findById(id, include = {}) {
+  findById(id, include = {}) {
     return prisma.note.findUnique({
       where: { id },
       include
     });
   }
 
-  async findMany(options = {}) {
+  findMany(options = {}) {
     return prisma.note.findMany(options);
   }
 
-  async count(options = {}) {
+  count(options = {}) {
     return prisma.note.count(options);
   }
 
-  async create(data) {
+  create(data) {
     return prisma.note.create({
       data
     });
   }
 
-  async update(id, data, select = undefined) {
+  update(id, data, select = undefined) {
     return prisma.note.update({
       where: { id },
       data,
@@ -31,7 +31,7 @@ class NoteRepository {
     });
   }
 
-  async delete(id) {
+  delete(id) {
     return prisma.note.delete({
       where: { id }
     });
@@ -39,3 +39,4 @@ class NoteRepository {
 }
 
 module.exports = new NoteRepository();
+
