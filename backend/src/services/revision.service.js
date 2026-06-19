@@ -19,19 +19,19 @@ class RevisionService {
 
     return await prisma.revisionHistory.findMany({
       where: { noteId },
-      include: {
-        user: {
-          select: { name: true, username: true, avatar: true }
-        }
-      },
       orderBy: { revisedAt: 'desc' },
-      // Exclude snapshot array from the list view to save bandwidth
       select: {
         id: true,
         noteId: true,
         userId: true,
         revisedAt: true,
-        user: { select: { name: true, username: true, avatar: true } }
+        user: {
+          select: {
+            name: true,
+            username: true,
+            avatar: true
+          }
+        }
       }
     });
   }

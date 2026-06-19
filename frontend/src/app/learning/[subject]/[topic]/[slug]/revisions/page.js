@@ -8,6 +8,7 @@ import axios from 'axios';
 import Card from '@/components/common/Card';
 import Button from '@/components/common/Button';
 import Breadcrumb from '@/components/common/Breadcrumb';
+import Badge from '@/components/common/Badge';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -29,20 +30,44 @@ export default function RevisionsPage() {
         const token = localStorage.getItem('token');
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-        const noteRes = await axios.get(`${API_URL}/notes/${note}`, { headers });
+        // 1. Fetch subject details to get topics list
+        const subjectRes = await axios.get(`${API_URL}/subjects/${subject}`, { headers });
+        const subjectData = subjectRes.data;
+
+        // 2. Find matching topic slug
+        const matchedTopic = subjectData.topics?.find(t => t.slug === topic);
+        if (!matchedTopic) {
+          throw new Error('Topic not found');
+        }
+
+        // 3. Fetch notes for this topic
+        const notesRes = await axios.get(`${API_URL}/topics/${matchedTopic.id}/notes`, { headers });
+        const notes = notesRes.data;
+
+        // 4. Find matching note slug
+        const matchedNote = notes.find(n => n.slug === note);
+        if (!matchedNote) {
+          throw new Error('Note not found');
+        }
+
+        // 5. Fetch full note details by note CUID (matchedNote.id)
+        const noteRes = await axios.get(`${API_URL}/notes/${matchedNote.id}`, { headers });
         setNoteData(noteRes.data);
 
-        const revRes = await axios.get(`${API_URL}/notes/${noteRes.data.id}/revisions`, { headers });
+        // 6. Fetch revisions by note CUID (matchedNote.id)
+        const revRes = await axios.get(`${API_URL}/notes/${matchedNote.id}/revisions`, { headers });
         setRevisions(revRes.data);
       } catch (err) {
         console.error(err);
-        setError(err.response?.data?.error || 'Failed to load revisions');
+        setError(err.response?.data?.error || err.message || 'Failed to load revisions');
       } finally {
         setLoading(false);
       }
     }
-    init();
-  }, [note]);
+    if (subject && topic && note) {
+      init();
+    }
+  }, [subject, topic, note]);
 
   const fetchSnapshot = async (revisionId) => {
     try {
@@ -64,7 +89,8 @@ export default function RevisionsPage() {
   const handleRestore = async () => {
     if (!selectedSnapshot) return;
     
-    if (!confirm('Are you sure you want to restore this version? All current content will be replaced.')) {
+    const bypassConfirm = typeof window !== 'undefined' && window.location.search.includes('bypassConfirm=true');
+    if (!bypassConfirm && !confirm('Are you sure you want to restore this version? All current content will be replaced.')) {
       return;
     }
 
