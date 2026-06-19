@@ -13,6 +13,7 @@ export default function StarRating({ noteId, initialAverage = 0, initialCount = 
   const [count, setCount] = useState(initialCount);
   const [loading, setLoading] = useState(!readOnly); // Only load if interactive to fetch user's rating
   const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState('');
 
   useEffect(() => {
     if (!readOnly && isAuthenticated) {
@@ -32,6 +33,11 @@ export default function StarRating({ noteId, initialAverage = 0, initialCount = 
     }
   }, [noteId, readOnly, isAuthenticated]);
 
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 3000);
+  };
+
   const handleRate = async (value) => {
     if (readOnly || !isAuthenticated || saving) return;
     
@@ -49,6 +55,7 @@ export default function StarRating({ noteId, initialAverage = 0, initialCount = 
         });
         setAverage(res.data.averageRating);
         setCount(res.data.ratingCount);
+        showToast('Rating removed');
       } else {
         const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/notes/${noteId}/rate`, 
           { rating: newValue },
@@ -56,10 +63,11 @@ export default function StarRating({ noteId, initialAverage = 0, initialCount = 
         );
         setAverage(res.data.averageRating);
         setCount(res.data.ratingCount);
+        showToast('Thanks for rating!');
       }
     } catch (err) {
       console.error('Failed to save rating', err);
-      // Revert optimism if needed (complex, but ignoring for now)
+      showToast('Failed to save rating');
     } finally {
       setSaving(false);
     }
@@ -103,6 +111,11 @@ export default function StarRating({ noteId, initialAverage = 0, initialCount = 
           <span className="ml-2 text-[var(--color-primary)]">Log in to rate</span>
         )}
       </div>
+      {toast && (
+        <div className="fixed bottom-6 right-6 bg-[var(--color-primary)] text-white px-4 py-2 rounded shadow-lg text-sm z-50">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
