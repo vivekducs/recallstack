@@ -137,6 +137,13 @@ export default function Header() {
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 rounded bg-[var(--color-bg-secondary)] border border-[var(--color-border)] shadow-xl py-1.5 text-xs z-50">
                   <Link 
+                    href="/profile" 
+                    onClick={() => setDropdownOpen(false)}
+                    className="block px-4 py-2 text-[var(--color-text-primary)] hover:bg-[var(--color-border)]"
+                  >
+                    My Profile
+                  </Link>
+                  <Link 
                     href="/dashboard" 
                     onClick={() => setDropdownOpen(false)}
                     className="block px-4 py-2 text-[var(--color-text-primary)] hover:bg-[var(--color-border)]"
@@ -294,6 +301,13 @@ export default function Header() {
                     </span>
                   )}
                 </div>
+                <Link 
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-left px-3 py-2 rounded hover:bg-[var(--color-bg-secondary)] text-xs text-[var(--color-text-primary)]"
+                >
+                  My Profile
+                </Link>
                 <Link 
                   href="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
