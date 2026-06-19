@@ -16,7 +16,7 @@ It features a premium glassmorphic dark-themed user interface, full-text search,
   * **Note**: Learning logs authored by users (e.g., Merge Sort Complete Guide).
   * **Section**: Individual content blocks within a note supporting TEXT, CODE (with syntax highlighting), EXAMPLE, IMAGE, and DIAGRAM content types.
 * **Creator Workspace (My Learnings)**: An interactive workflow allowing users to create notes, select subject/topic associations, and add, edit, or reorder content sections in real-time.
-* **Full-Text Search & Filters**: Insensitive string search scanning note titles, excerpts, and section contents, query-filtered by subject, topic, and difficulty.
+* **Advanced Search & Filters (Phase 2)**: Fast, debounced full-text search scanning note titles, excerpts, and section contents. Includes real-time URL syncing, advanced pagination, customizable sorting (Relevance, Recent, Popular), and query-filtering by subject, topic, and difficulty.
 * **Revision History & Timeline**: Automatic logging of note edits with a sequential timeline of revisions per user.
 * **Engagement & Moderation**: Bookmarks folder for saving notes, nested comments supporting admin/owner moderation (Pending/Approved/Rejected statuses), views count tracking, and helpful ratings.
 * **Database Transactions & Denormalization**: Denormalized topicsCount and notesCount values on subjects and topics managed via atomic database transactions to ensure O(1) reads on entry point queries.

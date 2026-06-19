@@ -6,7 +6,7 @@ const prisma = require('../config/database');
 // GET /api/search (Public - search notes & sections with filters)
 router.get('/', async (req, res, next) => {
   try {
-    const { q, subject, topic, difficulty } = req.query;
+    const { q, subject, topic, difficulty, sort, limit, page } = req.query;
 
     const where = {
       status: 'PUBLISHED'
@@ -41,41 +41,66 @@ router.get('/', async (req, res, next) => {
       ];
     }
 
-    const notes = await prisma.note.findMany({
-      where,
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        excerpt: true,
-        difficulty: true,
-        readingTime: true,
-        tags: true,
-        publishedAt: true,
-        updatedAt: true,
-        author: {
-          select: {
-            name: true,
-            username: true
-          }
-        },
-        topic: {
-          select: {
-            name: true,
-            slug: true,
-            subject: {
-              select: {
-                name: true,
-                slug: true
+    // Pagination
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 20;
+    const skip = (pageNum - 1) * limitNum;
+
+    // Sorting
+    let orderBy = { publishedAt: 'desc' };
+    if (sort === 'popular') {
+      orderBy = { views: 'desc' };
+    } else if (sort === 'relevance') {
+      orderBy = { publishedAt: 'desc' }; // Fallback since Prisma doesn't natively sort by relevance score without raw SQL
+    }
+
+    const [total, notes] = await prisma.$transaction([
+      prisma.note.count({ where }),
+      prisma.note.findMany({
+        where,
+        skip,
+        take: limitNum,
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          excerpt: true,
+          difficulty: true,
+          readingTime: true,
+          tags: true,
+          publishedAt: true,
+          updatedAt: true,
+          views: true,
+          helpfulCount: true,
+          author: {
+            select: {
+              name: true,
+              username: true
+            }
+          },
+          topic: {
+            select: {
+              name: true,
+              slug: true,
+              subject: {
+                select: {
+                  name: true,
+                  slug: true
+                }
               }
             }
           }
-        }
-      },
-      orderBy: { publishedAt: 'desc' }
-    });
+        },
+        orderBy
+      })
+    ]);
 
-    res.json(notes);
+    res.json({
+      results: notes,
+      total,
+      page: pageNum,
+      limit: limitNum
+    });
   } catch (err) {
     next(err);
   }

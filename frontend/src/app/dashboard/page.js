@@ -167,7 +167,6 @@ export default function DashboardPage() {
               <div className="space-y-6 relative border-l pl-4" style={{ borderColor: 'var(--color-border)' }}>
                 {timeline.map((event) => (
                   <div key={event.id} className="relative">
-                    <span className="absolute left-[-21px] top-1.5 w-2.5 h-2.5 rounded-full" style={{ background: 'var(--color-primary)' }}></span>
                     <div>
                       <p className="text-sm text-white font-medium">{event.description}</p>
                       <span className="text-xs mt-1 block" style={{ color: 'var(--color-text-dim)' }}>

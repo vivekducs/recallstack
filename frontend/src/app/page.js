@@ -70,7 +70,6 @@ export default async function HomePage() {
         <section className="max-w-[800px] mx-auto text-center pt-16 pb-12 flex flex-col items-center">
           
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-6 border border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
-            <span className="w-2 h-2 rounded-full bg-[var(--color-primary)]"></span>
             <span className="text-[12px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">
               Developer Knowledge Base
             </span>
@@ -123,10 +122,6 @@ export default async function HomePage() {
                       >
                         {subject.icon || '📚'}
                       </div>
-                      <div
-                        className="w-2.5 h-2.5 rounded-full"
-                        style={{ backgroundColor: subject.color || 'var(--color-primary)' }}
-                      ></div>
                     </div>
 
                     {/* Card Title: Bottom padding 4px */}
