@@ -15,7 +15,7 @@ export default function Navigation({ vertical = false, onItemClick }) {
   ];
 
   if (isAuthenticated) {
-    links.push({ name: 'My Notes', href: '/my-learnings' });
+    links.push({ name: 'My Notes', href: '/user-dashboard/my-notes' });
   }
 
   if (user?.role === 'ADMIN') {

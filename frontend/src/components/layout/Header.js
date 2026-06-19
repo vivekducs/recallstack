@@ -144,7 +144,7 @@ export default function Header() {
                     My Profile
                   </Link>
                   <Link 
-                    href="/dashboard" 
+                    href="/user-dashboard" 
                     onClick={() => setDropdownOpen(false)}
                     className="block px-4 py-2 text-[var(--color-text-primary)] hover:bg-[var(--color-border)]"
                   >
@@ -160,7 +160,7 @@ export default function Header() {
                     </Link>
                   )}
                   <Link 
-                    href="/bookmarks" 
+                    href="/user-dashboard/bookmarks" 
                     onClick={() => setDropdownOpen(false)}
                     className="block px-4 py-2 text-[var(--color-text-primary)] hover:bg-[var(--color-border)]"
                   >
@@ -318,7 +318,7 @@ export default function Header() {
                   My Profile
                 </Link>
                 <Link 
-                  href="/dashboard"
+                  href="/user-dashboard"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-left px-3 py-2 rounded hover:bg-[var(--color-bg-secondary)] text-xs text-[var(--color-text-primary)]"
                 >
@@ -334,7 +334,7 @@ export default function Header() {
                   </Link>
                 )}
                 <Link 
-                  href="/bookmarks"
+                  href="/user-dashboard/bookmarks"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-left px-3 py-2 rounded hover:bg-[var(--color-bg-secondary)] text-xs text-[var(--color-text-primary)]"
                 >
