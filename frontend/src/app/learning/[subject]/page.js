@@ -110,28 +110,28 @@ export default async function SubjectPage({ params }) {
                 {subject.icon || 'Book'}
               </div>
               <div>
-                <h1 className="text-4xl font-bold" style={{ color: 'white' }}>{subject.name}</h1>
-                <p className="mt-1" style={{ color: 'var(--color-text-muted)' }}>{subject.description}</p>
+                <h1 className="text-4xl font-bold text-[var(--color-text-primary)]">{subject.name}</h1>
+                <p className="mt-1 text-[var(--color-text-secondary)]">{subject.description}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-6 mt-4">
-              <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-dim)' }}>
-                <span className="font-semibold" style={{ color: 'var(--color-text-muted)' }}>{subject.topicsCount}</span> topics
+              <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+                <span className="font-semibold text-[var(--color-text-primary)]">{subject.topicsCount}</span> topics
               </div>
-              <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-dim)' }}>
-                <span className="font-semibold" style={{ color: 'var(--color-text-muted)' }}>{subject.notesCount}</span> notes
+              <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+                <span className="font-semibold text-[var(--color-text-primary)]">{subject.notesCount}</span> notes
               </div>
             </div>
           </header>
 
           {/* Topics List */}
           <section>
-            <h2 className="text-2xl font-bold mb-6 fade-in" style={{ color: 'white' }}>Topics</h2>
+            <h2 className="text-2xl font-bold mb-6 fade-in text-[var(--color-text-primary)]">Topics</h2>
 
             {!subject.topics || subject.topics.length === 0 ? (
               <div className="text-center py-16 glass-card">
-                <p style={{ color: 'var(--color-text-muted)' }}>No topics yet in this subject.</p>
+                <p className="text-[var(--color-text-secondary)]">No topics yet in this subject.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -140,20 +140,20 @@ export default async function SubjectPage({ params }) {
                     <div className={`glass-card p-5 cursor-pointer fade-in fade-in-delay-${Math.min(index + 1, 4)}`}>
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h3 className="text-lg font-semibold mb-1" style={{ color: 'white' }}>{topic.name}</h3>
+                          <h3 className="text-lg font-semibold mb-1 text-[var(--color-text-primary)]">{topic.name}</h3>
                           {topic.description && (
-                            <p className="text-sm mb-3 line-clamp-2" style={{ color: 'var(--color-text-muted)' }}>
+                            <p className="text-sm mb-3 line-clamp-2 text-[var(--color-text-secondary)]">
                               {topic.description}
                             </p>
                           )}
-                          <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--color-text-dim)' }}>
+                          <div className="flex items-center gap-4 text-xs text-[var(--color-text-secondary)]/80">
                             <span>{topic.notesCount} notes</span>
                             {topic.lastUpdated && (
                               <span>Updated {new Date(topic.lastUpdated).toLocaleDateString()}</span>
                             )}
                           </div>
                         </div>
-                        <svg className="w-5 h-5 mt-1" style={{ color: 'var(--color-text-dim)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 mt-1 text-[var(--color-text-secondary)]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </div>

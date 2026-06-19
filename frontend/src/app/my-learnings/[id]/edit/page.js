@@ -287,7 +287,7 @@ export default function EditNotePage() {
       <main className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--color-bg)' }}>
         <div className="max-w-md w-full glass-card p-8 text-center">
           <div className="text-6xl mb-4">🔒</div>
-          <h2 className="text-2xl font-bold mb-3" style={{ color: 'white' }}>Authorization Required</h2>
+          <h2 className="text-2xl font-bold mb-3 text-[var(--color-text-primary)]">Authorization Required</h2>
           <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
             Sign in to edit this note.
           </p>
@@ -304,7 +304,7 @@ export default function EditNotePage() {
       <main className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--color-bg)' }}>
         <div className="max-w-md w-full glass-card p-8 text-center">
           <div className="text-5xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold mb-3" style={{ color: 'white' }}>Note Not Found</h2>
+          <h2 className="text-2xl font-bold mb-3 text-[var(--color-text-primary)]">Note Not Found</h2>
           <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
             {error || 'The note you are trying to edit does not exist or you do not have permission.'}
           </p>
@@ -350,7 +350,7 @@ export default function EditNotePage() {
                 {note.status}
               </span>
             </div>
-            <h1 className="text-4xl font-extrabold text-white">{note.title}</h1>
+            <h1 className="text-4xl font-extrabold text-[var(--color-text-primary)]">{note.title}</h1>
             <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
               Created by you | Revisions: {note.revisionCount || 0} | Views: {note.views || 0}
             </p>
@@ -396,7 +396,7 @@ export default function EditNotePage() {
           {/* Main sections flow column */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <h2 className="text-xl font-bold text-[var(--color-text-primary)] flex items-center gap-2">
                 📂 Note Sections ({sections.length})
               </h2>
               <button
@@ -410,7 +410,7 @@ export default function EditNotePage() {
             {/* Dynamic Add Section Form Block */}
             {addingSection && (
               <form onSubmit={handleAddSection} className="glass-card p-6 border-2" style={{ borderColor: 'var(--color-primary)' }}>
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Add Content Section</h3>
+                <h3 className="text-sm font-bold text-[var(--color-text-primary)] uppercase tracking-wider mb-4">Add Content Section</h3>
                 
                 <div className="flex flex-col gap-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -422,8 +422,7 @@ export default function EditNotePage() {
                         value={newSecTitle}
                         onChange={(e) => setNewSecTitle(e.target.value)}
                         required
-                        className="px-3 py-2 text-sm rounded-lg text-white border outline-none"
-                        style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}
+                        className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none"
                       />
                     </div>
                     <div className="flex flex-col gap-1.5">
@@ -431,8 +430,7 @@ export default function EditNotePage() {
                       <select
                         value={newSecType}
                         onChange={(e) => setNewSecType(e.target.value)}
-                        className="px-3 py-2 text-sm rounded-lg text-white border outline-none"
-                        style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}
+                        className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none"
                       >
                         <option value="TEXT">Text (supports plain content)</option>
                         <option value="CODE">Code Block</option>
@@ -449,8 +447,7 @@ export default function EditNotePage() {
                       <select
                         value={newSecLanguage}
                         onChange={(e) => setNewSecLanguage(e.target.value)}
-                        className="px-3 py-2 text-sm rounded-lg text-white border outline-none w-48"
-                        style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}
+                        className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none w-48"
                       >
                         <option value="javascript">JavaScript</option>
                         <option value="typescript">TypeScript</option>
@@ -479,8 +476,7 @@ export default function EditNotePage() {
                       value={newSecContent}
                       onChange={(e) => setNewSecContent(e.target.value)}
                       required
-                      className="px-3 py-2 text-sm rounded-lg text-white border outline-none font-mono"
-                      style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}
+                      className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none font-mono"
                     />
                   </div>
 
@@ -508,7 +504,7 @@ export default function EditNotePage() {
             {sections.length === 0 ? (
               <div className="text-center py-16 glass-card border-dashed" style={{ borderColor: 'var(--color-border)' }}>
                 <div className="text-4xl mb-3">📦</div>
-                <h3 className="font-bold text-white mb-1">Your note is empty</h3>
+                <h3 className="font-bold text-[var(--color-text-primary)] mb-1">Your note is empty</h3>
                 <p className="text-sm text-gray-500 mb-5 max-w-sm mx-auto">
                   Click the "+ Add Block" button to populate this note with text, code snippets, or diagrams.
                 </p>
@@ -539,8 +535,7 @@ export default function EditNotePage() {
                                 value={editSecTitle}
                                 onChange={(e) => setEditSecTitle(e.target.value)}
                                 required
-                                className="px-3 py-2 text-sm rounded-lg text-white border outline-none"
-                                style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}
+                                className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none"
                               />
                             </div>
                             <div className="flex flex-col gap-1">
@@ -548,8 +543,7 @@ export default function EditNotePage() {
                               <select
                                 value={editSecType}
                                 onChange={(e) => setEditSecType(e.target.value)}
-                                className="px-3 py-2 text-sm rounded-lg text-white border outline-none"
-                                style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}
+                                className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none"
                               >
                                 <option value="TEXT">Text</option>
                                 <option value="CODE">Code Block</option>
@@ -566,8 +560,7 @@ export default function EditNotePage() {
                               <select
                                 value={editSecLanguage}
                                 onChange={(e) => setEditSecLanguage(e.target.value)}
-                                className="px-3 py-2 text-sm rounded-lg text-white border outline-none w-48"
-                                style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}
+                                className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none w-48"
                               >
                                 <option value="javascript">JavaScript</option>
                                 <option value="typescript">TypeScript</option>
@@ -589,8 +582,7 @@ export default function EditNotePage() {
                               value={editSecContent}
                               onChange={(e) => setEditSecContent(e.target.value)}
                               required
-                              className="px-3 py-2 text-sm rounded-lg text-white border outline-none font-mono"
-                              style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}
+                              className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none font-mono"
                             />
                           </div>
 
@@ -621,7 +613,7 @@ export default function EditNotePage() {
                             <span className="text-[10px] uppercase font-bold text-gray-400 bg-gray-800 px-2 py-0.5 rounded-full border border-gray-700">
                               {section.contentType} {section.contentType === 'CODE' && `(${section.language})`}
                             </span>
-                            <h3 className="text-base font-bold text-white mt-1">{section.title}</h3>
+                            <h3 className="text-base font-bold text-[var(--color-text-primary)] mt-1">{section.title}</h3>
                           </div>
 
                           {/* Controls Panel */}
@@ -666,7 +658,7 @@ export default function EditNotePage() {
                         <div className="text-sm leading-relaxed" style={{ color: 'var(--color-text)' }}>
                           {section.contentType === 'CODE' ? (
                             <pre className="p-4 rounded-lg text-xs font-mono overflow-x-auto" style={{ background: 'var(--color-bg-elevated)', border: '1px solid var(--color-border)' }}>
-                              <code>{section.content}</code>
+                              <code className="text-[var(--color-text-primary)]">{section.content}</code>
                             </pre>
                           ) : section.contentType === 'EXAMPLE' ? (
                             <div className="p-4 rounded-lg text-xs" style={{ background: 'rgba(36, 166, 112, 0.05)', borderLeft: '4px solid var(--color-accent)' }}>
@@ -679,7 +671,7 @@ export default function EditNotePage() {
                               <span className="text-[10px] text-gray-500 mt-1 block font-mono">{section.content}</span>
                             </div>
                           ) : (
-                            <p className="whitespace-pre-line">{section.content}</p>
+                            <p className="whitespace-pre-line text-[var(--color-text-primary)]">{section.content}</p>
                           )}
                         </div>
                       </div>
@@ -694,7 +686,7 @@ export default function EditNotePage() {
           <div className="flex flex-col gap-6">
             <div className="glass-card p-6 flex flex-col gap-4">
               <div className="flex justify-between items-center pb-2 border-b" style={{ borderColor: 'var(--color-border)' }}>
-                <h2 className="text-lg font-bold text-white">⚙️ Note Settings</h2>
+                <h2 className="text-lg font-bold text-[var(--color-text-primary)]">⚙️ Note Settings</h2>
                 {!editingMetadata && (
                   <button
                     onClick={() => setEditingMetadata(true)}
@@ -714,8 +706,7 @@ export default function EditNotePage() {
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       required
-                      className="px-3 py-2 rounded-lg text-white border outline-none text-sm"
-                      style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}
+                      className="px-3 py-2 rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none text-sm"
                     />
                   </div>
 
@@ -725,8 +716,7 @@ export default function EditNotePage() {
                       rows={3}
                       value={excerpt}
                       onChange={(e) => setExcerpt(e.target.value)}
-                      className="px-3 py-2 rounded-lg text-white border outline-none text-sm resize-none"
-                      style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}
+                      className="px-3 py-2 rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none text-sm resize-none"
                     />
                   </div>
 
@@ -735,8 +725,7 @@ export default function EditNotePage() {
                     <select
                       value={difficulty}
                       onChange={(e) => setDifficulty(e.target.value)}
-                      className="px-3 py-2 rounded-lg text-white border outline-none text-sm"
-                      style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}
+                      className="px-3 py-2 rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none text-sm"
                     >
                       <option value="EASY">Easy</option>
                       <option value="MEDIUM">Medium</option>
@@ -750,8 +739,7 @@ export default function EditNotePage() {
                       type="text"
                       value={tagsInput}
                       onChange={(e) => setTagsInput(e.target.value)}
-                      className="px-3 py-2 rounded-lg text-white border outline-none text-sm"
-                      style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}
+                      className="px-3 py-2 rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none text-sm"
                     />
                   </div>
 
@@ -776,7 +764,7 @@ export default function EditNotePage() {
                 <div className="flex flex-col gap-3 text-sm">
                   <div>
                     <span className="text-xs text-gray-500 block">Title</span>
-                    <span className="font-semibold text-white">{note.title}</span>
+                    <span className="font-semibold text-[var(--color-text-primary)]">{note.title}</span>
                   </div>
                   <div>
                     <span className="text-xs text-gray-500 block">Excerpt</span>
@@ -820,7 +808,7 @@ export default function EditNotePage() {
 
             {/* Quick Tips Panel */}
             <div className="glass-card p-6" style={{ background: 'rgba(108, 99, 241, 0.02)' }}>
-              <h3 className="text-sm font-bold text-white mb-2">💡 Quick Tips</h3>
+              <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-2">💡 Quick Tips</h3>
               <ul className="text-xs space-y-2 list-disc pl-4" style={{ color: 'var(--color-text-muted)' }}>
                 <li>Add multiple sections to structure your notes step-by-step.</li>
                 <li>Use code sections for code snippets (with syntax highlighting support).</li>

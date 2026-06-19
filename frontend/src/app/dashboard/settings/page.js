@@ -122,7 +122,7 @@ export default function ProfileSettingsPage() {
     return (
       <main className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--color-bg)' }}>
         <div className="max-w-md w-full glass-card p-8 text-center">
-          <h2 className="text-2xl font-bold mb-3" style={{ color: 'white' }}>Authentication Required</h2>
+          <h2 className="text-2xl font-bold mb-3 text-[var(--color-text-primary)]">Authentication Required</h2>
           <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
             Sign in to access your profile settings.
           </p>
@@ -151,7 +151,7 @@ export default function ProfileSettingsPage() {
         </nav>
 
         <header className="mb-10">
-          <h1 className="text-4xl font-bold mb-2" style={{ color: 'white' }}>Profile Settings</h1>
+          <h1 className="text-4xl font-bold mb-2 text-[var(--color-text-primary)]">Profile Settings</h1>
           <p style={{ color: 'var(--color-text-muted)' }}>
             Configure your creator profile, bio, and avatar.
           </p>
@@ -159,13 +159,13 @@ export default function ProfileSettingsPage() {
 
         {success && (
           <div className="glass-card p-4 mb-6 text-center border-emerald-500/30">
-            <p className="text-emerald-400 text-sm font-semibold">{success}</p>
+            <p className="text-emerald-500 text-sm font-semibold">{success}</p>
           </div>
         )}
 
         {error && (
           <div className="glass-card p-4 mb-6 text-center border-red-500/30">
-            <p className="text-red-400 text-sm font-semibold">{error}</p>
+            <p className="text-red-500 text-sm font-semibold">{error}</p>
           </div>
         )}
 
@@ -178,8 +178,8 @@ export default function ProfileSettingsPage() {
               <input
                 type="text"
                 id="username"
-                className="w-full p-3 rounded border text-zinc-500 cursor-not-allowed text-sm"
-                style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
+                className="w-full p-3 rounded border text-[var(--color-text-secondary)] cursor-not-allowed text-sm"
+                style={{ background: 'var(--color-bg-secondary)', borderColor: 'var(--color-border)' }}
                 value={`@${user?.username || 'username'}`}
                 disabled
               />
@@ -192,8 +192,8 @@ export default function ProfileSettingsPage() {
               <input
                 type="text"
                 id="email"
-                className="w-full p-3 rounded border text-zinc-500 cursor-not-allowed text-sm"
-                style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
+                className="w-full p-3 rounded border text-[var(--color-text-secondary)] cursor-not-allowed text-sm"
+                style={{ background: 'var(--color-bg-secondary)', borderColor: 'var(--color-border)' }}
                 value={user?.email || 'email'}
                 disabled
               />
@@ -206,8 +206,7 @@ export default function ProfileSettingsPage() {
               <input
                 type="text"
                 id="name"
-                className="w-full p-3 rounded border text-white text-sm focus:outline-none focus:border-violet-500/50"
-                style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
+                className="w-full p-3 rounded border text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] text-sm focus:outline-none focus:border-[var(--color-primary)]"
                 placeholder="Full Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -222,8 +221,7 @@ export default function ProfileSettingsPage() {
               <input
                 type="text"
                 id="avatar"
-                className="w-full p-3 rounded border text-white text-sm focus:outline-none focus:border-violet-500/50"
-                style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
+                className="w-full p-3 rounded border text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] text-sm focus:outline-none focus:border-[var(--color-primary)]"
                 placeholder="https://example.com/avatar.jpg"
                 value={avatar}
                 onChange={(e) => setAvatar(e.target.value)}
@@ -240,8 +238,7 @@ export default function ProfileSettingsPage() {
               <textarea
                 id="bio"
                 rows="4"
-                className="w-full p-3 rounded border text-white text-sm focus:outline-none focus:border-violet-500/50"
-                style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
+                className="w-full p-3 rounded border text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] text-sm focus:outline-none focus:border-[var(--color-primary)]"
                 placeholder="Tell others about your learning goals and stack experience..."
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
@@ -265,7 +262,7 @@ export default function ProfileSettingsPage() {
 
         {/* Notification Preferences */}
         <div className="glass-card p-8 mt-8 mb-16">
-          <h2 className="text-2xl font-bold mb-2 text-white">Email Notifications</h2>
+          <h2 className="text-2xl font-bold mb-2 text-[var(--color-text-primary)]">Email Notifications</h2>
           <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
             Choose what activities trigger an email to your inbox.
           </p>
@@ -273,7 +270,7 @@ export default function ProfileSettingsPage() {
           <div className="space-y-6">
             <div className="flex items-center justify-between pb-4 border-b" style={{ borderColor: 'var(--color-border)' }}>
               <div>
-                <h3 className="font-semibold text-white">New Comments</h3>
+                <h3 className="font-semibold text-[var(--color-text-primary)]">New Comments</h3>
                 <p className="text-xs" style={{ color: 'var(--color-text-dim)' }}>When someone comments on your published notes</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
@@ -284,7 +281,7 @@ export default function ProfileSettingsPage() {
 
             <div className="flex items-center justify-between pb-4 border-b" style={{ borderColor: 'var(--color-border)' }}>
               <div>
-                <h3 className="font-semibold text-white">Replies</h3>
+                <h3 className="font-semibold text-[var(--color-text-primary)]">Replies</h3>
                 <p className="text-xs" style={{ color: 'var(--color-text-dim)' }}>When someone replies to your comment</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
@@ -295,7 +292,7 @@ export default function ProfileSettingsPage() {
 
             <div className="flex items-center justify-between pb-4 border-b" style={{ borderColor: 'var(--color-border)' }}>
               <div>
-                <h3 className="font-semibold text-white">Helpful Ratings</h3>
+                <h3 className="font-semibold text-[var(--color-text-primary)]">Helpful Ratings</h3>
                 <p className="text-xs" style={{ color: 'var(--color-text-dim)' }}>When someone marks your note as helpful</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
@@ -306,11 +303,11 @@ export default function ProfileSettingsPage() {
 
             <div className="flex items-center justify-between pt-2">
               <div>
-                <h3 className="font-semibold text-white">Digest Frequency</h3>
+                <h3 className="font-semibold text-[var(--color-text-primary)]">Digest Frequency</h3>
                 <p className="text-xs" style={{ color: 'var(--color-text-dim)' }}>How often to send the activity digest</p>
               </div>
               <select
-                className="bg-zinc-800 text-white text-sm rounded border border-zinc-700 p-2 focus:outline-none focus:border-[var(--color-primary)]"
+                className="bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] text-sm rounded border border-[var(--color-border)] p-2 focus:outline-none focus:border-[var(--color-primary)]"
                 value={prefs.digestFrequency}
                 onChange={(e) => handlePrefsChange('digestFrequency', e.target.value)}
               >

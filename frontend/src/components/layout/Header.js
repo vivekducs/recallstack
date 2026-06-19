@@ -269,7 +269,7 @@ export default function Header() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-[var(--color-border)] bg-[var(--color-bg)] p-4 flex flex-col gap-4 z-40 relative">
+        <div className="md:hidden border-b border-[var(--color-border)] bg-[var(--color-bg)] p-4 flex flex-col gap-4 z-40 relative max-h-[calc(100vh-4rem)] overflow-y-auto">
           <form onSubmit={handleSearchSubmit} className="relative w-full">
             <input
               type="text"

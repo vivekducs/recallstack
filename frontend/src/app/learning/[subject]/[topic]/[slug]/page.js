@@ -154,23 +154,23 @@ export default async function NotePage({ params }) {
 
               {/* Note Header */}
               <header className="mb-10 fade-in">
-                <h1 className="text-4xl font-bold mb-4" style={{ color: 'white' }}>{note.title}</h1>
+                <h1 className="text-4xl font-bold mb-4 text-[var(--color-text-primary)]">{note.title}</h1>
 
                 <div className="flex items-center gap-4 flex-wrap mb-4">
                   <span className={`badge ${getDifficultyBadge(note.difficulty)}`}>{note.difficulty}</span>
-                  <span className="text-sm" style={{ color: 'var(--color-text-dim)' }}>
+                  <span className="text-sm text-[var(--color-text-secondary)]">
                     {note.readingTime || 1} min read
                   </span>
-                  <span className="text-sm" style={{ color: 'var(--color-text-dim)' }}>
+                  <span className="text-sm text-[var(--color-text-secondary)]">
                     by {note.author?.name || 'Unknown'}
                   </span>
                   {note.publishedAt && (
-                    <span className="text-sm" style={{ color: 'var(--color-text-dim)' }}>
+                    <span className="text-sm text-[var(--color-text-secondary)]">
                       {new Date(note.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </span>
                   )}
                   <BookmarkButton noteId={note.id} />
-                  <Link href={`/learning/${params.subject}/${params.topic}/${params.slug}/revisions`} className="text-sm font-medium hover:underline" style={{ color: 'var(--color-primary)' }}>
+                  <Link href={`/learning/${params.subject}/${params.topic}/${params.slug}/revisions`} className="text-sm font-medium hover:underline text-[var(--color-primary)]">
                     History
                   </Link>
                 </div>
@@ -185,13 +185,13 @@ export default async function NotePage({ params }) {
                 </div>
 
                 {note.excerpt && (
-                  <p className="text-lg" style={{ color: 'var(--color-text-muted)' }}>{note.excerpt}</p>
+                  <p className="text-lg text-[var(--color-text-secondary)]">{note.excerpt}</p>
                 )}
 
                 {note.tags && note.tags.length > 0 && (
                   <div className="flex gap-2 mt-4 flex-wrap">
                     {note.tags.map((tag, i) => (
-                      <span key={i} className="text-xs px-2.5 py-1 rounded-md" style={{ background: 'var(--color-bg-elevated)', color: 'var(--color-text-dim)', border: '1px solid var(--color-border)' }}>
+                      <span key={i} className="text-xs px-2.5 py-1 rounded-md" style={{ background: 'var(--color-bg-secondary)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)' }}>
                         #{tag}
                       </span>
                     ))}
@@ -207,7 +207,7 @@ export default async function NotePage({ params }) {
                     id={`section-${section.id}`}
                     className={`mb-10 fade-in fade-in-delay-${Math.min(index + 1, 4)}`}
                   >
-                    <h2 className="text-2xl font-bold mt-8 mb-3" style={{ color: 'white' }}>{section.title}</h2>
+                    <h2 className="text-2xl font-bold mt-8 mb-3 text-[var(--color-text-primary)]">{section.title}</h2>
 
                     {section.contentType === 'TEXT' && (
                       <div className="whitespace-pre-wrap leading-relaxed mb-3" style={{ color: 'var(--color-text-primary)' }}>

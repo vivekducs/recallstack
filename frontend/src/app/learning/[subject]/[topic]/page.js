@@ -121,26 +121,26 @@ export default async function TopicPage({ params }) {
 
           {/* Topic Header */}
           <header className="mb-10 fade-in">
-            <h1 className="text-4xl font-bold mb-2" style={{ color: 'white' }}>{topic.name}</h1>
+            <h1 className="text-4xl font-bold mb-2 text-[var(--color-text-primary)]">{topic.name}</h1>
             {topic.description && (
-              <p className="text-lg" style={{ color: 'var(--color-text-muted)' }}>{topic.description}</p>
+              <p className="text-lg text-[var(--color-text-secondary)]">{topic.description}</p>
             )}
-            <div className="flex items-center gap-4 mt-3 text-sm" style={{ color: 'var(--color-text-dim)' }}>
+            <div className="flex items-center gap-4 mt-3 text-sm text-[var(--color-text-secondary)]/80">
               <span className="font-medium">{notes.length} notes</span>
             </div>
           </header>
 
           {/* Notes List */}
           <section>
-            <h2 className="text-xl font-bold mb-6 fade-in" style={{ color: 'white' }}>
+            <h2 className="text-xl font-bold mb-6 fade-in text-[var(--color-text-primary)]">
               Notes
             </h2>
 
             {notes.length === 0 ? (
               <div className="text-center py-16 glass-card">
                 <div className="text-xl mb-4 font-mono text-zinc-500 tracking-wider">Empty Topic</div>
-                <p style={{ color: 'var(--color-text-muted)' }}>No notes yet in this topic.</p>
-                <p className="text-sm mt-2" style={{ color: 'var(--color-text-dim)' }}>Be the first to contribute!</p>
+                <p className="text-[var(--color-text-secondary)]">No notes yet in this topic.</p>
+                <p className="text-sm mt-2 text-[var(--color-text-secondary)]/80">Be the first to contribute!</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -149,9 +149,9 @@ export default async function TopicPage({ params }) {
                     <div className={`glass-card p-5 cursor-pointer fade-in fade-in-delay-${Math.min(index + 1, 4)} mb-4`}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
-                          <h3 className="text-lg font-semibold mb-2" style={{ color: 'white' }}>{note.title}</h3>
+                          <h3 className="text-lg font-semibold mb-2 text-[var(--color-text-primary)]">{note.title}</h3>
                           {note.excerpt && (
-                            <p className="text-sm mb-3 line-clamp-2" style={{ color: 'var(--color-text-muted)' }}>
+                            <p className="text-sm mb-3 line-clamp-2 text-[var(--color-text-secondary)]">
                               {note.excerpt}
                             </p>
                           )}
@@ -160,14 +160,14 @@ export default async function TopicPage({ params }) {
                             <span className={`badge ${getDifficultyBadge(note.difficulty)}`}>
                               {note.difficulty}
                             </span>
-                            <span className="text-xs" style={{ color: 'var(--color-text-dim)' }}>
+                            <span className="text-xs text-[var(--color-text-secondary)]">
                               {note.readingTime || 1} min read
                             </span>
-                            <span className="text-xs" style={{ color: 'var(--color-text-dim)' }}>
+                            <span className="text-xs text-[var(--color-text-secondary)]">
                               by {note.author?.name || 'Unknown'}
                             </span>
                             {note.publishedAt && (
-                              <span className="text-xs" style={{ color: 'var(--color-text-dim)' }}>
+                              <span className="text-xs text-[var(--color-text-secondary)]">
                                 {new Date(note.publishedAt).toLocaleDateString()}
                               </span>
                             )}
@@ -176,7 +176,7 @@ export default async function TopicPage({ params }) {
                           {note.tags && note.tags.length > 0 && (
                             <div className="flex gap-2 mt-3 flex-wrap">
                               {note.tags.map((tag, i) => (
-                                <span key={i} className="text-xs px-2 py-1 rounded-md" style={{ background: 'var(--color-bg-elevated)', color: 'var(--color-text-dim)', border: '1px solid var(--color-border)' }}>
+                                <span key={i} className="text-xs px-2 py-1 rounded-md" style={{ background: 'var(--color-bg-secondary)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)' }}>
                                   {tag}
                                 </span>
                               ))}
@@ -184,7 +184,7 @@ export default async function TopicPage({ params }) {
                           )}
                         </div>
 
-                        <svg className="w-5 h-5 mt-1 flex-shrink-0" style={{ color: 'var(--color-text-dim)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 mt-1 flex-shrink-0 text-[var(--color-text-secondary)]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </div>

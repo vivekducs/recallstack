@@ -47,7 +47,7 @@ function RevisionTimeline() {
     return (
       <Card className="text-center py-20">
         <div className="text-xl mb-4 font-mono text-zinc-500 tracking-wider">No Selection</div>
-        <h2 className="text-xl font-bold mb-2" style={{ color: 'white' }}>No Note Selected</h2>
+        <h2 className="text-xl font-bold mb-2 text-[var(--color-text-primary)]">No Note Selected</h2>
         <p className="max-w-md mx-auto mb-6" style={{ color: 'var(--color-text-muted)' }}>
           To view a note's revision history timeline, please search for a note first.
         </p>
@@ -87,10 +87,10 @@ function RevisionTimeline() {
             <span className="text-xs uppercase tracking-wider font-semibold" style={{ color: 'var(--color-primary)' }}>
               Revision Timeline For
             </span>
-            <h2 className="text-2xl font-bold mt-1 mb-2" style={{ color: 'white' }}>{note.title}</h2>
+            <h2 className="text-2xl font-bold mt-1 mb-2 text-[var(--color-text-primary)]">{note.title}</h2>
             <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-              Total Revisions: <span className="text-white font-medium">{note.revisionCount || revisions.length}</span> | 
-              Last Revised: <span className="text-white font-medium">{note.lastRevised ? new Date(note.lastRevised).toLocaleString() : 'N/A'}</span>
+              Total Revisions: <span className="text-[var(--color-text-primary)] font-medium">{note.revisionCount || revisions.length}</span> | 
+              Last Revised: <span className="text-[var(--color-text-primary)] font-medium">{note.lastRevised ? new Date(note.lastRevised).toLocaleString() : 'N/A'}</span>
             </p>
           </div>
           <Link
@@ -116,7 +116,7 @@ function RevisionTimeline() {
               <div
                 className="absolute left-[-31px] top-1.5 w-4.5 h-4.5 rounded-full border-2"
                 style={{
-                  background: index === 0 ? 'var(--color-primary)' : 'var(--color-bg-elevated)',
+                  background: index === 0 ? 'var(--color-primary)' : 'var(--color-bg-secondary)',
                   borderColor: 'var(--color-primary)'
                 }}
               ></div>
@@ -125,7 +125,7 @@ function RevisionTimeline() {
               <Card>
                 <div className="flex justify-between items-start flex-wrap gap-2 mb-3">
                   <div>
-                    <span className="font-semibold text-white block">
+                    <span className="font-semibold text-[var(--color-text-primary)] block">
                       {rev.user?.name || 'Contributor'}
                     </span>
                     <span className="text-xs" style={{ color: 'var(--color-text-dim)' }}>
@@ -139,7 +139,7 @@ function RevisionTimeline() {
 
                 <div className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
                   {index === revisions.length - 1 ? (
-                    <span className="inline-flex items-center gap-1.5 text-emerald-400">
+                    <span className="inline-flex items-center gap-1.5 text-emerald-500">
                       Initial compilation and section layout established.
                     </span>
                   ) : (
@@ -167,7 +167,7 @@ export default function RevisionTrackerPage() {
         </nav>
 
         <header className="mb-10">
-          <h1 className="text-4xl font-bold mb-2" style={{ color: 'white' }}>Version History</h1>
+          <h1 className="text-4xl font-bold mb-2 text-[var(--color-text-primary)]">Version History</h1>
           <p style={{ color: 'var(--color-text-muted)' }}>Audit trail of content updates and notes modifications.</p>
         </header>
 

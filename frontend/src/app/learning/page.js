@@ -13,8 +13,8 @@ export default function LearningPage() {
           <span style={{ color: 'var(--color-text-muted)' }}>Learning</span>
         </nav>
 
-        <h1 className="text-4xl font-bold mb-4" style={{ color: 'white' }}>Browse Subjects</h1>
-        <p className="mb-8" style={{ color: 'var(--color-text-muted)' }}>
+        <h1 className="text-4xl font-bold mb-4 text-[var(--color-text-primary)]">Browse Subjects</h1>
+        <p className="mb-8 text-[var(--color-text-secondary)]">
           Select a subject to start exploring topics and notes.
         </p>
 

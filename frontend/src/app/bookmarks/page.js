@@ -76,8 +76,8 @@ export default function BookmarksPage() {
       <main className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--color-bg)' }}>
         <div className="max-w-md w-full glass-card p-8 text-center">
           <div className="text-xl mb-4 font-mono text-zinc-500 tracking-wider">Bookmarks</div>
-          <h2 className="text-2xl font-bold mb-3" style={{ color: 'white' }}>Save Your Learning</h2>
-          <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
+          <h2 className="text-2xl font-bold mb-3 text-[var(--color-text-primary)]">Save Your Learning</h2>
+          <p className="text-sm mb-6 text-[var(--color-text-secondary)]">
             Keep track of the most helpful guides, code snippets, and cheat sheets. Sign in to sync bookmarks.
           </p>
           <Link href="/login" className="btn-primary inline-block">
@@ -97,22 +97,22 @@ export default function BookmarksPage() {
 
       <div className="relative max-w-5xl mx-auto px-6 py-12">
         {/* Navigation Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm mb-8" style={{ color: 'var(--color-text-dim)' }}>
-          <Link href="/" className="hover:underline" style={{ color: 'var(--color-primary)' }}>Home</Link>
+        <nav className="flex items-center gap-2 text-sm mb-8 text-[var(--color-text-secondary)]/80" aria-label="Breadcrumb">
+          <Link href="/" className="hover:underline text-[var(--color-primary)]">Home</Link>
           <span>/</span>
-          <span style={{ color: 'var(--color-text-muted)' }}>Bookmarks</span>
+          <span className="text-[var(--color-text-secondary)]">Bookmarks</span>
         </nav>
 
         <header className="mb-10">
-          <h1 className="text-4xl font-bold mb-2" style={{ color: 'white' }}>My Saved Notes</h1>
-          <p style={{ color: 'var(--color-text-muted)' }}>A curated collection of your bookmarked learning resources.</p>
+          <h1 className="text-4xl font-bold mb-2 text-[var(--color-text-primary)]">My Saved Notes</h1>
+          <p className="text-[var(--color-text-secondary)]">A curated collection of your bookmarked learning resources.</p>
         </header>
 
         {savedNotes.length === 0 ? (
           <div className="text-center py-20 glass-card">
             <div className="text-xl mb-4 font-mono text-zinc-500 tracking-wider">Empty Library</div>
-            <h2 className="text-xl font-bold mb-2" style={{ color: 'white' }}>No Bookmarks Yet</h2>
-            <p className="max-w-md mx-auto mb-6" style={{ color: 'var(--color-text-muted)' }}>
+            <h2 className="text-xl font-bold mb-2 text-[var(--color-text-primary)]">No Bookmarks Yet</h2>
+            <p className="max-w-md mx-auto mb-6 text-[var(--color-text-secondary)]" >
               Explore subjects and topics, and click the bookmark button inside notes to save them for easy access later.
             </p>
             <Link href="/" className="btn-primary inline-block">
@@ -125,20 +125,20 @@ export default function BookmarksPage() {
               <Card
                 key={note.id}
                 onClick={() => router.push(`/learning/${note.topic?.subject?.slug}/${note.topic?.slug}/${note.slug}`)}
-                className="flex flex-col h-full"
+                className="flex flex-col h-full animate-in fade-in"
               >
                 <div className="flex-1">
                   {/* Topic details */}
                   <div className="flex items-center justify-between text-xs mb-3">
-                    <div className="flex items-center gap-1.5" style={{ color: 'var(--color-primary)' }}>
+                    <div className="flex items-center gap-1.5 text-[var(--color-primary)]">
                       <span>{note.topic?.subject?.name}</span>
                       <span>•</span>
-                      <span style={{ color: 'var(--color-text-muted)' }}>{note.topic?.name}</span>
+                      <span className="text-[var(--color-text-secondary)]">{note.topic?.name}</span>
                     </div>
                     {/* Delete Bookmark Button */}
                     <button
                       onClick={(e) => handleUnsave(e, note.id)}
-                      className="p-1 rounded hover:bg-gray-800 text-red-400"
+                      className="p-1 rounded hover:bg-[var(--color-bg-secondary)] text-red-500"
                       title="Remove Bookmark"
                     >
                       <svg className="w-4 h-4" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,15 +147,15 @@ export default function BookmarksPage() {
                     </button>
                   </div>
 
-                  <h3 className="text-lg font-bold mb-2 text-white">{note.title}</h3>
+                  <h3 className="text-lg font-bold mb-2 text-[var(--color-text-primary)]">{note.title}</h3>
                   {note.excerpt && (
-                    <p className="text-sm mb-4 line-clamp-2" style={{ color: 'var(--color-text-muted)' }}>
+                    <p className="text-sm mb-4 line-clamp-2 text-[var(--color-text-secondary)]">
                       {note.excerpt}
                     </p>
                   )}
                 </div>
 
-                <div className="flex items-center gap-4 mt-4 pt-4 text-xs" style={{ borderTop: '1px solid var(--color-border)', color: 'var(--color-text-dim)' }}>
+                <div className="flex items-center gap-4 mt-4 pt-4 text-xs text-[var(--color-text-secondary)]" style={{ borderTop: '1px solid var(--color-border)' }}>
                   <span className={`badge ${getDifficultyBadge(note.difficulty)}`}>
                     {note.difficulty}
                   </span>

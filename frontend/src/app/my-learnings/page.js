@@ -99,8 +99,8 @@ export default function MyLearningsPage() {
       <main className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--color-bg)' }}>
         <div className="max-w-md w-full glass-card p-8 text-center">
           <div className="text-6xl mb-4">✍️</div>
-          <h2 className="text-2xl font-bold mb-3" style={{ color: 'white' }}>Create & Manage Notes</h2>
-          <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
+          <h2 className="text-2xl font-bold mb-3 text-[var(--color-text-primary)]">Create & Manage Notes</h2>
+          <p className="text-sm mb-6 text-[var(--color-text-secondary)]">
             Write technical articles, design notes, and revision timelines. Sign in to access your dashboard.
           </p>
           <Link href="/login" className="btn-primary inline-block">
@@ -129,8 +129,8 @@ export default function MyLearningsPage() {
         {/* Header Action Row */}
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
           <div>
-            <h1 className="text-4xl font-bold mb-2" style={{ color: 'white' }}>My Workspace</h1>
-            <p style={{ color: 'var(--color-text-muted)' }}>Manage your personal technical drafts and published notes.</p>
+            <h1 className="text-4xl font-bold mb-2 text-[var(--color-text-primary)]">My Workspace</h1>
+            <p className="text-[var(--color-text-secondary)]">Manage your personal technical drafts and published notes.</p>
           </div>
           <Link href="/my-learnings/create" className="btn-primary inline-flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,8 +158,8 @@ export default function MyLearningsPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
                 activeTab === tab.id
-                  ? 'bg-opacity-20 text-white'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-opacity-20 text-[var(--color-text-primary)]'
+                  : 'text-gray-400 hover:text-[var(--color-text-primary)]'
               }`}
               style={{
                 background: activeTab === tab.id ? 'rgba(108, 99, 241, 0.15)' : 'transparent',
@@ -175,8 +175,8 @@ export default function MyLearningsPage() {
         {filteredNotes.length === 0 ? (
           <div className="text-center py-20 glass-card">
             <div className="text-xl mb-4 font-mono text-zinc-500 tracking-wider">Empty Workspace</div>
-            <h2 className="text-xl font-bold mb-2" style={{ color: 'white' }}>No Notes Found</h2>
-            <p className="max-w-md mx-auto mb-6" style={{ color: 'var(--color-text-muted)' }}>
+            <h2 className="text-xl font-bold mb-2 text-[var(--color-text-primary)]">No Notes Found</h2>
+            <p className="max-w-md mx-auto mb-6 text-[var(--color-text-secondary)]">
               {activeTab === 'ALL'
                 ? 'Get started by creating your very first structured technical study guide.'
                 : `You don't have any notes matching the filter "${activeTab.toLowerCase()}".`}
@@ -212,8 +212,8 @@ export default function MyLearningsPage() {
                   </div>
 
                   {/* Title and Excerpt */}
-                  <h3 className="text-lg font-bold mb-2 text-white line-clamp-1">{note.title}</h3>
-                  <p className="text-sm mb-4 line-clamp-2" style={{ color: 'var(--color-text-muted)' }}>
+                  <h3 className="text-lg font-bold mb-2 text-[var(--color-text-primary)] line-clamp-1">{note.title}</h3>
+                  <p className="text-sm mb-4 line-clamp-2 text-[var(--color-text-secondary)]">
                     {note.excerpt || 'No excerpt provided. Add one in settings.'}
                   </p>
                 </div>

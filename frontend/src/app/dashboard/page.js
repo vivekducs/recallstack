@@ -63,7 +63,7 @@ export default function DashboardPage() {
     return (
       <main className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--color-bg)' }}>
         <div className="max-w-md w-full glass-card p-8 text-center">
-          <h2 className="text-2xl font-bold mb-3" style={{ color: 'white' }}>Dashboard Access Required</h2>
+          <h2 className="text-2xl font-bold mb-3 text-[var(--color-text-primary)]">Dashboard Access Required</h2>
           <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
             Please sign in to view your learning activity, revisions, and reading statistics.
           </p>
@@ -88,7 +88,7 @@ export default function DashboardPage() {
         {/* Welcome Header */}
         <header className="mb-10 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold mb-2" style={{ color: 'white' }}>
+            <h1 className="text-4xl font-bold mb-2 text-[var(--color-text-primary)]">
               Welcome back, {user?.name || 'Developer'}
             </h1>
             <p style={{ color: 'var(--color-text-muted)' }}>
@@ -114,8 +114,8 @@ export default function DashboardPage() {
         {/* Stats Grid */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <Card>
-            <span className="text-xs uppercase tracking-wider font-semibold" style={{ color: 'var(--color-text-dim)' }}>Notes Created</span>
-            <div className="text-3xl font-bold mt-2 mb-1" style={{ color: 'white' }}>{summary?.totalNotes || 0}</div>
+            <span className="text-xs uppercase tracking-wider font-semibold animate-fade-in" style={{ color: 'var(--color-text-dim)' }}>Notes Created</span>
+            <div className="text-3xl font-bold mt-2 mb-1 text-[var(--color-text-primary)]">{summary?.totalNotes || 0}</div>
             <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
               {summary?.publishedNotes || 0} published / {summary?.draftNotes || 0} drafts
             </p>
@@ -123,41 +123,41 @@ export default function DashboardPage() {
 
           <Card>
             <span className="text-xs uppercase tracking-wider font-semibold" style={{ color: 'var(--color-text-dim)' }}>Total Views</span>
-            <div className="text-3xl font-bold mt-2 mb-1" style={{ color: 'white' }}>{summary?.totalViews || 0}</div>
+            <div className="text-3xl font-bold mt-2 mb-1 text-[var(--color-text-primary)]">{summary?.totalViews || 0}</div>
             <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Across all published sections</p>
           </Card>
 
           <Card>
             <span className="text-xs uppercase tracking-wider font-semibold" style={{ color: 'var(--color-text-dim)' }}>Helpful Clicks</span>
-            <div className="text-3xl font-bold mt-2 mb-1" style={{ color: 'white' }}>{summary?.totalHelpful || 0}</div>
+            <div className="text-3xl font-bold mt-2 mb-1 text-[var(--color-text-primary)]">{summary?.totalHelpful || 0}</div>
             <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Positive feedback ratings received</p>
           </Card>
 
           <Card>
             <span className="text-xs uppercase tracking-wider font-semibold" style={{ color: 'var(--color-text-dim)' }}>Total Read Time</span>
-            <div className="text-3xl font-bold mt-2 mb-1" style={{ color: 'white' }}>{summary?.totalReadingTime || 0} min</div>
+            <div className="text-3xl font-bold mt-2 mb-1 text-[var(--color-text-primary)]">{summary?.totalReadingTime || 0} min</div>
             <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Estimated consumption time</p>
           </Card>
         </section>
 
         {/* Action Panel Links */}
         <Card className="mb-10">
-          <h2 className="text-lg font-bold mb-4" style={{ color: 'white' }}>Quick Navigation</h2>
+          <h2 className="text-lg font-bold mb-4 text-[var(--color-text-primary)]">Quick Navigation</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link href="/search" className="p-4 text-center rounded border transition hover:border-[var(--color-primary)] bg-[var(--color-bg)] border-[var(--color-border)]">
-              <span className="block font-semibold text-sm text-white">Search Library</span>
+              <span className="block font-semibold text-sm text-[var(--color-text-primary)]">Search Library</span>
               <span className="text-xs mt-1 block" style={{ color: 'var(--color-text-dim)' }}>Browse catalog</span>
             </Link>
             <Link href="/bookmarks" className="p-4 text-center rounded border transition hover:border-[var(--color-primary)] bg-[var(--color-bg)] border-[var(--color-border)]">
-              <span className="block font-semibold text-sm text-white">Bookmarks</span>
+              <span className="block font-semibold text-sm text-[var(--color-text-primary)]">Bookmarks</span>
               <span className="text-xs mt-1 block" style={{ color: 'var(--color-text-dim)' }}>Saved notes ({summary?.bookmarksCount || 0})</span>
             </Link>
             <Link href="/dashboard/analytics" className="p-4 text-center rounded border transition hover:border-[var(--color-primary)] bg-[var(--color-bg)] border-[var(--color-border)]">
-              <span className="block font-semibold text-sm text-white">Detailed Stats</span>
+              <span className="block font-semibold text-sm text-[var(--color-text-primary)]">Detailed Stats</span>
               <span className="text-xs mt-1 block" style={{ color: 'var(--color-text-dim)' }}>View statistics</span>
             </Link>
             <Link href="/my-learnings" className="p-4 text-center rounded border transition hover:border-[var(--color-primary)] bg-[var(--color-bg)] border-[var(--color-border)]">
-              <span className="block font-semibold text-sm text-white">Creator Space</span>
+              <span className="block font-semibold text-sm text-[var(--color-text-primary)]">Creator Space</span>
               <span className="text-xs mt-1 block" style={{ color: 'var(--color-text-dim)' }}>Manage articles</span>
             </Link>
           </div>
@@ -165,7 +165,7 @@ export default function DashboardPage() {
 
         {/* Analytics Chart */}
         <Card className="mb-10">
-          <h2 className="text-xl font-bold mb-6" style={{ color: 'white' }}>Views Over Time (Last 30 Days)</h2>
+          <h2 className="text-xl font-bold mb-6 text-[var(--color-text-primary)]">Views Over Time (Last 30 Days)</h2>
           {dailyViews.length === 0 ? (
             <p className="text-sm text-center py-16" style={{ color: 'var(--color-text-muted)' }}>
               No views recorded in the last 30 days. Share your published notes to start collecting analytics!
@@ -193,7 +193,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Column 1: Learning activity timeline */}
           <Card>
-            <h2 className="text-xl font-bold mb-6" style={{ color: 'white' }}>Learning Timeline</h2>
+            <h2 className="text-xl font-bold mb-6 text-[var(--color-text-primary)]">Learning Timeline</h2>
             {timeline.length === 0 ? (
               <p className="text-sm text-center py-8" style={{ color: 'var(--color-text-muted)' }}>
                 No activity logged yet. Revisions, note creations, and comments will populate here.
@@ -203,7 +203,7 @@ export default function DashboardPage() {
                 {timeline.map((event) => (
                   <div key={event.id} className="relative">
                     <div>
-                      <p className="text-sm text-white font-medium">{event.description}</p>
+                      <p className="text-sm text-[var(--color-text-primary)] font-medium">{event.description}</p>
                       <span className="text-xs mt-1 block" style={{ color: 'var(--color-text-dim)' }}>
                         {new Date(event.date).toLocaleString()}
                       </span>
@@ -216,7 +216,7 @@ export default function DashboardPage() {
 
           {/* Column 2: Most Revised Notes */}
           <Card>
-            <h2 className="text-xl font-bold mb-6" style={{ color: 'white' }}>Most Revised Notes</h2>
+            <h2 className="text-xl font-bold mb-6 text-[var(--color-text-primary)]">Most Revised Notes</h2>
             {mostRevised.length === 0 ? (
               <p className="text-sm text-center py-8" style={{ color: 'var(--color-text-muted)' }}>
                 No notes found in your repository workspace.
@@ -226,7 +226,7 @@ export default function DashboardPage() {
                 {mostRevised.map((note) => (
                   <div key={note.id} className="py-4 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
                     <div>
-                      <h3 className="font-semibold text-white hover:underline">
+                      <h3 className="font-semibold text-[var(--color-text-primary)] hover:underline">
                         <Link href={`/learning/${note.topic?.subject?.slug}/${note.topic?.slug}/${note.slug}`}>
                           {note.title}
                         </Link>
@@ -253,7 +253,7 @@ export default function DashboardPage() {
         {/* Top Performing Notes Row */}
         <div className="mt-8">
           <Card>
-            <h2 className="text-xl font-bold mb-6" style={{ color: 'white' }}>Top Performing Notes</h2>
+            <h2 className="text-xl font-bold mb-6 text-[var(--color-text-primary)]">Top Performing Notes</h2>
             {topNotes.length === 0 ? (
               <p className="text-sm text-center py-8" style={{ color: 'var(--color-text-muted)' }}>
                 You have no published notes yet.
@@ -263,7 +263,7 @@ export default function DashboardPage() {
                 {topNotes.map((note) => (
                   <div key={note.id} className="py-4 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
                     <div>
-                      <h3 className="font-semibold text-white hover:underline">
+                      <h3 className="font-semibold text-[var(--color-text-primary)] hover:underline">
                         <Link href={`/learning/${note.topic?.subject?.slug}/${note.topic?.slug}/${note.slug}`}>
                           {note.title}
                         </Link>
