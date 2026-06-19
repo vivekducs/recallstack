@@ -12,7 +12,7 @@ export default function Input({
   ...props
 }) {
   // Height: 36-40px. Padding: 8-10px horizontal. Border: 1px solid. Border radius: 4px.
-  const baseInputStyle = 'w-full px-2.5 h-[38px] rounded-[4px] bg-[var(--color-bg-secondary)] border border-[var(--color-border)] text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)]/70 placeholder:italic outline-none transition-all duration-150 focus:ring-2 focus:ring-[var(--color-primary)]/50 focus:border-[var(--color-primary)] disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseInputStyle = 'w-full rounded-[4px] bg-[var(--color-bg-secondary)] border border-[var(--color-border)] text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)]/70 placeholder:italic outline-none transition-all duration-150 focus:ring-2 focus:ring-[var(--color-primary)]/50 focus:border-[var(--color-primary)] disabled:opacity-50 disabled:cursor-not-allowed';
   
   const textareaStyle = 'min-h-[100px] h-auto py-2 resize-y';
 
@@ -31,12 +31,14 @@ export default function Input({
         <textarea
           id={id}
           className={`${baseInputStyle} ${textareaStyle}`}
+          style={{ paddingLeft: 'var(--density-padding, 10px)', paddingRight: 'var(--density-padding, 10px)', ...props.style }}
           {...props}
         />
       ) : type === 'select' ? (
         <select
           id={id}
           className={baseInputStyle}
+          style={{ height: 'var(--density-btn-height, 38px)', paddingLeft: 'var(--density-padding, 10px)', paddingRight: 'var(--density-padding, 10px)', ...props.style }}
           {...props}
         >
           {options.map((opt) => (
@@ -50,6 +52,7 @@ export default function Input({
           id={id}
           type={type}
           className={baseInputStyle}
+          style={{ height: 'var(--density-btn-height, 38px)', paddingLeft: 'var(--density-padding, 10px)', paddingRight: 'var(--density-padding, 10px)', ...props.style }}
           {...props}
         />
       )}

@@ -10,7 +10,7 @@ export default function Card({
 }) {
   const isClickable = !!onClick;
   
-  const baseStyle = 'border rounded-lg p-4 transition-all duration-150 bg-[var(--color-bg-secondary)] border-[var(--color-border)]';
+  const baseStyle = 'border rounded-lg transition-all duration-150 bg-[var(--color-bg-secondary)] border-[var(--color-border)]';
   
   const variants = {
     standard: 'hover:shadow-sm',
@@ -24,6 +24,7 @@ export default function Card({
     <div
       onClick={onClick}
       className={`${baseStyle} ${selectedVariant} ${cursorStyle} ${className}`}
+      style={{ padding: 'var(--density-padding, 16px)', ...props.style }}
       {...props}
     >
       {children}

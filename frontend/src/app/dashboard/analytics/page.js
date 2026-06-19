@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import useAuth from '@/hooks/useAuth';
+import Card from '@/components/common/Card';
+import Table from '@/components/common/Table';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -58,7 +60,7 @@ export default function AnalyticsDashboard() {
   if (!isAuthenticated) {
     return (
       <main className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--color-bg)' }}>
-        <div className="max-w-md w-full glass-card p-8 text-center">
+        <Card className="max-w-md w-full text-center">
           <h2 className="text-2xl font-bold mb-3" style={{ color: 'white' }}>Analytics Access Required</h2>
           <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
             Sign in to view catalog analytics, difficulty distributions, and notes statistics.
@@ -66,7 +68,7 @@ export default function AnalyticsDashboard() {
           <Link href="/login" className="btn-primary inline-block">
             Sign In
           </Link>
-        </div>
+        </Card>
       </main>
     );
   }
@@ -96,10 +98,6 @@ export default function AnalyticsDashboard() {
 
   return (
     <main className="min-h-screen py-12" style={{ background: 'var(--color-bg)' }}>
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full opacity-[0.03]" style={{ background: 'radial-gradient(circle, #8b5cf6, transparent 70%)' }}></div>
-      </div>
-
       <div className="relative max-w-5xl mx-auto px-6">
         {/* Navigation Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm mb-8" style={{ color: 'var(--color-text-dim)' }}>
@@ -118,15 +116,15 @@ export default function AnalyticsDashboard() {
         </header>
 
         {error && (
-          <div className="glass-card p-4 mb-8 text-center border-red-500/30">
+          <Card className="mb-8 text-center" style={{ borderColor: 'rgba(239, 68, 68, 0.3)' }}>
             <p className="text-red-400 text-sm">{error}</p>
-          </div>
+          </Card>
         )}
 
         {/* Visual Analytics Sections */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
           {/* Difficulty Level Distribution card */}
-          <div className="glass-card p-6">
+          <Card>
             <h2 className="text-lg font-bold mb-6" style={{ color: 'white' }}>Difficulty Level Distribution</h2>
             {totalNotes === 0 ? (
               <p className="text-sm text-center py-10" style={{ color: 'var(--color-text-muted)' }}>
@@ -165,10 +163,10 @@ export default function AnalyticsDashboard() {
                 </div>
               </div>
             )}
-          </div>
+          </Card>
 
           {/* Note Status Ratio Card */}
-          <div className="glass-card p-6">
+          <Card>
             <h2 className="text-lg font-bold mb-6" style={{ color: 'white' }}>Publication Status Ratio</h2>
             {totalNotes === 0 ? (
               <p className="text-sm text-center py-10" style={{ color: 'var(--color-text-muted)' }}>
@@ -212,11 +210,11 @@ export default function AnalyticsDashboard() {
                 </div>
               </div>
             )}
-          </div>
+          </Card>
         </div>
 
         {/* Read Stats Metrics Row */}
-        <section className="glass-card p-6 mb-10">
+        <Card className="mb-10">
           <h2 className="text-lg font-bold mb-4" style={{ color: 'white' }}>Reading Statistics Summary</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center divide-y md:divide-y-0 md:divide-x" style={{ borderColor: 'var(--color-border)' }}>
             <div className="py-4 md:py-0">
@@ -237,63 +235,69 @@ export default function AnalyticsDashboard() {
               <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>Articles saved in quick-read folder</p>
             </div>
           </div>
-        </section>
+        </Card>
 
         {/* Subject wise Distribution summary */}
-        <section className="glass-card p-6">
+        <Card>
           <h2 className="text-lg font-bold mb-4" style={{ color: 'white' }}>Subject Breakdown</h2>
           {totalNotes === 0 ? (
             <p className="text-sm text-center py-6" style={{ color: 'var(--color-text-muted)' }}>
               No notes written in the workspace to catalog by subject.
             </p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}>
-                    <th className="pb-3 font-semibold">Subject / Topic</th>
-                    <th className="pb-3 font-semibold text-center">Difficulty</th>
-                    <th className="pb-3 font-semibold text-center">Status</th>
-                    <th className="pb-3 font-semibold text-right">Reading Time</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
-                  {notes.map((note) => (
-                    <tr key={note.id} style={{ color: 'white' }}>
-                      <td className="py-3.5">
-                        <Link href={`/learning/${note.topic?.subject?.slug}/${note.topic?.slug}/${note.slug}`} className="hover:underline font-medium block">
-                          {note.title}
-                        </Link>
-                        <span className="text-xs block" style={{ color: 'var(--color-text-dim)' }}>
-                          {note.topic?.subject?.name} - {note.topic?.name}
-                        </span>
-                      </td>
-                      <td className="py-3.5 text-center">
-                        <span className="text-xs font-semibold px-2 py-0.5 rounded" style={{
-                          background: note.difficulty === 'EASY' ? 'rgba(16, 185, 129, 0.1)' : note.difficulty === 'MEDIUM' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                          color: note.difficulty === 'EASY' ? '#10b981' : note.difficulty === 'MEDIUM' ? '#f59e0b' : '#ef4444'
-                        }}>
-                          {note.difficulty}
-                        </span>
-                      </td>
-                      <td className="py-3.5 text-center">
-                        <span className="text-xs px-2 py-0.5 rounded font-mono" style={{
-                          background: note.status === 'PUBLISHED' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(107, 114, 128, 0.1)',
-                          color: note.status === 'PUBLISHED' ? '#10b981' : '#9ca3af'
-                        }}>
-                          {note.status.toLowerCase()}
-                        </span>
-                      </td>
-                      <td className="py-3.5 text-right font-mono" style={{ color: 'var(--color-text-muted)' }}>
-                        {note.readingTime || 0}m
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table
+              headers={[
+                { key: 'title', label: 'Subject / Topic', align: 'left' },
+                { key: 'difficulty', label: 'Difficulty', align: 'center' },
+                { key: 'status', label: 'Status', align: 'center' },
+                { key: 'readingTime', label: 'Reading Time', align: 'right' }
+              ]}
+              data={notes}
+              renderCell={(note, key) => {
+                if (key === 'title') {
+                  return (
+                    <>
+                      <Link href={`/learning/${note.topic?.subject?.slug}/${note.topic?.slug}/${note.slug}`} className="hover:underline font-medium block">
+                        {note.title}
+                      </Link>
+                      <span className="text-xs block" style={{ color: 'var(--color-text-dim)' }}>
+                        {note.topic?.subject?.name} - {note.topic?.name}
+                      </span>
+                    </>
+                  );
+                }
+                if (key === 'difficulty') {
+                  return (
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded" style={{
+                      background: note.difficulty === 'EASY' ? 'rgba(16, 185, 129, 0.1)' : note.difficulty === 'MEDIUM' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                      color: note.difficulty === 'EASY' ? '#10b981' : note.difficulty === 'MEDIUM' ? '#f59e0b' : '#ef4444'
+                    }}>
+                      {note.difficulty}
+                    </span>
+                  );
+                }
+                if (key === 'status') {
+                  return (
+                    <span className="text-xs px-2 py-0.5 rounded font-mono" style={{
+                      background: note.status === 'PUBLISHED' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(107, 114, 128, 0.1)',
+                      color: note.status === 'PUBLISHED' ? '#10b981' : '#9ca3af'
+                    }}>
+                      {note.status.toLowerCase()}
+                    </span>
+                  );
+                }
+                if (key === 'readingTime') {
+                  return (
+                    <span className="font-mono" style={{ color: 'var(--color-text-muted)' }}>
+                      {note.readingTime || 0}m
+                    </span>
+                  );
+                }
+                return note[key];
+              }}
+            />
           )}
-        </section>
+        </Card>
       </div>
     </main>
   );

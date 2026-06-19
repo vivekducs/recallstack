@@ -5,6 +5,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
+import Card from '@/components/common/Card';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -44,7 +45,7 @@ function RevisionTimeline() {
 
   if (!noteId) {
     return (
-      <div className="text-center py-20 glass-card">
+      <Card className="text-center py-20">
         <div className="text-xl mb-4 font-mono text-zinc-500 tracking-wider">No Selection</div>
         <h2 className="text-xl font-bold mb-2" style={{ color: 'white' }}>No Note Selected</h2>
         <p className="max-w-md mx-auto mb-6" style={{ color: 'var(--color-text-muted)' }}>
@@ -53,7 +54,7 @@ function RevisionTimeline() {
         <Link href="/search" className="btn-primary inline-block">
           Search Notes Library
         </Link>
-      </div>
+      </Card>
     );
   }
 
@@ -67,13 +68,13 @@ function RevisionTimeline() {
 
   if (error) {
     return (
-      <div className="text-center py-20 glass-card">
+      <Card className="text-center py-20">
         <div className="text-lg font-mono text-zinc-500 mb-4 tracking-wider">Warning</div>
         <p className="text-red-400 mb-6">{error}</p>
         <Link href="/search" className="btn-secondary inline-block">
           ← Back to Search
         </Link>
-      </div>
+      </Card>
     );
   }
 
@@ -81,7 +82,7 @@ function RevisionTimeline() {
     <div>
       {/* Note Reference Info */}
       {note && (
-        <div className="glass-card p-6 mb-10 flex items-center justify-between flex-wrap gap-4">
+        <Card className="mb-10 flex items-center justify-between flex-wrap gap-4">
           <div>
             <span className="text-xs uppercase tracking-wider font-semibold" style={{ color: 'var(--color-primary)' }}>
               Revision Timeline For
@@ -98,15 +99,15 @@ function RevisionTimeline() {
           >
             View Live Note
           </Link>
-        </div>
+        </Card>
       )}
 
       {/* Revisions Vertical Timeline */}
       {revisions.length === 0 ? (
-        <div className="text-center py-12 glass-card">
+        <Card className="text-center py-12">
           <p style={{ color: 'var(--color-text-muted)' }}>No revisions logged yet for this note.</p>
           <p className="text-xs mt-1" style={{ color: 'var(--color-text-dim)' }}>Modifications to note sections will trigger timeline logs.</p>
-        </div>
+        </Card>
       ) : (
         <div className="relative border-l-2 pl-6 ml-4 space-y-8" style={{ borderColor: 'var(--color-border)' }}>
           {revisions.map((rev, index) => (
@@ -121,7 +122,7 @@ function RevisionTimeline() {
               ></div>
 
               {/* Timeline card */}
-              <div className="glass-card p-5">
+              <Card>
                 <div className="flex justify-between items-start flex-wrap gap-2 mb-3">
                   <div>
                     <span className="font-semibold text-white block">
@@ -145,7 +146,7 @@ function RevisionTimeline() {
                     <span>Note content or sections revised.</span>
                   )}
                 </div>
-              </div>
+              </Card>
             </div>
           ))}
         </div>
@@ -157,11 +158,6 @@ function RevisionTimeline() {
 export default function RevisionTrackerPage() {
   return (
     <main className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
-      {/* Ambient background glow */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full opacity-[0.03]" style={{ background: 'radial-gradient(circle, #8b5cf6, transparent 70%)' }}></div>
-      </div>
-
       <div className="relative max-w-4xl mx-auto px-6 py-12">
         {/* Navigation Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm mb-8" style={{ color: 'var(--color-text-dim)' }}>

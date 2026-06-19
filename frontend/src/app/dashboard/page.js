@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import useAuth from '@/hooks/useAuth';
+import Card from '@/components/common/Card';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -103,60 +104,60 @@ export default function DashboardPage() {
 
         {/* Stats Grid */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          <div className="glass-card p-6">
+          <Card>
             <span className="text-xs uppercase tracking-wider font-semibold" style={{ color: 'var(--color-text-dim)' }}>Notes Created</span>
             <div className="text-3xl font-bold mt-2 mb-1" style={{ color: 'white' }}>{summary?.totalNotes || 0}</div>
             <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
               {summary?.publishedNotes || 0} published / {summary?.draftNotes || 0} drafts
             </p>
-          </div>
+          </Card>
 
-          <div className="glass-card p-6">
+          <Card>
             <span className="text-xs uppercase tracking-wider font-semibold" style={{ color: 'var(--color-text-dim)' }}>Total Views</span>
             <div className="text-3xl font-bold mt-2 mb-1" style={{ color: 'white' }}>{summary?.totalViews || 0}</div>
             <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Across all published sections</p>
-          </div>
+          </Card>
 
-          <div className="glass-card p-6">
+          <Card>
             <span className="text-xs uppercase tracking-wider font-semibold" style={{ color: 'var(--color-text-dim)' }}>Helpful Clicks</span>
             <div className="text-3xl font-bold mt-2 mb-1" style={{ color: 'white' }}>{summary?.totalHelpful || 0}</div>
             <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Positive feedback ratings received</p>
-          </div>
+          </Card>
 
-          <div className="glass-card p-6">
+          <Card>
             <span className="text-xs uppercase tracking-wider font-semibold" style={{ color: 'var(--color-text-dim)' }}>Total Read Time</span>
             <div className="text-3xl font-bold mt-2 mb-1" style={{ color: 'white' }}>{summary?.totalReadingTime || 0} min</div>
             <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Estimated consumption time</p>
-          </div>
+          </Card>
         </section>
 
         {/* Action Panel Links */}
-        <section className="glass-card p-6 mb-10">
+        <Card className="mb-10">
           <h2 className="text-lg font-bold mb-4" style={{ color: 'white' }}>Quick Navigation</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link href="/search" className="p-4 text-center rounded border transition hover:border-violet-500/50" style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}>
+            <Link href="/search" className="p-4 text-center rounded border transition hover:border-[var(--color-primary)] bg-[var(--color-bg)] border-[var(--color-border)]">
               <span className="block font-semibold text-sm text-white">Search Library</span>
               <span className="text-xs mt-1 block" style={{ color: 'var(--color-text-dim)' }}>Browse catalog</span>
             </Link>
-            <Link href="/bookmarks" className="p-4 text-center rounded border transition hover:border-violet-500/50" style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}>
+            <Link href="/bookmarks" className="p-4 text-center rounded border transition hover:border-[var(--color-primary)] bg-[var(--color-bg)] border-[var(--color-border)]">
               <span className="block font-semibold text-sm text-white">Bookmarks</span>
               <span className="text-xs mt-1 block" style={{ color: 'var(--color-text-dim)' }}>Saved notes ({summary?.bookmarksCount || 0})</span>
             </Link>
-            <Link href="/dashboard/analytics" className="p-4 text-center rounded border transition hover:border-violet-500/50" style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}>
+            <Link href="/dashboard/analytics" className="p-4 text-center rounded border transition hover:border-[var(--color-primary)] bg-[var(--color-bg)] border-[var(--color-border)]">
               <span className="block font-semibold text-sm text-white">Detailed Stats</span>
               <span className="text-xs mt-1 block" style={{ color: 'var(--color-text-dim)' }}>View statistics</span>
             </Link>
-            <Link href="/my-learnings" className="p-4 text-center rounded border transition hover:border-violet-500/50" style={{ background: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}>
+            <Link href="/my-learnings" className="p-4 text-center rounded border transition hover:border-[var(--color-primary)] bg-[var(--color-bg)] border-[var(--color-border)]">
               <span className="block font-semibold text-sm text-white">Creator Space</span>
               <span className="text-xs mt-1 block" style={{ color: 'var(--color-text-dim)' }}>Manage articles</span>
             </Link>
           </div>
-        </section>
+        </Card>
 
         {/* Multi-column Detail lists */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Column 1: Learning activity timeline */}
-          <section className="glass-card p-6">
+          <Card>
             <h2 className="text-xl font-bold mb-6" style={{ color: 'white' }}>Learning Timeline</h2>
             {timeline.length === 0 ? (
               <p className="text-sm text-center py-8" style={{ color: 'var(--color-text-muted)' }}>
@@ -177,10 +178,10 @@ export default function DashboardPage() {
                 ))}
               </div>
             )}
-          </section>
+          </Card>
 
           {/* Column 2: Most Revised Notes */}
-          <section className="glass-card p-6">
+          <Card>
             <h2 className="text-xl font-bold mb-6" style={{ color: 'white' }}>Most Revised Notes</h2>
             {mostRevised.length === 0 ? (
               <p className="text-sm text-center py-8" style={{ color: 'var(--color-text-muted)' }}>
@@ -201,7 +202,7 @@ export default function DashboardPage() {
                       </p>
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <span className="text-xs px-2 py-1 rounded font-semibold block text-center" style={{ background: 'var(--color-primary-transparent)', color: 'var(--color-primary)' }}>
+                      <span className="text-xs px-2 py-1 rounded font-semibold block text-center" style={{ background: 'rgba(96, 165, 250, 0.1)', color: 'var(--color-primary)' }}>
                         {note.revisionCount} revisions
                       </span>
                       <Link href={`/revision-tracker?noteId=${note.id}`} className="text-xs hover:underline mt-1.5 block" style={{ color: 'var(--color-text-muted)' }}>
@@ -212,7 +213,7 @@ export default function DashboardPage() {
                 ))}
               </div>
             )}
-          </section>
+          </Card>
         </div>
       </div>
     </main>

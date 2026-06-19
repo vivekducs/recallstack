@@ -24,7 +24,8 @@ export default function Table({
             {headers.map((header) => (
               <th
                 key={header.key}
-                className={`p-3 font-semibold text-[var(--color-text-primary)] ${getAlignClass(header.align)}`}
+                className={`font-semibold text-[var(--color-text-primary)] ${getAlignClass(header.align)}`}
+                style={{ padding: 'calc(var(--density-padding, 16px) * 0.75) var(--density-padding, 16px)' }}
               >
                 {header.label}
               </th>
@@ -46,7 +47,8 @@ export default function Table({
               {headers.map((header) => (
                 <td
                   key={header.key}
-                  className={`p-3 text-[var(--color-text-secondary)] ${getAlignClass(header.align)}`}
+                  className={`text-[var(--color-text-secondary)] ${getAlignClass(header.align)}`}
+                  style={{ padding: 'calc(var(--density-padding, 16px) * 0.75) var(--density-padding, 16px)' }}
                 >
                   {renderCell 
                     ? renderCell(row, header.key, rowIndex)

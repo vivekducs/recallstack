@@ -15,16 +15,26 @@ export default function Button({
   
   const variants = {
     // Primary: Background: Blue, Text: White, 600 weight, Padding: 8px vertical / 10-12px horizontal, Border radius: 4-6px
-    primary: 'bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white shadow-sm border border-transparent py-2 px-3 text-xs rounded-[4px] sm:rounded-[6px]',
+    primary: 'bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white shadow-sm border border-transparent text-xs rounded-[4px] sm:rounded-[6px]',
     // Secondary: Background: Light gray, Text: Dark gray, 600 weight, Padding: Same, Border: 1px solid gray, Hover: Darker gray background
-    secondary: 'bg-[var(--color-bg-secondary)] hover:bg-[var(--color-border)] border border-[var(--color-border)] text-[var(--color-text-primary)] py-2 px-3 text-xs rounded-[4px] sm:rounded-[6px]',
+    secondary: 'bg-[var(--color-bg-secondary)] hover:bg-[var(--color-border)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-xs rounded-[4px] sm:rounded-[6px]',
     // Text: Background: Transparent, Text: Blue, 600 weight, Hover: Underline
     text: 'bg-transparent hover:underline text-[var(--color-primary)] py-1.5 px-3 rounded',
     // Destructive: Background: Red, Text: White, 600 weight
-    destructive: 'bg-[var(--color-error)] hover:brightness-90 text-white py-2 px-3 text-xs rounded-[4px] sm:rounded-[6px] border border-transparent shadow-sm'
+    destructive: 'bg-[var(--color-error)] hover:brightness-90 text-white text-xs rounded-[4px] sm:rounded-[6px] border border-transparent shadow-sm'
   };
 
   const selectedVariant = variants[variant] || variants.primary;
+  
+  const needsDensity = variant !== 'text';
+  const buttonStyle = needsDensity ? {
+    height: 'var(--density-btn-height, 40px)',
+    paddingLeft: 'var(--density-padding, 16px)',
+    paddingRight: 'var(--density-padding, 16px)',
+    paddingTop: 0,
+    paddingBottom: 0,
+    ...props.style
+  } : props.style;
 
   return (
     <button
@@ -32,6 +42,7 @@ export default function Button({
       onClick={onClick}
       disabled={disabled || loading}
       className={`${baseStyle} ${selectedVariant} ${className}`}
+      style={buttonStyle}
       {...props}
     >
       {loading ? (
