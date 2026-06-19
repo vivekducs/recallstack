@@ -15,6 +15,7 @@ const revisionRoutes = require('./routes/revision.routes');
 const commentRoutes = require('./routes/comment.routes');
 const bookmarkRoutes = require('./routes/bookmark.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
+const emailRoutes = require('./routes/email.routes');
 const profileRoutes = require('./routes/profile.routes');
 const trendingRoutes = require('./routes/trending.routes');
 
@@ -47,6 +48,7 @@ app.use('/api/notes/:noteId/comments', commentRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/email', emailRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/trending', trendingRoutes);
 
