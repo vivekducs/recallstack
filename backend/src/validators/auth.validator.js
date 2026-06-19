@@ -26,9 +26,20 @@ const updatePreferencesSchema = {
   digestFrequency: { required: false, type: 'string', enum: ['none', 'daily', 'weekly'] }
 };
 
+const forgotPasswordSchema = {
+  email: { required: true, type: 'string', pattern: /^\S+@\S+\.\S+$/ }
+};
+
+const resetPasswordSchema = {
+  token: { required: true, type: 'string' },
+  password: { required: true, type: 'string', minLength: 8 }
+};
+
 module.exports = {
   registerSchema,
   loginSchema,
   updateProfileSchema,
-  updatePreferencesSchema
+  updatePreferencesSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema
 };

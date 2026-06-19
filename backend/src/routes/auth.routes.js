@@ -7,7 +7,9 @@ const {
   registerSchema,
   loginSchema,
   updateProfileSchema,
-  updatePreferencesSchema
+  updatePreferencesSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema
 } = require('../validators/auth.validator');
 const authController = require('../controllers/auth.controller');
 
@@ -25,5 +27,11 @@ router.put('/profile', authenticateToken, validate(updateProfileSchema), authCon
 
 // PATCH /api/auth/preferences (Protected)
 router.patch('/preferences', authenticateToken, validate(updatePreferencesSchema), authController.updatePreferences);
+
+// POST /api/auth/forgot-password (Public)
+router.post('/forgot-password', validate(forgotPasswordSchema), authController.forgotPassword);
+
+// POST /api/auth/reset-password (Public)
+router.post('/reset-password', validate(resetPasswordSchema), authController.resetPassword);
 
 module.exports = router;

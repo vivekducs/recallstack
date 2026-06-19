@@ -238,6 +238,31 @@ class EmailService {
 
     return { success: true, count: sentCount };
   }
+
+  async sendPasswordResetEmail(user, resetUrl) {
+    try {
+      const html = await this.getTemplate('password-reset.html', {
+        name: user.name,
+        resetUrl
+      });
+
+      const info = await this.transporter.sendMail({
+        from: this.defaultFrom,
+        to: user.email,
+        subject: 'Reset your RecallStack Password',
+        html
+      });
+
+      console.log(`\n========== EMAIL MOCK PASSWORD RESET SENT TO: ${user.email} ==========`);
+      console.log(`Subject: Reset your RecallStack Password`);
+      console.log(`Link: ${resetUrl}`);
+      console.log(info.message.toString());
+      console.log(`========================================================================\n`);
+    } catch (err) {
+      console.error('[EmailService] Failed to send password reset email:', err);
+      throw err;
+    }
+  }
 }
 
 module.exports = new EmailService();

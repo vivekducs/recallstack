@@ -65,6 +65,33 @@ class UserRepository {
       data: { followersCount: { increment: incrementValue } }
     });
   }
+
+  async findByResetToken(token) {
+    return prisma.user.findUnique({
+      where: { passwordResetToken: token }
+    });
+  }
+
+  async updateResetToken(id, token, expires) {
+    return prisma.user.update({
+      where: { id },
+      data: {
+        passwordResetToken: token,
+        passwordResetExpires: expires
+      }
+    });
+  }
+
+  async updatePassword(id, passwordHash) {
+    return prisma.user.update({
+      where: { id },
+      data: {
+        passwordHash,
+        passwordResetToken: null,
+        passwordResetExpires: null
+      }
+    });
+  }
 }
 
 module.exports = new UserRepository();
