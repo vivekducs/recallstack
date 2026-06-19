@@ -3,6 +3,7 @@ import Link from 'next/link';
 import CodeBlock from '@/components/note/CodeBlock';
 import TableOfContents from '@/components/note/TableOfContents';
 import BookmarkButton from '@/components/note/BookmarkButton';
+import StarRating from '@/components/common/StarRating';
 import CommentsSection from '@/components/comments/CommentsSection';
 import JsonLd from '@/components/common/JsonLd';
 import { getNoteTitle } from '@/lib/seo';
@@ -169,6 +170,18 @@ export default async function NotePage({ params }) {
                     </span>
                   )}
                   <BookmarkButton noteId={note.id} />
+                  <Link href={`/learning/${params.subject}/${params.topic}/${params.slug}/revisions`} className="text-sm font-medium hover:underline" style={{ color: 'var(--color-primary)' }}>
+                    History
+                  </Link>
+                </div>
+                
+                <div className="mb-6">
+                  <StarRating 
+                    noteId={note.id} 
+                    initialAverage={note.averageRating || 0} 
+                    initialCount={note.ratingCount || 0} 
+                    readOnly={false} 
+                  />
                 </div>
 
                 {note.excerpt && (

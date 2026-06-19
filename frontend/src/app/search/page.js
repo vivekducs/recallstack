@@ -10,6 +10,7 @@ import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Badge from '@/components/common/Badge';
 import Breadcrumb from '@/components/common/Breadcrumb';
+import StarRating from '@/components/common/StarRating';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -301,6 +302,10 @@ function SearchPageContent() {
                         <span>👁 {note.views || 0}</span>
                         <span>•</span>
                         <span>👍 {note.helpfulCount || 0}</span>
+                        <span>•</span>
+                        <div onClick={(e) => e.preventDefault()}>
+                          <StarRating noteId={note.id} initialAverage={note.averageRating} initialCount={note.ratingCount} readOnly={true} />
+                        </div>
                         <span>•</span>
                         <span>by {note.author?.name || 'Unknown'}</span>
                         {note.publishedAt && (

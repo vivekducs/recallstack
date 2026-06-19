@@ -17,7 +17,9 @@ It features a premium glassmorphic dark-themed user interface, full-text search,
   * **Section**: Individual content blocks within a note supporting TEXT, CODE (with syntax highlighting), EXAMPLE, IMAGE, and DIAGRAM content types.
 * **Creator Workspace (My Learnings)**: An interactive workflow allowing users to create notes, select subject/topic associations, and add, edit, or reorder content sections in real-time.
 * **Advanced Search & Filters (Phase 2)**: Fast, debounced full-text search scanning note titles, excerpts, and section contents. Includes real-time URL syncing, advanced pagination, customizable sorting (Relevance, Recent, Popular), and query-filtering by subject, topic, and difficulty.
-* **Revision History & Timeline**: Automatic logging of note edits with a sequential timeline of revisions per user.
+* **Revision History & Timeline (Phase 2)**: Automatic logging of note edits with a sequential timeline of revisions per user, including full snapshot restoration capabilities.
+* **User Profiles & Social Graph (Phase 2)**: Public profiles showcasing user stats, bio, and published notes, with an interactive Follow/Unfollow mechanism.
+* **Trending Engine (Phase 2)**: Real-time calculation of top trending notes based on 7-day rolling view analytics.
 * **Engagement & Moderation**: Bookmarks folder for saving notes, nested comments supporting admin/owner moderation (Pending/Approved/Rejected statuses), views count tracking, and helpful ratings.
 * **Database Transactions & Denormalization**: Denormalized topicsCount and notesCount values on subjects and topics managed via atomic database transactions to ensure O(1) reads on entry point queries.
 * **SEO Engine**: Static sitemaps, robots.txt routing, Open Graph image parameters, dynamic structured JSON-LD (Article & Breadcrumbs schemas) injections, RSS feed generation, and an LLM-friendly llms.txt route.

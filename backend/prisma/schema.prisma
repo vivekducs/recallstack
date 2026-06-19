@@ -21,15 +21,35 @@ model User {
   role          Role     @default(USER)
   emailPreferences Json?   @default("{\"newComment\":true,\"newReply\":true,\"helpful\":false,\"newNoteInTopic\":false,\"digestFrequency\":\"daily\"}")
 
+  followersCount Int     @default(0)
+  followingCount Int     @default(0)
+
   notes         Note[]   @relation("NoteAuthor")
   comments      Comment[]
   bookmarks     Bookmark[]
   revisions     RevisionHistory[]
+  ratings       NoteRating[]
+  followers     Follows[] @relation("Following")
+  following     Follows[] @relation("Followers")
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   @@map("users")
+}
+
+model Follows {
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower    User @relation("Followers", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+  @@map("follows")
 }
 
 enum Role {
@@ -90,7 +110,7 @@ model Note {
   excerpt     String?
 
   // Content metadata
-  readingTime Int?
+  readingTime Int      @default(0)
   difficulty  Difficulty @default(MEDIUM)
   tags        String[]
 
@@ -105,6 +125,8 @@ model Note {
   // Tracking
   views       Int      @default(0)
   helpfulCount Int     @default(0)
+  averageRating Float    @default(0)
+  ratingCount   Int      @default(0)
 
   // Relationships
   topicId     String
@@ -117,6 +139,7 @@ model Note {
   comments    Comment[]
   bookmarks   Bookmark[]
   revisions   RevisionHistory[]
+  ratings     NoteRating[]
   analyticsDaily NoteAnalyticsDaily[]
 
   createdAt   DateTime @default(now())
@@ -140,6 +163,20 @@ model NoteAnalyticsDaily {
   @@index([noteId])
   @@index([date])
   @@map("note_analytics_daily")
+}
+
+model NoteRating {
+  id        String   @id @default(uuid())
+  rating    Int
+  userId    String
+  noteId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  note      Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, noteId]) // One rating per user per note
 }
 
 enum NoteStatus {
@@ -237,6 +274,7 @@ model RevisionHistory {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  snapshot  Json?
   revisedAt DateTime @default(now())
 
   @@index([noteId])
