@@ -6,6 +6,8 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
 import useAuth from '@/hooks/useAuth';
+import Modal from '@/components/common/Modal';
+import Button from '@/components/common/Button';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -42,6 +44,11 @@ export default function EditNotePage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Confirmation Modals State
+  const [deleteSecModalOpen, setDeleteSecModalOpen] = useState(false);
+  const [sectionIdToDelete, setSectionIdToDelete] = useState(null);
+  const [publishModalOpen, setPublishModalOpen] = useState(false);
 
   const fetchNote = async () => {
     try {
@@ -183,18 +190,25 @@ export default function EditNotePage() {
     }
   };
 
-  const handleDeleteSection = async (sectionId) => {
-    if (!confirm('Are you sure you want to delete this section?')) return;
+  const triggerDeleteSection = (sectionId) => {
+    setSectionIdToDelete(sectionId);
+    setDeleteSecModalOpen(true);
+  };
+
+  const handleConfirmDeleteSection = async () => {
+    if (!sectionIdToDelete) return;
     setSaving(true);
     setError('');
 
     try {
-      await axios.delete(`${API_URL}/sections/${sectionId}`, {
+      await axios.delete(`${API_URL}/sections/${sectionIdToDelete}`, {
         headers: getAuthHeaders()
       });
-      setSections(prev => prev.filter(sec => sec.id !== sectionId));
+      setSections(prev => prev.filter(sec => sec.id !== sectionIdToDelete));
       setSuccess('Section deleted.');
       setTimeout(() => setSuccess(''), 3000);
+      setDeleteSecModalOpen(false);
+      setSectionIdToDelete(null);
     } catch (err) {
       console.error('Failed to delete section:', err);
       setError(err.response?.data?.error || 'Failed to delete section.');
@@ -229,15 +243,18 @@ export default function EditNotePage() {
     }
   };
 
-  const handlePublish = async () => {
+  const triggerPublish = () => {
     if (sections.length === 0) {
       setError('You must add at least one section before publishing.');
       return;
     }
-    
-    if (!confirm('Are you ready to publish this note? It will become publicly visible.')) return;
+    setPublishModalOpen(true);
+  };
+
+  const handleConfirmPublish = async () => {
     setSaving(true);
     setError('');
+    setPublishModalOpen(false);
 
     try {
       const res = await axios.patch(
@@ -342,7 +359,7 @@ export default function EditNotePage() {
           <div className="flex items-center gap-3 flex-wrap">
             {note.status === 'DRAFT' && (
               <button
-                onClick={handlePublish}
+                onClick={triggerPublish}
                 disabled={saving}
                 className="btn-primary bg-emerald-600 hover:bg-emerald-500 font-bold"
                 style={{ background: 'var(--gradient-accent)' }}
@@ -636,7 +653,7 @@ export default function EditNotePage() {
                               ✏️
                             </button>
                             <button
-                              onClick={() => handleDeleteSection(section.id)}
+                              onClick={() => triggerDeleteSection(section.id)}
                               className="p-1.5 rounded hover:bg-gray-800 text-red-400"
                               title="Delete Section"
                             >
@@ -815,6 +832,73 @@ export default function EditNotePage() {
           </div>
         </div>
       </div>
+
+      {/* Confirm Section Deletion Modal */}
+      <Modal
+        isOpen={deleteSecModalOpen}
+        onClose={() => {
+          if (!saving) {
+            setDeleteSecModalOpen(false);
+            setSectionIdToDelete(null);
+          }
+        }}
+        title="Delete Content Section"
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setDeleteSecModalOpen(false);
+                setSectionIdToDelete(null);
+              }}
+              disabled={saving}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDeleteSection}
+              disabled={saving}
+            >
+              {saving ? 'Deleting...' : 'Delete Section'}
+            </Button>
+          </>
+        }
+      >
+        <p>Are you sure you want to delete this section block? This action cannot be undone.</p>
+      </Modal>
+
+      {/* Confirm Note Publication Modal */}
+      <Modal
+        isOpen={publishModalOpen}
+        onClose={() => {
+          if (!saving) {
+            setPublishModalOpen(false);
+          }
+        }}
+        title="Publish Note"
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => setPublishModalOpen(false)}
+              disabled={saving}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleConfirmPublish}
+              disabled={saving}
+              className="bg-emerald-600 hover:bg-emerald-500 font-bold text-white"
+            >
+              {saving ? 'Publishing...' : 'Publish'}
+            </Button>
+          </>
+        }
+      >
+        <p>Are you ready to publish this note? It will become publicly visible to other developers on the platform.</p>
+      </Modal>
     </main>
   );
 }

@@ -97,9 +97,18 @@ export default function CodeBlock({ language = 'javascript', content }) {
       </div>
 
       {/* Code content */}
-      <pre style={{ margin: 0, padding: '20px', overflowX: 'auto', fontFamily: "'JetBrains Mono', 'Fira Code', monospace", fontSize: '0.875rem', lineHeight: '1.7' }}>
-        <code ref={codeRef} className={`language-${language}`}>{content}</code>
-      </pre>
+      <div className="flex font-mono text-[13px] leading-[1.5]" style={{ padding: '12px 0', backgroundColor: 'var(--color-bg-secondary)' }}>
+        {/* Line Numbers Column */}
+        <div className="select-none text-right text-[var(--color-text-secondary)] pr-3 border-r border-[var(--color-border)] mr-3" style={{ minWidth: '2.5rem', opacity: 0.5, userSelect: 'none' }}>
+          {content.trimEnd().split('\n').map((_, index) => (
+            <div key={index} style={{ height: '1.5em' }}>{index + 1}</div>
+          ))}
+        </div>
+        {/* Code Column */}
+        <pre style={{ margin: 0, padding: 0, overflowX: 'auto', flex: 1, background: 'transparent', border: 'none' }}>
+          <code ref={codeRef} className={`language-${language}`} style={{ padding: 0, display: 'block', lineHeight: '1.5em', background: 'transparent' }}>{content}</code>
+        </pre>
+      </div>
     </div>
   );
 }

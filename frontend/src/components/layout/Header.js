@@ -14,6 +14,20 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [density, setDensity] = useState('comfortable');
+
+  useEffect(() => {
+    const savedDensity = localStorage.getItem('recallstack-density') || 'comfortable';
+    setDensity(savedDensity);
+    document.documentElement.setAttribute('data-density', savedDensity);
+  }, []);
+
+  const changeDensity = (d) => {
+    setDensity(d);
+    document.documentElement.setAttribute('data-density', d);
+    localStorage.setItem('recallstack-density', d);
+  };
+  
   const [searchQuery, setSearchQuery] = useState('');
   
   const dropdownRef = useRef(null);
@@ -137,6 +151,29 @@ export default function Header() {
                     Bookmarks
                   </Link>
                   <hr className="border-[var(--color-border)] my-1" />
+                  
+                  {/* Density controls in dropdown */}
+                  <div className="px-4 py-1.5 text-[var(--color-text-secondary)] flex flex-col gap-1">
+                    <span className="text-[10px] uppercase font-bold tracking-wider">Density</span>
+                    <div className="flex bg-[var(--color-bg)] border border-[var(--color-border)] rounded overflow-hidden mt-1">
+                      {['comfortable', 'compact', 'spacious'].map(d => (
+                        <button
+                          key={d}
+                          onClick={() => changeDensity(d)}
+                          type="button"
+                          className={`flex-1 py-1 text-[10px] text-center capitalize transition-colors ${
+                            density === d
+                              ? 'bg-[var(--color-primary)] text-white font-semibold'
+                              : 'text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)]'
+                          }`}
+                        >
+                          {d === 'comfortable' ? 'Comfy' : d === 'compact' ? 'Comp' : 'Space'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <hr className="border-[var(--color-border)] my-1" />
                   <button 
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-[var(--color-error)] hover:bg-[var(--color-error)]/10 font-semibold"
@@ -154,6 +191,44 @@ export default function Header() {
               <Link href="/register" className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-1.5 text-xs font-semibold rounded-[4px] sm:rounded-[6px] transition-all">
                 Sign Up
               </Link>
+              
+              {/* Preferences Cog Trigger */}
+              <div className="relative flex items-center" ref={dropdownRef}>
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="p-1.5 rounded bg-[var(--color-bg-secondary)] hover:bg-[var(--color-border)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-all focus:ring-2 focus:ring-[var(--color-primary)]/50"
+                  aria-label="Preferences"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </button>
+
+                {dropdownOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-48 rounded bg-[var(--color-bg-secondary)] border border-[var(--color-border)] shadow-xl py-2.5 text-xs z-50">
+                    <div className="px-4 py-1 text-[var(--color-text-secondary)] flex flex-col gap-1">
+                      <span className="text-[10px] uppercase font-bold tracking-wider">Density</span>
+                      <div className="flex bg-[var(--color-bg)] border border-[var(--color-border)] rounded overflow-hidden mt-1">
+                        {['comfortable', 'compact', 'spacious'].map(d => (
+                          <button
+                            key={d}
+                            onClick={() => changeDensity(d)}
+                            type="button"
+                            className={`flex-1 py-1 text-[10px] text-center capitalize transition-colors ${
+                              density === d
+                                ? 'bg-[var(--color-primary)] text-white font-semibold'
+                                : 'text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)]'
+                            }`}
+                          >
+                            {d === 'comfortable' ? 'Comfy' : d === 'compact' ? 'Comp' : 'Space'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -258,6 +333,27 @@ export default function Header() {
                 </Link>
               </div>
             )}
+            
+            {/* Density Selector in Mobile Menu */}
+            <div className="mt-4 pt-4 border-t border-[var(--color-border)] px-1">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-[var(--color-text-secondary)]">Density</span>
+              <div className="flex bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded overflow-hidden mt-1.5">
+                {['comfortable', 'compact', 'spacious'].map(d => (
+                  <button
+                    key={d}
+                    onClick={() => changeDensity(d)}
+                    type="button"
+                    className={`flex-1 py-1.5 text-[10px] text-center capitalize transition-colors ${
+                      density === d
+                        ? 'bg-[var(--color-primary)] text-white font-semibold'
+                        : 'text-[var(--color-text-primary)] hover:bg-[var(--color-border)]'
+                    }`}
+                  >
+                    {d}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}

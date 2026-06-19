@@ -133,9 +133,9 @@ export default async function NotePage({ params }) {
       <JsonLd schema={jsonLdSchema} />
       <main className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
         <div className="max-w-6xl mx-auto px-6 py-12">
-          <div className="flex gap-8">
+          <div className="flex gap-8 justify-between">
             {/* Main Content */}
-            <article className="flex-1 min-w-0">
+            <article className="flex-1 min-w-0 max-w-[700px]">
               {/* Breadcrumb */}
               <nav className="flex items-center gap-2 text-sm mb-8 fade-in flex-wrap" style={{ color: 'var(--color-text-dim)' }} aria-label="Breadcrumb">
                 <Link href="/" className="hover:underline" style={{ color: 'var(--color-primary)' }}>Home</Link>
@@ -194,38 +194,40 @@ export default async function NotePage({ params }) {
                     id={`section-${section.id}`}
                     className={`mb-10 fade-in fade-in-delay-${Math.min(index + 1, 4)}`}
                   >
-                    <h2 className="text-2xl font-bold mb-4" style={{ color: 'white' }}>{section.title}</h2>
+                    <h2 className="text-2xl font-bold mt-8 mb-3" style={{ color: 'white' }}>{section.title}</h2>
 
                     {section.contentType === 'TEXT' && (
-                      <div className="whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--color-text)' }}>
+                      <div className="whitespace-pre-wrap leading-relaxed mb-3" style={{ color: 'var(--color-text-primary)' }}>
                         {section.content}
                       </div>
                     )}
 
                     {section.contentType === 'CODE' && (
-                      <CodeBlock language={section.language} content={section.content} />
+                      <div className="my-4">
+                        <CodeBlock language={section.language} content={section.content} />
+                      </div>
                     )}
 
                     {section.contentType === 'EXAMPLE' && (
-                      <div className="rounded-xl p-5" style={{ background: 'rgba(36, 166, 112, 0.08)', borderLeft: '3px solid var(--color-accent)' }}>
+                      <div className="rounded-xl p-5 mb-3" style={{ background: 'rgba(36, 166, 112, 0.08)', borderLeft: '3px solid var(--color-accent)' }}>
                         <div className="flex items-center gap-2 mb-3">
                           <span className="text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>Example</span>
                         </div>
-                        <div className="whitespace-pre-wrap" style={{ color: 'var(--color-text)' }}>
+                        <div className="whitespace-pre-wrap" style={{ color: 'var(--color-text-primary)' }}>
                           {section.content}
                         </div>
                       </div>
                     )}
 
                     {section.contentType === 'IMAGE' && (
-                      <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--color-border)' }}>
+                      <div className="rounded-xl overflow-hidden mb-3" style={{ border: '1px solid var(--color-border)' }}>
                         <img src={section.content} alt={section.title} className="w-full" />
                       </div>
                     )}
 
                     {section.contentType === 'DIAGRAM' && (
-                      <div className="rounded-xl p-5 font-mono text-sm overflow-x-auto" style={{ background: 'var(--color-bg-elevated)', border: '1px solid var(--color-border)' }}>
-                        <pre className="whitespace-pre" style={{ color: 'var(--color-text)' }}>{section.content}</pre>
+                      <div className="rounded-xl p-5 font-mono text-sm overflow-x-auto mb-3" style={{ background: 'var(--color-bg-elevated)', border: '1px solid var(--color-border)' }}>
+                        <pre className="whitespace-pre" style={{ color: 'var(--color-text-primary)' }}>{section.content}</pre>
                       </div>
                     )}
                   </section>

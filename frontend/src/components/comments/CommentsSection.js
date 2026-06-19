@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import useAuth from '@/hooks/useAuth';
+import Modal from '@/components/common/Modal';
+import Button from '@/components/common/Button';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -16,6 +18,9 @@ export default function CommentsSection({ noteId, noteAuthorId }) {
   const [replyText, setReplyText] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [commentIdToDelete, setCommentIdToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Fetch comments tree
   const fetchComments = async () => {
@@ -71,13 +76,23 @@ export default function CommentsSection({ noteId, noteAuthorId }) {
     }
   };
 
-  const handleDeleteComment = async (commentId) => {
-    if (!confirm('Are you sure you want to delete this comment?')) return;
+  const triggerDeleteComment = (commentId) => {
+    setCommentIdToDelete(commentId);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDeleteComment = async () => {
+    if (!commentIdToDelete) return;
+    setDeleting(true);
     try {
-      await axios.delete(`${API_URL}/comments/${commentId}`, { headers: getAuthHeaders() });
+      await axios.delete(`${API_URL}/comments/${commentIdToDelete}`, { headers: getAuthHeaders() });
+      setDeleteModalOpen(false);
+      setCommentIdToDelete(null);
       fetchComments();
     } catch (err) {
       console.error('Failed to delete comment:', err);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -172,7 +187,7 @@ export default function CommentsSection({ noteId, noteAuthorId }) {
 
           {(isCommentOwner || canModerate) && (
             <button
-              onClick={() => handleDeleteComment(comment.id)}
+              onClick={() => triggerDeleteComment(comment.id)}
               className="text-red-500 hover:underline"
             >
               Delete
@@ -271,6 +286,40 @@ export default function CommentsSection({ noteId, noteAuthorId }) {
           {comments.map(comment => renderComment(comment, 0))}
         </div>
       )}
+
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          if (!deleting) {
+            setDeleteModalOpen(false);
+            setCommentIdToDelete(null);
+          }
+        }}
+        title="Delete Comment"
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setDeleteModalOpen(false);
+                setCommentIdToDelete(null);
+              }}
+              disabled={deleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDeleteComment}
+              disabled={deleting}
+            >
+              {deleting ? 'Deleting...' : 'Delete'}
+            </Button>
+          </>
+        }
+      >
+        <p>Are you sure you want to delete this comment? This action cannot be undone.</p>
+      </Modal>
     </section>
   );
 }

@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import useAuth from '@/hooks/useAuth';
+import Modal from '@/components/common/Modal';
+import Button from '@/components/common/Button';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -14,6 +16,9 @@ export default function MyLearningsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('ALL'); // ALL, DRAFT, PUBLISHED
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [noteIdToDelete, setNoteIdToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchMyNotes = async () => {
     if (!token) return;
@@ -42,20 +47,28 @@ export default function MyLearningsPage() {
     }
   }, [authLoading, isAuthenticated, token]);
 
-  const handleDelete = async (e, noteId) => {
+  const triggerDeleteConfirm = (e, noteId) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!confirm('Are you sure you want to permanently delete this note? This action cannot be undone.')) return;
-    
+    setNoteIdToDelete(noteId);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!noteIdToDelete) return;
+    setDeleting(true);
     try {
-      await axios.delete(`${API_URL}/notes/${noteId}`, {
+      await axios.delete(`${API_URL}/notes/${noteIdToDelete}`, {
         headers: getAuthHeaders(),
       });
-      // Remove from local state
-      setNotes(prev => prev.filter(note => note.id !== noteId));
+      setNotes(prev => prev.filter(note => note.id !== noteIdToDelete));
+      setDeleteModalOpen(false);
+      setNoteIdToDelete(null);
     } catch (err) {
       console.error('Failed to delete note:', err);
       alert(err.response?.data?.error || 'Failed to delete note');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -243,7 +256,7 @@ export default function MyLearningsPage() {
                       </Link>
                     )}
                     <button
-                      onClick={(e) => handleDelete(e, note.id)}
+                      onClick={(e) => triggerDeleteConfirm(e, note.id)}
                       className="p-1.5 rounded hover:bg-gray-800 text-red-500 hover:text-red-400 transition-colors"
                       title="Delete Note"
                     >
@@ -258,6 +271,40 @@ export default function MyLearningsPage() {
           </div>
         )}
       </div>
+
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          if (!deleting) {
+            setDeleteModalOpen(false);
+            setNoteIdToDelete(null);
+          }
+        }}
+        title="Confirm Note Deletion"
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setDeleteModalOpen(false);
+                setNoteIdToDelete(null);
+              }}
+              disabled={deleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={deleting}
+            >
+              {deleting ? 'Deleting...' : 'Delete Note'}
+            </Button>
+          </>
+        }
+      >
+        <p>Are you sure you want to permanently delete this note? This action cannot be undone and the note will be removed from your workspace.</p>
+      </Modal>
     </main>
   );
 }

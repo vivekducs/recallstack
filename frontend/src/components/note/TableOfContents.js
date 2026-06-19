@@ -30,7 +30,7 @@ export default function TableOfContents({ sections }) {
 
   return (
     <aside className="hidden lg:block w-64 flex-shrink-0">
-      <div className="sticky top-8">
+      <div className="sticky top-20">
         <nav className="glass-card p-5" aria-label="Table of Contents">
           <h3 className="text-sm font-bold mb-4 uppercase tracking-wider" style={{ color: 'var(--color-text-dim)' }}>
             Contents
