@@ -1,5 +1,6 @@
 // backend/src/services/note.service.js
 const prisma = require('../config/database');
+const emailService = require('./email.service');
 
 class NoteService {
   async getNotesByTopic(topicId) {
@@ -285,8 +286,13 @@ class NoteService {
       throw err;
     }
 
-    const note = await prisma.note.findUnique({ where: { id } });
+    const note = await prisma.note.findUnique({ 
+      where: { id },
+      include: { author: true }
+    });
     if (!note) throw new Error('Note not found');
+
+    const rater = await prisma.user.findUnique({ where: { id: userId } });
 
     await prisma.noteRating.upsert({
       where: { userId_noteId: { userId, noteId: id } },
@@ -308,6 +314,11 @@ class NoteService {
       data: { averageRating: newAverage, ratingCount: newCount },
       select: { averageRating: true, ratingCount: true }
     });
+
+    if (rater && note.authorId !== userId) {
+      emailService.sendRatingNotification(note.author, rater, note.title, rating)
+        .catch(err => console.error('Rating email failed:', err));
+    }
 
     return {
       averageRating: updatedNote.averageRating,

@@ -88,6 +88,18 @@ class CommentService {
         .catch(err => console.error('Email failed:', err));
     }
 
+    if (parentId) {
+      prisma.comment.findUnique({
+        where: { id: parentId },
+        include: { user: true }
+      }).then(parentComment => {
+        if (parentComment && parentComment.userId !== userId) {
+          emailService.sendReplyNotification(parentComment.user, comment.user, note.title, comment.content)
+            .catch(err => console.error('Reply email failed:', err));
+        }
+      }).catch(err => console.error('Failed to fetch parent comment for notification:', err));
+    }
+
     return comment;
   }
 
