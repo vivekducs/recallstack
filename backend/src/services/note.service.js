@@ -1,5 +1,7 @@
 // backend/src/services/note.service.js
 const prisma = require('../config/database');
+const noteRepository = require('../repositories/note.repository');
+const userRepository = require('../repositories/user.repository');
 const emailService = require('./email.service');
 const slugify = require('../utils/slugify');
 
@@ -8,7 +10,7 @@ class NoteService {
     const topic = await prisma.topic.findUnique({ where: { id: topicId } });
     if (!topic) throw new Error('Topic not found');
 
-    return await prisma.note.findMany({
+    return await noteRepository.findMany({
       where: { topicId, status: 'PUBLISHED' },
       select: {
         id: true,
@@ -26,7 +28,7 @@ class NoteService {
   }
 
   async getMyNotes(userId) {
-    return await prisma.note.findMany({
+    return await noteRepository.findMany({
       where: { authorId: userId },
       include: {
         topic: {
@@ -42,18 +44,15 @@ class NoteService {
   }
 
   async getNoteById(id, user) {
-    const note = await prisma.note.findUnique({
-      where: { id },
-      include: {
-        author: { select: { id: true, name: true, username: true } },
-        sections: { orderBy: { order: 'asc' } },
-        topic: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            subject: { select: { id: true, name: true, slug: true } }
-          }
+    const note = await noteRepository.findById(id, {
+      author: { select: { id: true, name: true, username: true } },
+      sections: { orderBy: { order: 'asc' } },
+      topic: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          subject: { select: { id: true, name: true, slug: true } }
         }
       }
     });
@@ -75,10 +74,7 @@ class NoteService {
       today.setUTCHours(0, 0, 0, 0);
 
       await prisma.$transaction([
-        prisma.note.update({
-          where: { id },
-          data: { views: { increment: 1 } }
-        }),
+        noteRepository.update(id, { views: { increment: 1 } }),
         prisma.noteAnalyticsDaily.upsert({
           where: { noteId_date: { noteId: id, date: today } },
           update: { views: { increment: 1 } },
@@ -103,23 +99,21 @@ class NoteService {
 
     const slug = slugify(title);
 
-    return await prisma.note.create({
-      data: {
-        title,
-        slug,
-        excerpt,
-        difficulty: difficulty || 'MEDIUM',
-        tags: tags || [],
-        topicId,
-        authorId: userId,
-        status: 'DRAFT',
-        readingTime: 0
-      }
+    return await noteRepository.create({
+      title,
+      slug,
+      excerpt,
+      difficulty: difficulty || 'MEDIUM',
+      tags: tags || [],
+      topicId,
+      authorId: userId,
+      status: 'DRAFT',
+      readingTime: 0
     });
   }
 
   async updateNote(id, userId, role, data) {
-    const note = await prisma.note.findUnique({ where: { id } });
+    const note = await noteRepository.findById(id);
     if (!note) throw new Error('Note not found');
     if (note.authorId !== userId && role !== 'ADMIN') {
       const err = new Error('Cannot update this note');
@@ -136,16 +130,12 @@ class NoteService {
     if (data.difficulty !== undefined) updateData.difficulty = data.difficulty;
     if (data.tags !== undefined) updateData.tags = data.tags;
 
-    return await prisma.note.update({
-      where: { id },
-      data: updateData
-    });
+    return await noteRepository.update(id, updateData);
   }
 
   async publishNote(id, userId, role) {
-    const note = await prisma.note.findUnique({
-      where: { id },
-      include: { topic: { select: { subjectId: true } } }
+    const note = await noteRepository.findById(id, {
+      topic: { select: { subjectId: true } }
     });
 
     if (!note) throw new Error('Note not found');
@@ -161,10 +151,7 @@ class NoteService {
     }
 
     const result = await prisma.$transaction([
-      prisma.note.update({
-        where: { id },
-        data: { status: 'PUBLISHED', publishedAt: new Date() }
-      }),
+      noteRepository.update(id, { status: 'PUBLISHED', publishedAt: new Date() }),
       prisma.topic.update({
         where: { id: note.topicId },
         data: { notesCount: { increment: 1 }, lastUpdated: new Date() }
@@ -179,9 +166,8 @@ class NoteService {
   }
 
   async deleteNote(id, userId, role) {
-    const note = await prisma.note.findUnique({
-      where: { id },
-      include: { topic: { select: { subjectId: true } } }
+    const note = await noteRepository.findById(id, {
+      topic: { select: { subjectId: true } }
     });
 
     if (!note) throw new Error('Note not found');
@@ -191,7 +177,7 @@ class NoteService {
       throw err;
     }
 
-    const updateQueries = [prisma.note.delete({ where: { id } })];
+    const updateQueries = [noteRepository.delete(id)];
 
     if (note.status === 'PUBLISHED') {
       updateQueries.push(
@@ -211,9 +197,8 @@ class NoteService {
   }
 
   async getNoteAnalytics(id, userId, role) {
-    const note = await prisma.note.findUnique({
-      where: { id },
-      include: { _count: { select: { comments: true } } }
+    const note = await noteRepository.findById(id, {
+      _count: { select: { comments: true } }
     });
 
     if (!note) throw new Error('Note not found');
@@ -233,10 +218,7 @@ class NoteService {
   }
 
   async getNoteAnalyticsDaily(id, userId, role, days = 30) {
-    const note = await prisma.note.findUnique({
-      where: { id },
-      select: { authorId: true, status: true }
-    });
+    const note = await noteRepository.findById(id);
 
     if (!note) throw new Error('Note not found');
     if (note.authorId !== userId && role !== 'ADMIN') {
@@ -258,11 +240,7 @@ class NoteService {
   }
 
   async getNoteRating(id, userId) {
-    const note = await prisma.note.findUnique({
-      where: { id },
-      select: { averageRating: true, ratingCount: true }
-    });
-
+    const note = await noteRepository.findById(id);
     if (!note) throw new Error('Note not found');
 
     let userRating = null;
@@ -287,13 +265,10 @@ class NoteService {
       throw err;
     }
 
-    const note = await prisma.note.findUnique({ 
-      where: { id },
-      include: { author: true }
-    });
+    const note = await noteRepository.findById(id, { author: true });
     if (!note) throw new Error('Note not found');
 
-    const rater = await prisma.user.findUnique({ where: { id: userId } });
+    const rater = await userRepository.findById(userId);
 
     await prisma.noteRating.upsert({
       where: { userId_noteId: { userId, noteId: id } },
@@ -310,10 +285,12 @@ class NoteService {
     const newAverage = aggregations._avg.rating || 0;
     const newCount = aggregations._count.rating || 0;
 
-    const updatedNote = await prisma.note.update({
-      where: { id },
-      data: { averageRating: newAverage, ratingCount: newCount },
-      select: { averageRating: true, ratingCount: true }
+    const updatedNote = await noteRepository.update(id, {
+      averageRating: newAverage,
+      ratingCount: newCount
+    }, {
+      averageRating: true,
+      ratingCount: true
     });
 
     if (rater && note.authorId !== userId) {
@@ -342,10 +319,12 @@ class NoteService {
     const newAverage = aggregations._avg.rating || 0;
     const newCount = aggregations._count.rating || 0;
 
-    const updatedNote = await prisma.note.update({
-      where: { id },
-      data: { averageRating: newAverage, ratingCount: newCount },
-      select: { averageRating: true, ratingCount: true }
+    const updatedNote = await noteRepository.update(id, {
+      averageRating: newAverage,
+      ratingCount: newCount
+    }, {
+      averageRating: true,
+      ratingCount: true
     });
 
     return {

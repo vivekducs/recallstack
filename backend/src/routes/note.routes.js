@@ -3,6 +3,8 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const { authenticateToken, optionalAuth } = require('../middleware/auth.middleware');
+const validate = require('../middleware/validation.middleware');
+const { createNoteSchema, updateNoteSchema, rateNoteSchema } = require('../validators/note.validator');
 const noteController = require('../controllers/note.controller');
 
 // GET /api/topics/:topicId/notes (Public)
@@ -15,10 +17,10 @@ router.get('/user/my-notes', authenticateToken, noteController.getMyNotes);
 router.get('/:id', optionalAuth, noteController.getNoteById);
 
 // POST /api/notes (Authenticated users)
-router.post('/', authenticateToken, noteController.createNote);
+router.post('/', authenticateToken, validate(createNoteSchema), noteController.createNote);
 
 // PUT /api/notes/:id (Owner or Admin)
-router.put('/:id', authenticateToken, noteController.updateNote);
+router.put('/:id', authenticateToken, validate(updateNoteSchema), noteController.updateNote);
 
 // PATCH /api/notes/:id/publish (Owner or Admin)
 router.patch('/:id/publish', authenticateToken, noteController.publishNote);
@@ -36,7 +38,7 @@ router.get('/:id/analytics/daily', authenticateToken, noteController.getNoteAnal
 router.get('/:id/rating', optionalAuth, noteController.getNoteRating);
 
 // POST /api/notes/:id/rate (Authenticated - Add or update rating)
-router.post('/:id/rate', authenticateToken, noteController.rateNote);
+router.post('/:id/rate', authenticateToken, validate(rateNoteSchema), noteController.rateNote);
 
 // DELETE /api/notes/:id/rate (Authenticated - Remove rating)
 router.delete('/:id/rate', authenticateToken, noteController.deleteNoteRating);

@@ -1,11 +1,11 @@
 // backend/src/services/revision.service.js
 const prisma = require('../config/database');
+const revisionRepository = require('../repositories/revision.repository');
+const noteRepository = require('../repositories/note.repository');
 
 class RevisionService {
   async getRevisions(noteId, user) {
-    const note = await prisma.note.findUnique({
-      where: { id: noteId }
-    });
+    const note = await noteRepository.findById(noteId);
 
     if (!note) throw new Error('Note not found');
 
@@ -17,7 +17,7 @@ class RevisionService {
       }
     }
 
-    return await prisma.revisionHistory.findMany({
+    return await revisionRepository.findMany({
       where: { noteId },
       orderBy: { revisedAt: 'desc' },
       select: {
@@ -37,7 +37,7 @@ class RevisionService {
   }
 
   async getRevisionSnapshot(noteId, revisionId, user) {
-    const note = await prisma.note.findUnique({ where: { id: noteId } });
+    const note = await noteRepository.findById(noteId);
     if (!note) throw new Error('Note not found');
 
     if (note.status === 'DRAFT') {
@@ -48,9 +48,7 @@ class RevisionService {
       }
     }
 
-    const revision = await prisma.revisionHistory.findUnique({
-      where: { id: revisionId }
-    });
+    const revision = await revisionRepository.findById(revisionId);
 
     if (!revision || revision.noteId !== noteId) {
       const err = new Error('Revision not found');
@@ -62,7 +60,7 @@ class RevisionService {
   }
 
   async restoreRevision(noteId, revisionId, user) {
-    const note = await prisma.note.findUnique({ where: { id: noteId } });
+    const note = await noteRepository.findById(noteId);
     if (!note) throw new Error('Note not found');
 
     if (note.authorId !== user.userId && user.role !== 'ADMIN') {
@@ -71,9 +69,7 @@ class RevisionService {
       throw err;
     }
 
-    const revision = await prisma.revisionHistory.findUnique({
-      where: { id: revisionId }
-    });
+    const revision = await revisionRepository.findById(revisionId);
 
     if (!revision || revision.noteId !== noteId) {
       const err = new Error('Revision not found');

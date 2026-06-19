@@ -2,16 +2,18 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const { authenticateToken, optionalAuth } = require('../middleware/auth.middleware');
+const validate = require('../middleware/validation.middleware');
+const { createCommentSchema, updateCommentSchema } = require('../validators/comment.validator');
 const commentController = require('../controllers/comment.controller');
 
 // GET /api/notes/:noteId/comments (Public/Optional Auth - get comment tree)
 router.get('/', optionalAuth, commentController.getCommentsByNote);
 
 // POST /api/notes/:noteId/comments (Authenticated - post a comment or reply)
-router.post('/', authenticateToken, commentController.createComment);
+router.post('/', authenticateToken, validate(createCommentSchema), commentController.createComment);
 
 // PUT /api/comments/:id (Authenticated - edit comment content)
-router.put('/:id', authenticateToken, commentController.updateComment);
+router.put('/:id', authenticateToken, validate(updateCommentSchema), commentController.updateComment);
 
 // DELETE /api/comments/:id (Authenticated - delete comment)
 router.delete('/:id', authenticateToken, commentController.deleteComment);

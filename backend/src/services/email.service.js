@@ -1,5 +1,7 @@
 // backend/src/services/email.service.js
 const nodemailer = require('nodemailer');
+const fs = require('fs/promises');
+const path = require('path');
 const prisma = require('../config/database');
 const emailConfig = require('../config/email');
 
@@ -16,6 +18,44 @@ class EmailService {
     this.defaultFrom = emailConfig.defaults.from;
   }
 
+  async getTemplate(templateName, replacements = {}) {
+    try {
+      const templatePath = path.join(__dirname, '..', 'templates', templateName);
+      let content = await fs.readFile(templatePath, 'utf8');
+      
+      for (const [key, value] of Object.entries(replacements)) {
+        content = content.replace(new RegExp(`{{${key}}}`, 'g'), value !== undefined && value !== null ? value : '');
+      }
+      
+      return content;
+    } catch (error) {
+      console.error(`[EmailService] Error loading template ${templateName}:`, error);
+      throw error;
+    }
+  }
+
+  async sendWelcomeEmail(user) {
+    try {
+      const html = await this.getTemplate('welcome-email.html', {
+        name: user.name
+      });
+
+      const info = await this.transporter.sendMail({
+        from: this.defaultFrom,
+        to: user.email,
+        subject: 'Welcome to RecallStack!',
+        html
+      });
+
+      console.log(`\n========== EMAIL MOCK SENT TO: ${user.email} ==========`);
+      console.log(`Subject: Welcome to RecallStack!`);
+      console.log(info.message.toString());
+      console.log(`==========================================================\n`);
+    } catch (err) {
+      console.error('[EmailService] Failed to send welcome email:', err);
+    }
+  }
+
   async sendCommentNotification(noteAuthor, commentAuthor, noteTitle, commentContent) {
     // Check preferences
     const prefs = noteAuthor.emailPreferences || {};
@@ -24,20 +64,14 @@ class EmailService {
       return;
     }
 
-    const html = `
-      <h2>New comment on "${noteTitle}"</h2>
-      <p>Hi ${noteAuthor.name},</p>
-      <p><strong>${commentAuthor.name}</strong> left a new comment on your note:</p>
-      <blockquote style="border-left: 4px solid #ddd; padding-left: 10px; color: #555;">
-        ${commentContent}
-      </blockquote>
-      <br/>
-      <p><a href="http://localhost:3000/dashboard">View Comment & Manage Note</a></p>
-      <hr/>
-      <p style="font-size: 12px; color: #888;">Manage your notification preferences in your <a href="http://localhost:3000/dashboard/settings">Settings</a>.</p>
-    `;
-
     try {
+      const html = await this.getTemplate('comment-notification.html', {
+        noteTitle,
+        noteAuthorName: noteAuthor.name,
+        commentAuthorName: commentAuthor.name,
+        commentContent
+      });
+
       const info = await this.transporter.sendMail({
         from: this.defaultFrom,
         to: noteAuthor.email,
@@ -51,7 +85,7 @@ class EmailService {
       console.log(`==========================================================\n`);
 
     } catch (err) {
-      console.error('[EmailService] Failed to send email:', err);
+      console.error('[EmailService] Failed to send comment email:', err);
     }
   }
 
@@ -62,20 +96,14 @@ class EmailService {
       return;
     }
 
-    const html = `
-      <h2>New reply to your comment on "${noteTitle}"</h2>
-      <p>Hi ${commentAuthor.name},</p>
-      <p><strong>${replyAuthor.name}</strong> replied to your comment:</p>
-      <blockquote style="border-left: 4px solid #ddd; padding-left: 10px; color: #555;">
-        ${replyContent}
-      </blockquote>
-      <br/>
-      <p><a href="http://localhost:3000/dashboard">View Comment & Manage Note</a></p>
-      <hr/>
-      <p style="font-size: 12px; color: #888;">Manage your notification preferences in your <a href="http://localhost:3000/dashboard/settings">Settings</a>.</p>
-    `;
-
     try {
+      const html = await this.getTemplate('reply-notification.html', {
+        noteTitle,
+        commentAuthorName: commentAuthor.name,
+        replyAuthorName: replyAuthor.name,
+        replyContent
+      });
+
       const info = await this.transporter.sendMail({
         from: this.defaultFrom,
         to: commentAuthor.email,
@@ -99,17 +127,14 @@ class EmailService {
       return;
     }
 
-    const html = `
-      <h2>Your note "${noteTitle}" received a rating!</h2>
-      <p>Hi ${noteAuthor.name},</p>
-      <p><strong>${rater.name}</strong> rated your note with <strong>${rating} stars</strong>.</p>
-      <br/>
-      <p><a href="http://localhost:3000/dashboard">Go to Dashboard</a></p>
-      <hr/>
-      <p style="font-size: 12px; color: #888;">Manage your notification preferences in your <a href="http://localhost:3000/dashboard/settings">Settings</a>.</p>
-    `;
-
     try {
+      const html = await this.getTemplate('rating-notification.html', {
+        noteTitle,
+        noteAuthorName: noteAuthor.name,
+        raterName: rater.name,
+        rating
+      });
+
       const info = await this.transporter.sendMail({
         from: this.defaultFrom,
         to: noteAuthor.email,
@@ -169,38 +194,32 @@ class EmailService {
       // If no new activities, don't send anything
       if (newComments.length === 0 && newRatings.length === 0) continue;
 
-      // 3. Construct HTML
-      let html = `
-        <h2>Your RecallStack Daily Digest</h2>
-        <p>Hi ${user.name},</p>
-        <p>Here is a summary of the activity on your notes over the last 24 hours:</p>
-      `;
+      // 3. Construct digest content HTML block
+      let digestContent = '';
 
       if (newComments.length > 0) {
-        html += `<h3>New Comments (${newComments.length})</h3><ul>`;
+        digestContent += `<h3>New Comments (${newComments.length})</h3><ul>`;
         for (const c of newComments) {
-          html += `<li><strong>${c.user.name}</strong> left a comment on "<em>${c.note.title}</em>":<br/>
-          <span style="color: #555;">"${c.content}"</span></li>`;
+          digestContent += `<li><strong>${c.user.name}</strong> left a comment on "<em>${c.note.title}</em>":<br/>
+          <span class="quote">"${c.content}"</span></li>`;
         }
-        html += '</ul>';
+        digestContent += '</ul>';
       }
 
       if (newRatings.length > 0) {
-        html += `<h3>New Ratings (${newRatings.length})</h3><ul>`;
+        digestContent += `<h3>New Ratings (${newRatings.length})</h3><ul>`;
         for (const r of newRatings) {
-          html += `<li><strong>${r.user.name}</strong> rated "<em>${r.note.title}</em>" with <strong>${r.rating} stars</strong>.</li>`;
+          digestContent += `<li><strong>${r.user.name}</strong> rated "<em>${r.note.title}</em>" with <strong>${r.rating} stars</strong>.</li>`;
         }
-        html += '</ul>';
+        digestContent += '</ul>';
       }
 
-      html += `
-        <br/>
-        <p><a href="http://localhost:3000/dashboard">Go to your Dashboard</a></p>
-        <hr/>
-        <p style="font-size: 12px; color: #888;">Manage your notification preferences in your <a href="http://localhost:3000/settings">Settings</a>.</p>
-      `;
-
       try {
+        const html = await this.getTemplate('daily-digest.html', {
+          name: user.name,
+          digestContent
+        });
+
         const info = await this.transporter.sendMail({
           from: this.defaultFrom,
           to: user.email,
@@ -222,3 +241,4 @@ class EmailService {
 }
 
 module.exports = new EmailService();
+

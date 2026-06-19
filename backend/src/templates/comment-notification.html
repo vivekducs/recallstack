@@ -2,23 +2,28 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>New Note Published</title>
+  <title>New Comment on RecallStack</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px; }
     .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 8px; border: 1px solid #e5e7eb; }
-    h1 { color: #1f2937; font-size: 24px; margin-top: 0; }
+    h2 { color: #1f2937; margin-top: 0; }
     p { color: #4b5563; font-size: 16px; line-height: 1.5; }
+    blockquote { border-left: 4px solid #4f46e5; padding-left: 15px; margin: 20px 0; color: #374151; font-style: italic; }
     .btn { display: inline-block; background-color: #4f46e5; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 20px; }
     .footer { margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 20px; font-size: 12px; color: #9ca3af; text-align: center; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>New note published: "{{noteTitle}}"</h1>
-    <p>Hi {{name}},</p>
-    <p>A new guide has been added that you might find helpful. Check out the latest content to continue learning.</p>
-    <a href="https://recallstack.vercel.app/learning" class="btn" style="color: #ffffff;">Read Note</a>
+    <h2>New comment on "{{noteTitle}}"</h2>
+    <p>Hi {{noteAuthorName}},</p>
+    <p><strong>{{commentAuthorName}}</strong> left a new comment on your note:</p>
+    <blockquote>
+      {{commentContent}}
+    </blockquote>
+    <a href="https://recallstack.vercel.app/dashboard" class="btn" style="color: #ffffff;">View Comment & Manage Note</a>
     <div class="footer">
+      <p>Manage your notification preferences in your Settings.</p>
       <p>RecallStack Notifier &copy; 2026. All rights reserved.</p>
     </div>
   </div>

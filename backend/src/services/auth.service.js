@@ -1,5 +1,6 @@
 // backend/src/services/auth.service.js
-const prisma = require('../config/database');
+const userRepository = require('../repositories/user.repository');
+const emailService = require('./email.service');
 const { hashPassword, comparePassword } = require('../utils/bcrypt');
 const { generateToken } = require('../utils/jwt');
 
@@ -19,14 +20,14 @@ class AuthService {
       throw err;
     }
 
-    const existingEmail = await prisma.user.findUnique({ where: { email } });
+    const existingEmail = await userRepository.findByEmail(email);
     if (existingEmail) {
       const err = new Error('Email already registered');
       err.status = 409;
       throw err;
     }
 
-    const existingUsername = await prisma.user.findUnique({ where: { username } });
+    const existingUsername = await userRepository.findByUsername(username);
     if (existingUsername) {
       const err = new Error('Username already taken');
       err.status = 409;
@@ -35,8 +36,17 @@ class AuthService {
 
     const passwordHash = await hashPassword(password);
 
-    const user = await prisma.user.create({
-      data: { name, username, email, passwordHash, role: 'USER' }
+    const user = await userRepository.create({
+      name,
+      username,
+      email,
+      passwordHash,
+      role: 'USER'
+    });
+
+    // Send welcome email asynchronously
+    emailService.sendWelcomeEmail(user).catch(err => {
+      console.error('[AuthService] Welcome email failed to send:', err);
     });
 
     const token = generateToken(user.id, user.role);
@@ -52,7 +62,7 @@ class AuthService {
       throw err;
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await userRepository.findByEmail(email);
     if (!user) {
       const err = new Error('Invalid credentials');
       err.status = 401;
@@ -77,23 +87,19 @@ class AuthService {
   }
 
   async getMe(userId) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        username: true,
-        email: true,
-        avatar: true,
-        bio: true,
-        role: true,
-        createdAt: true,
-        emailPreferences: true
-      }
-    });
-
+    const user = await userRepository.findById(userId);
     if (!user) throw new Error('User not found');
-    return user;
+    return {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      avatar: user.avatar,
+      bio: user.bio,
+      role: user.role,
+      createdAt: user.createdAt,
+      emailPreferences: user.emailPreferences
+    };
   }
 
   async updateProfile(userId, data) {
@@ -110,29 +116,11 @@ class AuthService {
     if (bio !== undefined) updateData.bio = bio;
     if (avatar !== undefined) updateData.avatar = avatar;
 
-    return await prisma.user.update({
-      where: { id: userId },
-      data: updateData,
-      select: {
-        id: true,
-        name: true,
-        username: true,
-        email: true,
-        avatar: true,
-        bio: true,
-        role: true,
-        createdAt: true,
-        emailPreferences: true
-      }
-    });
+    return await userRepository.updateProfile(userId, updateData);
   }
 
   async updatePreferences(userId, preferences) {
-    const updated = await prisma.user.update({
-      where: { id: userId },
-      data: { emailPreferences: preferences },
-      select: { emailPreferences: true }
-    });
+    const updated = await userRepository.updatePreferences(userId, preferences);
     return updated.emailPreferences;
   }
 }

@@ -1,29 +1,27 @@
 // backend/src/services/section.service.js
 const prisma = require('../config/database');
+const sectionRepository = require('../repositories/section.repository');
+const noteRepository = require('../repositories/note.repository');
+const revisionRepository = require('../repositories/revision.repository');
 const { updateNoteReadingTime } = require('../utils/readingTime');
 
 class SectionService {
   async logNoteRevision(noteId, userId) {
     try {
-      const currentSections = await prisma.section.findMany({
+      const currentSections = await sectionRepository.findMany({
         where: { noteId },
         orderBy: { order: 'asc' }
       });
 
       await prisma.$transaction([
-        prisma.revisionHistory.create({
-          data: { 
-            noteId, 
-            userId,
-            snapshot: JSON.parse(JSON.stringify(currentSections))
-          }
+        revisionRepository.create({
+          noteId, 
+          userId,
+          snapshot: JSON.parse(JSON.stringify(currentSections))
         }),
-        prisma.note.update({
-          where: { id: noteId },
-          data: {
-            revisionCount: { increment: 1 },
-            lastRevised: new Date()
-          }
+        noteRepository.update(noteId, {
+          revisionCount: { increment: 1 },
+          lastRevised: new Date()
         })
       ]);
     } catch (err) {
@@ -53,7 +51,7 @@ class SectionService {
       throw err;
     }
 
-    const note = await prisma.note.findUnique({ where: { id: noteId } });
+    const note = await noteRepository.findById(noteId);
     if (!note) {
       const err = new Error('Note not found');
       err.status = 404;
@@ -66,21 +64,19 @@ class SectionService {
       throw err;
     }
 
-    const lastSection = await prisma.section.findFirst({
+    const lastSection = await sectionRepository.findFirst({
       where: { noteId },
       orderBy: { order: 'desc' }
     });
     const nextOrder = lastSection ? lastSection.order + 1 : 0;
 
-    const section = await prisma.section.create({
-      data: {
-        title,
-        content,
-        contentType,
-        language: language || null,
-        noteId,
-        order: nextOrder
-      }
+    const section = await sectionRepository.create({
+      title,
+      content,
+      contentType,
+      language: language || null,
+      noteId,
+      order: nextOrder
     });
 
     await updateNoteReadingTime(noteId);
@@ -92,10 +88,7 @@ class SectionService {
   async updateSection(id, userId, role, data) {
     const { title, content, contentType, language } = data;
 
-    const section = await prisma.section.findUnique({
-      where: { id },
-      include: { note: true }
-    });
+    const section = await sectionRepository.findById(id, { note: true });
 
     if (!section) {
       const err = new Error('Section not found');
@@ -115,10 +108,7 @@ class SectionService {
     if (contentType !== undefined) updateData.contentType = contentType;
     if (language !== undefined) updateData.language = language;
 
-    const updated = await prisma.section.update({
-      where: { id },
-      data: updateData
-    });
+    const updated = await sectionRepository.update(id, updateData);
 
     await updateNoteReadingTime(section.noteId);
     await this.logNoteRevision(section.noteId, userId);
@@ -127,10 +117,7 @@ class SectionService {
   }
 
   async deleteSection(id, userId, role) {
-    const section = await prisma.section.findUnique({
-      where: { id },
-      include: { note: true }
-    });
+    const section = await sectionRepository.findById(id, { note: true });
 
     if (!section) {
       const err = new Error('Section not found');
@@ -144,7 +131,7 @@ class SectionService {
       throw err;
     }
 
-    await prisma.section.delete({ where: { id } });
+    await sectionRepository.delete(id);
 
     await updateNoteReadingTime(section.noteId);
     await this.logNoteRevision(section.noteId, userId);
@@ -159,10 +146,7 @@ class SectionService {
       throw err;
     }
 
-    const section = await prisma.section.findUnique({
-      where: { id },
-      include: { note: true }
-    });
+    const section = await sectionRepository.findById(id, { note: true });
 
     if (!section) {
       const err = new Error('Section not found');
@@ -176,7 +160,7 @@ class SectionService {
       throw err;
     }
 
-    const sections = await prisma.section.findMany({
+    const sections = await sectionRepository.findMany({
       where: { noteId: section.noteId },
       orderBy: { order: 'asc' }
     });
@@ -200,7 +184,7 @@ class SectionService {
     await prisma.$transaction(updates);
     await this.logNoteRevision(section.noteId, userId);
 
-    return await prisma.section.findUnique({ where: { id } });
+    return await sectionRepository.findById(id);
   }
 }
 
