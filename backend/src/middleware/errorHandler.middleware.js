@@ -1,10 +1,11 @@
 // backend/src/middleware/errorHandler.middleware.js
+const logger = require('../utils/logger');
 
 function errorHandler(err, req, res, next) {
-  console.error(`[Error] ${req.method} ${req.url} - Code: ${err.code || 'N/A'} - Message: ${err.message}`);
-  if (process.env.NODE_ENV !== 'production') {
-    console.error(err.stack);
-  }
+  logger.error(`${req.method} ${req.url} - Code: ${err.code || 'N/A'} - Message: ${err.message}`, {
+    stack: err.stack,
+    code: err.code
+  });
 
   // Prisma unique constraint violation (Conflict)
   if (err.code === 'P2002') {
