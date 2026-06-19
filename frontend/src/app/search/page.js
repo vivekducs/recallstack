@@ -1,13 +1,17 @@
 // frontend/src/app/search/page.js
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-export default function SearchPage() {
+function SearchPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [query, setQuery] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('');
@@ -45,38 +49,68 @@ export default function SearchPage() {
         try {
           const res = await axios.get(`${API_URL}/subjects/${foundSubject.id}/topics`);
           setFilteredTopics(res.data);
+
+          // Restore topic from URL if present and valid
+          const urlTopic = searchParams.get('topic') || '';
+          const hasUrlTopic = res.data.some(t => t.slug === urlTopic);
+          if (hasUrlTopic) {
+            setSelectedTopic(urlTopic);
+          } else {
+            setSelectedTopic('');
+          }
         } catch (err) {
           console.error('Failed to load subject topics:', err);
         }
       }
       fetchTopics();
     }
-  }, [selectedSubject, subjects]);
+  }, [selectedSubject, subjects, searchParams]);
+
+  // Synchronize state and trigger search whenever URL params change
+  useEffect(() => {
+    const qVal = searchParams.get('q') || '';
+    const subjectVal = searchParams.get('subject') || '';
+    const topicVal = searchParams.get('topic') || '';
+    const difficultyVal = searchParams.get('difficulty') || '';
+
+    setQuery(qVal);
+    setSelectedSubject(subjectVal);
+    setSelectedDifficulty(difficultyVal);
+
+    async function performSearch() {
+      setLoading(true);
+      try {
+        const params = {};
+        if (qVal) params.q = qVal;
+        if (subjectVal) params.subject = subjectVal;
+        if (topicVal) params.topic = topicVal;
+        if (difficultyVal) params.difficulty = difficultyVal;
+
+        const res = await axios.get(`${API_URL}/search`, { params });
+        setResults(res.data);
+      } catch (err) {
+        console.error('Search failed:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    performSearch();
+  }, [searchParams]);
 
   // Handle Search Trigger
-  const handleSearch = async (e) => {
+  const handleSearch = (e) => {
     if (e) e.preventDefault();
-    setLoading(true);
-    try {
-      const params = {};
-      if (query) params.q = query;
-      if (selectedSubject) params.subject = selectedSubject;
-      if (selectedTopic) params.topic = selectedTopic;
-      if (selectedDifficulty) params.difficulty = selectedDifficulty;
-
-      const res = await axios.get(`${API_URL}/search`, { params });
-      setResults(res.data);
-    } catch (err) {
-      console.error('Search failed:', err);
-    } finally {
-      setLoading(false);
-    }
+    
+    // Update URL query string
+    const params = new URLSearchParams();
+    if (query.trim()) params.set('q', query.trim());
+    if (selectedSubject) params.set('subject', selectedSubject);
+    if (selectedTopic) params.set('topic', selectedTopic);
+    if (selectedDifficulty) params.set('difficulty', selectedDifficulty);
+    
+    router.push(`/search?${params.toString()}`);
   };
-
-  // Run initial search on mount to show all published notes
-  useEffect(() => {
-    handleSearch();
-  }, []);
 
   const getDifficultyBadge = (difficulty) => {
     const classes = {
@@ -271,5 +305,17 @@ export default function SearchPage() {
         </section>
       </div>
     </main>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
+        <div className="loading-pulse" style={{ color: 'var(--color-text-muted)' }}>Loading search directory...</div>
+      </main>
+    }>
+      <SearchPageContent />
+    </Suspense>
   );
 }
