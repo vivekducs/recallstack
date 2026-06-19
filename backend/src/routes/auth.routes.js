@@ -95,7 +95,8 @@ router.get('/me', authenticateToken, async (req, res, next) => {
         avatar: true,
         bio: true,
         role: true,
-        createdAt: true
+        createdAt: true,
+        emailPreferences: true
       }
     });
 
@@ -134,11 +135,30 @@ router.put('/profile', authenticateToken, async (req, res, next) => {
         avatar: true,
         bio: true,
         role: true,
-        createdAt: true
+        createdAt: true,
+        emailPreferences: true
       }
     });
 
     res.json(updated);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PATCH /api/auth/preferences (Protected)
+router.patch('/preferences', authenticateToken, async (req, res, next) => {
+  try {
+    const preferences = req.body;
+    
+    // Type validation and merging would happen here in a stricter setup
+    const updated = await prisma.user.update({
+      where: { id: req.user.userId },
+      data: { emailPreferences: preferences },
+      select: { emailPreferences: true }
+    });
+
+    res.json(updated.emailPreferences);
   } catch (err) {
     next(err);
   }

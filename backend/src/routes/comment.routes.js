@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const prisma = require('../config/database');
 const { authenticateToken, optionalAuth } = require('../middleware/auth.middleware');
+const emailService = require('../services/email.service');
 
 // GET /api/notes/:noteId/comments (Public/Optional Auth - get comment tree)
 router.get('/', optionalAuth, async (req, res, next) => {
@@ -80,7 +81,8 @@ router.post('/', authenticateToken, async (req, res, next) => {
 
     // Verify note exists
     const note = await prisma.note.findUnique({
-      where: { id: noteId }
+      where: { id: noteId },
+      include: { author: true }
     });
     if (!note) {
       return res.status(404).json({ error: 'Note not found' });
@@ -126,6 +128,16 @@ router.post('/', authenticateToken, async (req, res, next) => {
         }
       }
     });
+
+    // Trigger email notification (don't block response)
+    if (req.user.userId !== note.authorId) {
+      emailService.sendCommentNotification(
+        note.author,
+        comment.user,
+        note.title,
+        comment.content
+      ).catch(err => console.error('Email failed:', err));
+    }
 
     res.status(201).json(comment);
   } catch (err) {

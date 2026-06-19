@@ -19,6 +19,7 @@ model User {
   avatar        String?
   bio           String?
   role          Role     @default(USER)
+  emailPreferences Json?   @default("{\"newComment\":true,\"newReply\":true,\"helpful\":false,\"newNoteInTopic\":false,\"digestFrequency\":\"daily\"}")
 
   notes         Note[]   @relation("NoteAuthor")
   comments      Comment[]
@@ -116,6 +117,7 @@ model Note {
   comments    Comment[]
   bookmarks   Bookmark[]
   revisions   RevisionHistory[]
+  analyticsDaily NoteAnalyticsDaily[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -124,6 +126,20 @@ model Note {
   @@index([slug])
   @@index([authorId])
   @@map("notes")
+}
+
+// ==================== ANALYTICS ====================
+model NoteAnalyticsDaily {
+  id        String   @id @default(cuid())
+  noteId    String
+  note      Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  date      DateTime @db.Date
+  views     Int      @default(0)
+
+  @@unique([noteId, date])
+  @@index([noteId])
+  @@index([date])
+  @@map("note_analytics_daily")
 }
 
 enum NoteStatus {

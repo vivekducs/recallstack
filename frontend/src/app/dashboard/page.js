@@ -6,6 +6,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import useAuth from '@/hooks/useAuth';
 import Card from '@/components/common/Card';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -66,7 +67,7 @@ export default function DashboardPage() {
     );
   }
 
-  const { summary, mostRevised = [], timeline = [] } = data || {};
+  const { summary, mostRevised = [], topNotes = [], dailyViews = [], timeline = [] } = data || {};
 
   return (
     <main className="min-h-screen py-12" style={{ background: 'var(--color-bg)' }}>
@@ -154,6 +155,32 @@ export default function DashboardPage() {
           </div>
         </Card>
 
+        {/* Analytics Chart */}
+        <Card className="mb-10">
+          <h2 className="text-xl font-bold mb-6" style={{ color: 'white' }}>Views Over Time (Last 30 Days)</h2>
+          {dailyViews.length === 0 ? (
+            <p className="text-sm text-center py-16" style={{ color: 'var(--color-text-muted)' }}>
+              No views recorded in the last 30 days. Share your published notes to start collecting analytics!
+            </p>
+          ) : (
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={dailyViews} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                  <XAxis dataKey="date" stroke="#666" tick={{ fill: '#888', fontSize: 12 }} tickMargin={10} minTickGap={30} />
+                  <YAxis stroke="#666" tick={{ fill: '#888', fontSize: 12 }} allowDecimals={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: 'var(--color-bg)', borderColor: 'var(--color-border)', borderRadius: '8px' }}
+                    itemStyle={{ color: 'var(--color-primary)' }}
+                    labelStyle={{ color: 'var(--color-text-muted)', marginBottom: '5px' }}
+                  />
+                  <Line type="monotone" dataKey="views" name="Views" stroke="var(--color-primary)" strokeWidth={3} dot={{ r: 4, fill: 'var(--color-bg)', strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </Card>
+
         {/* Multi-column Detail lists */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Column 1: Learning activity timeline */}
@@ -207,6 +234,40 @@ export default function DashboardPage() {
                       <Link href={`/revision-tracker?noteId=${note.id}`} className="text-xs hover:underline mt-1.5 block" style={{ color: 'var(--color-text-muted)' }}>
                         Audit logs
                       </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+        
+        {/* Top Performing Notes Row */}
+        <div className="mt-8">
+          <Card>
+            <h2 className="text-xl font-bold mb-6" style={{ color: 'white' }}>Top Performing Notes</h2>
+            {topNotes.length === 0 ? (
+              <p className="text-sm text-center py-8" style={{ color: 'var(--color-text-muted)' }}>
+                You have no published notes yet.
+              </p>
+            ) : (
+              <div className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
+                {topNotes.map((note) => (
+                  <div key={note.id} className="py-4 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
+                    <div>
+                      <h3 className="font-semibold text-white hover:underline">
+                        <Link href={`/learning/${note.topic?.subject?.slug}/${note.topic?.slug}/${note.slug}`}>
+                          {note.title}
+                        </Link>
+                      </h3>
+                      <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
+                        Subject: {note.topic?.subject?.slug} | Views: {note.views} | Helpful: {note.helpfulCount}
+                      </p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <span className="text-xs px-2 py-1 rounded font-semibold block text-center" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>
+                        #{topNotes.indexOf(note) + 1} Best
+                      </span>
                     </div>
                   </div>
                 ))}

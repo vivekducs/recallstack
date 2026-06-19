@@ -159,6 +159,49 @@ router.get('/dashboard', authenticateToken, async (req, res, next) => {
       where: { userId: authorId }
     });
 
+    // Fetch Top Performing Notes (by views)
+    const topNotes = await prisma.note.findMany({
+      where: { authorId, status: 'PUBLISHED' },
+      orderBy: { views: 'desc' },
+      take: 5,
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        views: true,
+        helpfulCount: true,
+        topic: { select: { subject: { select: { slug: true } }, slug: true } }
+      }
+    });
+
+    // Fetch Daily Views aggregate for the last 30 days
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 30);
+    
+    const dailyAnalytics = await prisma.noteAnalyticsDaily.findMany({
+      where: {
+        note: { authorId },
+        date: { gte: startDate }
+      },
+      select: {
+        date: true,
+        views: true
+      }
+    });
+
+    // Aggregate by date
+    const dailyMap = {};
+    dailyAnalytics.forEach(record => {
+      const dateStr = record.date.toISOString().split('T')[0];
+      if (!dailyMap[dateStr]) dailyMap[dateStr] = 0;
+      dailyMap[dateStr] += record.views;
+    });
+
+    const dailyViews = Object.keys(dailyMap).sort().map(date => ({
+      date,
+      views: dailyMap[date]
+    }));
+
     res.json({
       summary: {
         totalNotes: notes.length,
@@ -170,6 +213,8 @@ router.get('/dashboard', authenticateToken, async (req, res, next) => {
         bookmarksCount
       },
       mostRevised,
+      topNotes,
+      dailyViews,
       timeline: recentTimeline
     });
   } catch (err) {

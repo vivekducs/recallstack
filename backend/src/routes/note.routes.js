@@ -96,10 +96,29 @@ router.get('/:id', optionalAuth, async (req, res, next) => {
 
     // Increment view count for published notes
     if (note.status === 'PUBLISHED') {
-      await prisma.note.update({
-        where: { id },
-        data: { views: { increment: 1 } }
-      });
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+
+      await prisma.$transaction([
+        prisma.note.update({
+          where: { id },
+          data: { views: { increment: 1 } }
+        }),
+        prisma.noteAnalyticsDaily.upsert({
+          where: {
+            noteId_date: {
+              noteId: id,
+              date: today
+            }
+          },
+          update: { views: { increment: 1 } },
+          create: {
+            noteId: id,
+            date: today,
+            views: 1
+          }
+        })
+      ]);
     }
 
     res.json(note);
@@ -276,5 +295,75 @@ router.delete('/:id', authenticateToken, async (req, res, next) => {
   }
 });
 
+
+// GET /api/notes/:id/analytics (Owner or Admin)
+router.get('/:id/analytics', authenticateToken, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const note = await prisma.note.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: { comments: true }
+        }
+      }
+    });
+
+    if (!note) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+
+    if (note.authorId !== req.user.userId && req.user.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Cannot view analytics for this note' });
+    }
+
+    res.json({
+      views: note.views,
+      helpfulCount: note.helpfulCount,
+      commentsCount: note._count.comments,
+      status: note.status,
+      publishedAt: note.publishedAt
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/notes/:id/analytics/daily (Owner or Admin)
+router.get('/:id/analytics/daily', authenticateToken, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { days = 30 } = req.query;
+
+    const note = await prisma.note.findUnique({
+      where: { id },
+      select: { authorId: true, status: true }
+    });
+
+    if (!note) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+
+    if (note.authorId !== req.user.userId && req.user.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Cannot view analytics for this note' });
+    }
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - parseInt(days));
+
+    const dailyData = await prisma.noteAnalyticsDaily.findMany({
+      where: {
+        noteId: id,
+        date: { gte: startDate }
+      },
+      orderBy: { date: 'asc' }
+    });
+
+    res.json(dailyData);
+  } catch (err) {
+    next(err);
+  }
+});
 
 module.exports = router;

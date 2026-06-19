@@ -19,6 +19,14 @@ export default function ProfileSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+  
+  const [prefs, setPrefs] = useState({
+    newComment: true,
+    newReply: true,
+    helpful: false,
+    newNoteInTopic: false,
+    digestFrequency: 'daily'
+  });
 
   useEffect(() => {
     if (!authLoading) {
@@ -34,6 +42,9 @@ export default function ProfileSettingsPage() {
             setName(profile.name || '');
             setBio(profile.bio || '');
             setAvatar(profile.avatar || '');
+            if (profile.emailPreferences) {
+              setPrefs(profile.emailPreferences);
+            }
           } catch (err) {
             console.error('Failed to load profile details:', err);
             setError('Could not load current profile info.');
@@ -83,6 +94,19 @@ export default function ProfileSettingsPage() {
       setError(err.response?.data?.error || 'Failed to update profile settings. Try again.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handlePrefsChange = async (key, value) => {
+    const newPrefs = { ...prefs, [key]: value };
+    setPrefs(newPrefs);
+    try {
+      await axios.patch(`${API_URL}/auth/preferences`, newPrefs, { headers: getAuthHeaders() });
+      setSuccess('Notification preferences saved.');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      console.error(err);
+      setError('Failed to save preferences.');
     }
   };
 
@@ -237,6 +261,66 @@ export default function ProfileSettingsPage() {
               </button>
             </div>
           </form>
+        </div>
+
+        {/* Notification Preferences */}
+        <div className="glass-card p-8 mt-8 mb-16">
+          <h2 className="text-2xl font-bold mb-2 text-white">Email Notifications</h2>
+          <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
+            Choose what activities trigger an email to your inbox.
+          </p>
+
+          <div className="space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b" style={{ borderColor: 'var(--color-border)' }}>
+              <div>
+                <h3 className="font-semibold text-white">New Comments</h3>
+                <p className="text-xs" style={{ color: 'var(--color-text-dim)' }}>When someone comments on your published notes</p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" checked={prefs.newComment} onChange={(e) => handlePrefsChange('newComment', e.target.checked)} />
+                <div className="w-11 h-6 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-primary)]"></div>
+              </label>
+            </div>
+
+            <div className="flex items-center justify-between pb-4 border-b" style={{ borderColor: 'var(--color-border)' }}>
+              <div>
+                <h3 className="font-semibold text-white">Replies</h3>
+                <p className="text-xs" style={{ color: 'var(--color-text-dim)' }}>When someone replies to your comment</p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" checked={prefs.newReply} onChange={(e) => handlePrefsChange('newReply', e.target.checked)} />
+                <div className="w-11 h-6 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-primary)]"></div>
+              </label>
+            </div>
+
+            <div className="flex items-center justify-between pb-4 border-b" style={{ borderColor: 'var(--color-border)' }}>
+              <div>
+                <h3 className="font-semibold text-white">Helpful Ratings</h3>
+                <p className="text-xs" style={{ color: 'var(--color-text-dim)' }}>When someone marks your note as helpful</p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" checked={prefs.helpful} onChange={(e) => handlePrefsChange('helpful', e.target.checked)} />
+                <div className="w-11 h-6 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-primary)]"></div>
+              </label>
+            </div>
+
+            <div className="flex items-center justify-between pt-2">
+              <div>
+                <h3 className="font-semibold text-white">Digest Frequency</h3>
+                <p className="text-xs" style={{ color: 'var(--color-text-dim)' }}>How often to send the activity digest</p>
+              </div>
+              <select
+                className="bg-zinc-800 text-white text-sm rounded border border-zinc-700 p-2 focus:outline-none focus:border-[var(--color-primary)]"
+                value={prefs.digestFrequency}
+                onChange={(e) => handlePrefsChange('digestFrequency', e.target.value)}
+              >
+                <option value="immediate">Immediate</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="off">Off</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
     </main>
