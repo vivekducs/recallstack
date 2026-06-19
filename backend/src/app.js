@@ -18,6 +18,8 @@ const analyticsRoutes = require('./routes/analytics.routes');
 const emailRoutes = require('./routes/email.routes');
 const profileRoutes = require('./routes/profile.routes');
 const trendingRoutes = require('./routes/trending.routes');
+const rateLimiter = require('./middleware/rateLimit.middleware');
+const securityHeaders = require('./middleware/cors.middleware');
 
 const app = express();
 
@@ -31,6 +33,7 @@ if (process.env.FRONTEND_URL) {
   allowedOrigins.push(...envOrigins);
 }
 
+app.use(securityHeaders);
 app.use(cors({
   origin: allowedOrigins,
   credentials: true
@@ -41,6 +44,14 @@ app.use(express.json({ limit: '10mb' }));
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Rate Limiting
+const apiLimiter = rateLimiter(150, 15 * 60 * 1000);
+const authLimiter = rateLimiter(10, 15 * 60 * 1000);
+
+app.use('/api', apiLimiter);
+app.use('/api/auth', authLimiter);
+app.use('/api/email/send-digest', authLimiter);
 
 // Routes
 app.use('/api/auth', authRoutes);

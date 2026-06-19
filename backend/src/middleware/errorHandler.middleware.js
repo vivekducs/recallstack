@@ -1,20 +1,47 @@
 // backend/src/middleware/errorHandler.middleware.js
 
 function errorHandler(err, req, res, next) {
-  console.error('Error:', err.message);
-  console.error(err.stack);
+  console.error(`[Error] ${req.method} ${req.url} - Code: ${err.code || 'N/A'} - Message: ${err.message}`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.error(err.stack);
+  }
 
-  // Prisma known errors
+  // Prisma unique constraint violation (Conflict)
   if (err.code === 'P2002') {
-    return res.status(409).json({ error: 'A record with this value already exists' });
+    const fields = err.meta && err.meta.target ? ` (${err.meta.target.join(', ')})` : '';
+    return res.status(409).json({ error: `A record with this unique value already exists${fields}` });
   }
 
+  // Prisma foreign key constraint violation (Bad Request)
+  if (err.code === 'P2003') {
+    return res.status(400).json({ error: 'Database relationship constraint failed. Invalid foreign key reference.' });
+  }
+
+  // Prisma record not found
   if (err.code === 'P2025') {
-    return res.status(404).json({ error: 'Record not found' });
+    return res.status(404).json({ error: err.meta && err.meta.cause ? err.meta.cause : 'Record not found' });
   }
 
-  res.status(err.status || 500).json({
-    error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+  // Prisma null constraint violation / missing field value
+  if (err.code === 'P2011' || err.code === 'P2012') {
+    return res.status(400).json({ error: 'Required database column constraint violation' });
+  }
+
+  // Prisma input value type validation error
+  if (err.code === 'P2019') {
+    return res.status(400).json({ error: 'Database invalid type format received' });
+  }
+
+  // Express JSON parser body error
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return res.status(400).json({ error: 'Invalid JSON request payload format' });
+  }
+
+  const statusCode = err.status || 500;
+  res.status(statusCode).json({
+    error: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+      ? err.message 
+      : (statusCode === 500 ? 'Internal server error' : err.message)
   });
 }
 
