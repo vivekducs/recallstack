@@ -1,7 +1,8 @@
 // backend/src/routes/topic.routes.js
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-const { authenticateToken, adminOnly } = require('../middleware/auth.middleware');
+const { authenticateToken } = require('../middleware/auth.middleware');
+const adminOnly = require('../middleware/admin.middleware');
 const topicController = require('../controllers/topic.controller');
 
 // GET /api/subjects/:subjectId/topics (Public)

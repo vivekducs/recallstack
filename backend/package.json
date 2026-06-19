@@ -2,10 +2,10 @@
   "name": "recallstack-backend",
   "version": "1.0.0",
   "description": "RecallStack - Personal Knowledge Management Platform API",
-  "main": "src/app.js",
+  "main": "src/server.js",
   "scripts": {
-    "dev": "nodemon src/app.js",
-    "start": "node src/app.js",
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
     "db:migrate": "npx prisma migrate dev",
     "db:push": "npx prisma db push",
     "db:seed": "node prisma/seed.js"

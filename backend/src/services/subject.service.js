@@ -1,5 +1,6 @@
 // backend/src/services/subject.service.js
 const prisma = require('../config/database');
+const slugify = require('../utils/slugify');
 
 class SubjectService {
   async getSubjects() {
@@ -43,21 +44,15 @@ class SubjectService {
 
   async createSubject(data) {
     const { name, slug, description, icon, color } = data;
-
-    if (!name || !slug) {
+    const finalSlug = slugify(slug || name);
+    if (!name || !finalSlug) {
       const err = new Error('name and slug required');
       err.status = 400;
       throw err;
     }
 
-    if (!/^[a-z0-9-]+$/.test(slug)) {
-      const err = new Error('Invalid slug format. Use lowercase letters, numbers, and hyphens only.');
-      err.status = 400;
-      throw err;
-    }
-
     const existing = await prisma.subject.findFirst({
-      where: { OR: [{ name }, { slug }] }
+      where: { OR: [{ name }, { slug: finalSlug }] }
     });
     if (existing) {
       const err = new Error('Subject name or slug already exists');
@@ -68,7 +63,7 @@ class SubjectService {
     return await prisma.subject.create({
       data: {
         name,
-        slug,
+        slug: finalSlug,
         description,
         icon,
         color,
@@ -81,7 +76,7 @@ class SubjectService {
   async updateSubject(id, data) {
     const updateData = {};
     if (data.name !== undefined) updateData.name = data.name;
-    if (data.slug !== undefined) updateData.slug = data.slug;
+    if (data.slug !== undefined) updateData.slug = slugify(data.slug);
     if (data.description !== undefined) updateData.description = data.description;
     if (data.icon !== undefined) updateData.icon = data.icon;
     if (data.color !== undefined) updateData.color = data.color;

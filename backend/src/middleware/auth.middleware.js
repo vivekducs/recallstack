@@ -1,29 +1,6 @@
 // backend/src/middleware/auth.middleware.js
 
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key-change-in-prod';
-const JWT_EXPIRY = '7d';
-
-// ========== PASSWORD HASHING ==========
-async function hashPassword(plaintext) {
-  const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(plaintext, salt);
-}
-
-async function comparePassword(plaintext, hash) {
-  return bcrypt.compare(plaintext, hash);
-}
-
-// ========== TOKEN GENERATION ==========
-function generateToken(userId, role) {
-  return jwt.sign(
-    { userId, role },
-    JWT_SECRET,
-    { expiresIn: JWT_EXPIRY }
-  );
-}
+const { verifyToken } = require('../utils/jwt');
 
 // ========== MIDDLEWARE: VERIFY TOKEN ==========
 function authenticateToken(req, res, next) {
@@ -34,13 +11,13 @@ function authenticateToken(req, res, next) {
     return res.status(401).json({ error: 'No token provided' });
   }
 
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ error: 'Invalid or expired token' });
-    }
+  try {
+    const decoded = verifyToken(token);
     req.user = decoded; // { userId, role }
     next();
-  });
+  } catch (err) {
+    return res.status(403).json({ error: 'Invalid or expired token' });
+  }
 }
 
 // ========== MIDDLEWARE: OPTIONAL AUTH ==========
@@ -54,29 +31,16 @@ function optionalAuth(req, res, next) {
     return next();
   }
 
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err) {
-      req.user = null;
-    } else {
-      req.user = decoded;
-    }
-    next();
-  });
-}
-
-// ========== MIDDLEWARE: ADMIN ONLY ==========
-function adminOnly(req, res, next) {
-  if (req.user.role !== 'ADMIN') {
-    return res.status(403).json({ error: 'Admin access required' });
+  try {
+    const decoded = verifyToken(token);
+    req.user = decoded;
+  } catch (err) {
+    req.user = null;
   }
   next();
 }
 
 module.exports = {
-  hashPassword,
-  comparePassword,
-  generateToken,
   authenticateToken,
-  optionalAuth,
-  adminOnly
+  optionalAuth
 };

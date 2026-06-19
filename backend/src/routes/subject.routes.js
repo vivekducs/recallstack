@@ -1,7 +1,8 @@
 // backend/src/routes/subject.routes.js
 const express = require('express');
 const router = express.Router();
-const { authenticateToken, adminOnly } = require('../middleware/auth.middleware');
+const { authenticateToken } = require('../middleware/auth.middleware');
+const adminOnly = require('../middleware/admin.middleware');
 const subjectController = require('../controllers/subject.controller');
 
 // GET /api/subjects (Public)

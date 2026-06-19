@@ -1,6 +1,7 @@
 // backend/src/services/auth.service.js
 const prisma = require('../config/database');
-const { hashPassword, comparePassword, generateToken } = require('../middleware/auth.middleware');
+const { hashPassword, comparePassword } = require('../utils/bcrypt');
+const { generateToken } = require('../utils/jwt');
 
 class AuthService {
   async register(data) {

@@ -1,6 +1,7 @@
 // backend/src/services/note.service.js
 const prisma = require('../config/database');
 const emailService = require('./email.service');
+const slugify = require('../utils/slugify');
 
 class NoteService {
   async getNotesByTopic(topicId) {
@@ -100,7 +101,7 @@ class NoteService {
     const topic = await prisma.topic.findUnique({ where: { id: topicId } });
     if (!topic) throw new Error('Topic not found');
 
-    const slug = title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').substring(0, 80);
+    const slug = slugify(title);
 
     return await prisma.note.create({
       data: {
@@ -129,7 +130,7 @@ class NoteService {
     const updateData = {};
     if (data.title !== undefined) {
       updateData.title = data.title;
-      updateData.slug = data.title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').substring(0, 80);
+      updateData.slug = slugify(data.title);
     }
     if (data.excerpt !== undefined) updateData.excerpt = data.excerpt;
     if (data.difficulty !== undefined) updateData.difficulty = data.difficulty;

@@ -1,15 +1,19 @@
 // backend/src/services/email.service.js
 const nodemailer = require('nodemailer');
 const prisma = require('../config/database');
+const emailConfig = require('../config/email');
 
 class EmailService {
   constructor() {
-    // For local development, we'll log to console, but we can also use Ethereal Email.
-    // Setting up a dummy stream transport that just logs out the email content
-    this.transporter = nodemailer.createTransport({
-      streamTransport: true,
-      newline: 'windows'
-    });
+    if (emailConfig.useStream) {
+      this.transporter = nodemailer.createTransport({
+        streamTransport: true,
+        newline: 'windows'
+      });
+    } else {
+      this.transporter = nodemailer.createTransport(emailConfig.smtp);
+    }
+    this.defaultFrom = emailConfig.defaults.from;
   }
 
   async sendCommentNotification(noteAuthor, commentAuthor, noteTitle, commentContent) {
@@ -35,7 +39,7 @@ class EmailService {
 
     try {
       const info = await this.transporter.sendMail({
-        from: '"RecallStack Notifier" <notifications@recallstack.com>',
+        from: this.defaultFrom,
         to: noteAuthor.email,
         subject: `New Comment on "${noteTitle}"`,
         html
@@ -73,7 +77,7 @@ class EmailService {
 
     try {
       const info = await this.transporter.sendMail({
-        from: '"RecallStack Notifier" <notifications@recallstack.com>',
+        from: this.defaultFrom,
         to: commentAuthor.email,
         subject: `New Reply on "${noteTitle}"`,
         html
@@ -107,7 +111,7 @@ class EmailService {
 
     try {
       const info = await this.transporter.sendMail({
-        from: '"RecallStack Notifier" <notifications@recallstack.com>',
+        from: this.defaultFrom,
         to: noteAuthor.email,
         subject: `Your note "${noteTitle}" was rated`,
         html
@@ -198,7 +202,7 @@ class EmailService {
 
       try {
         const info = await this.transporter.sendMail({
-          from: '"RecallStack Digest" <digest@recallstack.com>',
+          from: this.defaultFrom,
           to: user.email,
           subject: 'Your RecallStack Daily Digest',
           html

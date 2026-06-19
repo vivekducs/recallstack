@@ -22,8 +22,17 @@ const trendingRoutes = require('./routes/trending.routes');
 const app = express();
 
 // Middleware
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://recallstack.vercel.app'
+];
+if (process.env.FRONTEND_URL) {
+  const envOrigins = process.env.FRONTEND_URL.split(',').map(o => o.trim());
+  allowedOrigins.push(...envOrigins);
+}
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: allowedOrigins,
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -54,13 +63,6 @@ app.use('/api/trending', trendingRoutes);
 
 // Global error handler
 app.use(errorHandler);
-
-// Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`RecallStack API running on port ${PORT}`);
-  console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
-});
 
 module.exports = app;
 
