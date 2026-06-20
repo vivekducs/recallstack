@@ -184,13 +184,13 @@ export default async function NotePage({ params }) {
                     History
                   </Link>
                 </div>
-                
+
                 <div className="mb-6">
-                  <StarRating 
-                    noteId={note.id} 
-                    initialAverage={note.averageRating || 0} 
-                    initialCount={note.ratingCount || 0} 
-                    readOnly={false} 
+                  <StarRating
+                    noteId={note.id}
+                    initialAverage={note.averageRating || 0}
+                    initialCount={note.ratingCount || 0}
+                    readOnly={false}
                   />
                 </div>
 
@@ -221,12 +221,12 @@ export default async function NotePage({ params }) {
 
                     {section.contentType === 'TEXT' && (
                       <div className="mb-3">
-                        <ReactMarkdown 
+                        <ReactMarkdown
                           remarkPlugins={[remarkGfm, remarkMath]}
                           rehypePlugins={[rehypeKatex]}
                           className="prose max-w-none prose-p:text-[var(--color-text-primary)] prose-headings:text-[var(--color-text-primary)] prose-strong:text-[var(--color-text-primary)] prose-li:text-[var(--color-text-primary)]"
                           components={{
-                            a: ({node, ...props}) => {
+                            a: ({ node, ...props }) => {
                               const isExternal = props.href?.startsWith('http');
                               if (isExternal) {
                                 return <a {...props} target="_blank" rel="noopener noreferrer" className="font-semibold underline hover:text-[var(--color-primary-hover)] text-[var(--color-primary)]" />;
@@ -252,12 +252,12 @@ export default async function NotePage({ params }) {
                           <span className="text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>Example</span>
                         </div>
                         <div>
-                          <ReactMarkdown 
+                          <ReactMarkdown
                             remarkPlugins={[remarkGfm, remarkMath]}
                             rehypePlugins={[rehypeKatex]}
                             className="prose max-w-none prose-p:text-[var(--color-text-primary)] prose-headings:text-[var(--color-text-primary)] prose-strong:text-[var(--color-text-primary)] prose-li:text-[var(--color-text-primary)]"
                             components={{
-                              a: ({node, ...props}) => {
+                              a: ({ node, ...props }) => {
                                 const isExternal = props.href?.startsWith('http');
                                 if (isExternal) {
                                   return <a {...props} target="_blank" rel="noopener noreferrer" className="font-semibold underline hover:text-[var(--color-primary-hover)] text-[var(--color-primary)]" />;
