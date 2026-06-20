@@ -8,6 +8,7 @@ import axios from 'axios';
 import useAuth from '@/hooks/useAuth';
 import Modal from '@/components/common/Modal';
 import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -18,7 +19,7 @@ export default function EditNotePage() {
 
   const [note, setNote] = useState(null);
   const [sections, setSections] = useState([]);
-  
+
   // Note metadata edit state
   const [title, setTitle] = useState('');
   const [excerpt, setExcerpt] = useState('');
@@ -56,10 +57,10 @@ export default function EditNotePage() {
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const res = await axios.get(`${API_URL}/notes/${id}`, { headers });
       const noteData = res.data;
-      
+
       setNote(noteData);
       setSections(noteData.sections || []);
-      
+
       // Initialize edit fields
       setTitle(noteData.title);
       setExcerpt(noteData.excerpt || '');
@@ -132,7 +133,7 @@ export default function EditNotePage() {
       );
 
       setSections(prev => [...prev, res.data]);
-      
+
       // Reset form
       setNewSecTitle('');
       setNewSecContent('');
@@ -216,7 +217,7 @@ export default function EditNotePage() {
   const handleReorder = async (sectionId, currentIndex, direction) => {
     const newOrder = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
     if (newOrder < 0 || newOrder >= sections.length) return;
-    
+
     setSaving(true);
     setError('');
 
@@ -226,7 +227,7 @@ export default function EditNotePage() {
         { newOrder },
         { headers: getAuthHeaders() }
       );
-      
+
       // Refetch note/sections to assure accurate synchronized database order
       await fetchNote();
       setSuccess('Reordered successfully.');
@@ -281,7 +282,11 @@ export default function EditNotePage() {
   if (!note) {
     return (
       <div className="text-center py-12 glass-card">
-        <div className="text-5xl mb-4">⚠️</div>
+        <div className="flex justify-center mb-4">
+          <svg className="w-16 h-16 text-[var(--color-error)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
         <h2 className="text-2xl font-bold mb-3 text-[var(--color-text-primary)]">Note Not Found</h2>
         <p className="text-sm mb-6 text-[var(--color-text-secondary)]">
           {error || 'The note you are trying to edit does not exist or you do not have permission.'}
@@ -312,11 +317,10 @@ export default function EditNotePage() {
               {note.topic?.subject?.name} / {note.topic?.name}
             </span>
             <span
-              className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                note.status === 'PUBLISHED'
+              className={`px-2 py-0.5 rounded text-[10px] font-bold ${note.status === 'PUBLISHED'
                   ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
                   : 'bg-yellow-950 text-yellow-400 border border-yellow-800'
-              }`}
+                }`}
             >
               {note.status}
             </span>
@@ -330,12 +334,12 @@ export default function EditNotePage() {
         <div className="flex items-center gap-3 flex-wrap">
           {note.status === 'DRAFT' && (
             <button
-              onClick={triggerPublish}
-              disabled={saving}
-              className="btn-primary bg-emerald-600 hover:bg-emerald-500 font-bold"
-            >
-              🚀 Publish Note
-            </button>
+               onClick={triggerPublish}
+               disabled={saving}
+               className="btn-primary bg-emerald-600 hover:bg-emerald-500 font-bold"
+             >
+               Publish Note
+             </button>
           )}
           <Link
             href={
@@ -353,12 +357,12 @@ export default function EditNotePage() {
       {/* Global Notifications */}
       {error && (
         <div className="p-4 mb-6 rounded-lg text-sm text-[var(--color-error)] border border-[var(--color-error)]/20 bg-[var(--color-error)]/10">
-          ⚠️ {error}
+          {error}
         </div>
       )}
       {success && (
         <div className="p-4 mb-6 rounded-lg text-sm text-[var(--color-success)] border border-[var(--color-success)]/20 bg-[var(--color-success)]/10">
-          ✅ {success}
+          {success}
         </div>
       )}
 
@@ -367,7 +371,7 @@ export default function EditNotePage() {
         <div className="lg:col-span-2 flex flex-col gap-6">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-[var(--color-text-primary)] flex items-center gap-2">
-              📂 Note Sections ({sections.length})
+              Note Sections ({sections.length})
             </h2>
             <button
               onClick={() => setAddingSection(!addingSection)}
@@ -381,90 +385,89 @@ export default function EditNotePage() {
           {addingSection && (
             <form onSubmit={handleAddSection} className="glass-card p-6 border-2" style={{ borderColor: 'var(--color-primary)' }}>
               <h3 className="text-sm font-bold text-[var(--color-text-primary)] uppercase tracking-wider mb-4">Add Content Section</h3>
-              
+
               <div className="flex flex-col gap-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs text-gray-400">Block Title</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. 1. Base Complexity, Code Example..."
-                      value={newSecTitle}
-                      onChange={(e) => setNewSecTitle(e.target.value)}
-                      required
-                      className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs text-gray-400">Content Type</label>
-                    <select
-                      value={newSecType}
-                      onChange={(e) => setNewSecType(e.target.value)}
-                      className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none"
-                    >
-                      <option value="TEXT">Text (supports plain content)</option>
-                      <option value="CODE">Code Block</option>
-                      <option value="EXAMPLE">Interactive Example Box</option>
-                      <option value="IMAGE">Image Link URL</option>
-                      <option value="DIAGRAM">Diagram Notation</option>
-                    </select>
-                  </div>
-                </div>
-
-                {newSecType === 'CODE' && (
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs text-gray-400">Coding Language</label>
-                    <select
-                      value={newSecLanguage}
-                      onChange={(e) => setNewSecLanguage(e.target.value)}
-                      className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none w-48"
-                    >
-                      <option value="javascript">JavaScript</option>
-                      <option value="typescript">TypeScript</option>
-                      <option value="python">Python</option>
-                      <option value="java">Java</option>
-                      <option value="cpp">C++</option>
-                      <option value="html">HTML</option>
-                      <option value="css">CSS</option>
-                      <option value="sql">SQL</option>
-                      <option value="bash">Bash/Terminal</option>
-                    </select>
-                  </div>
-                )}
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs text-gray-400">Content Body</label>
-                  <textarea
-                    rows={6}
-                    placeholder={
-                      newSecType === 'CODE'
-                        ? 'Paste code snippet here...'
-                        : newSecType === 'IMAGE'
-                        ? 'Paste raw image link URL...'
-                        : 'Write content markdown or description...'
-                    }
-                    value={newSecContent}
-                    onChange={(e) => setNewSecContent(e.target.value)}
+                  <Input
+                    id="new-sec-title"
+                    type="text"
+                    label="Block Title"
+                    placeholder="e.g. 1. Base Complexity, Code Example..."
+                    value={newSecTitle}
+                    onChange={(e) => setNewSecTitle(e.target.value)}
                     required
-                    className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none font-mono text-xs"
+                  />
+                  <Input
+                    id="new-sec-type"
+                    type="select"
+                    label="Content Type"
+                    value={newSecType}
+                    onChange={(e) => setNewSecType(e.target.value)}
+                    options={[
+                      { value: 'TEXT', label: 'Text (supports plain content)' },
+                      { value: 'CODE', label: 'Code Block' },
+                      { value: 'EXAMPLE', label: 'Interactive Example Box' },
+                      { value: 'IMAGE', label: 'Image Link URL' },
+                      { value: 'DIAGRAM', label: 'Diagram Notation' }
+                    ]}
+                    required
                   />
                 </div>
 
+                {newSecType === 'CODE' && (
+                  <Input
+                    id="new-sec-language"
+                    type="select"
+                    label="Coding Language"
+                    value={newSecLanguage}
+                    onChange={(e) => setNewSecLanguage(e.target.value)}
+                    className="w-48"
+                    options={[
+                      { value: 'javascript', label: 'JavaScript' },
+                      { value: 'typescript', label: 'TypeScript' },
+                      { value: 'python', label: 'Python' },
+                      { value: 'java', label: 'Java' },
+                      { value: 'cpp', label: 'C++' },
+                      { value: 'html', label: 'HTML' },
+                      { value: 'css', label: 'CSS' },
+                      { value: 'sql', label: 'SQL' },
+                      { value: 'bash', label: 'Bash/Terminal' }
+                    ]}
+                    required
+                  />
+                )}
+
+                <Input
+                  id="new-sec-content"
+                  type="textarea"
+                  label="Content Body"
+                  rows={6}
+                  placeholder={
+                    newSecType === 'CODE'
+                      ? 'Paste code snippet here...'
+                      : newSecType === 'IMAGE'
+                        ? 'Paste raw image link URL...'
+                        : 'Write content markdown or description...'
+                  }
+                  value={newSecContent}
+                  onChange={(e) => setNewSecContent(e.target.value)}
+                  required
+                />
+
                 <div className="flex justify-end gap-3 pt-2">
-                  <button
-                    type="button"
+                  <Button
+                    variant="secondary"
                     onClick={() => setAddingSection(false)}
-                    className="btn-secondary text-xs px-4 py-2"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="submit"
                     disabled={saving}
-                    className="btn-primary text-xs px-5 py-2"
+                    variant="primary"
                   >
                     Save Section Block
-                  </button>
+                  </Button>
                 </div>
               </div>
             </form>
@@ -473,7 +476,11 @@ export default function EditNotePage() {
           {/* Sections Flow List */}
           {sections.length === 0 ? (
             <div className="text-center py-16 glass-card border-dashed" style={{ borderColor: 'var(--color-border)' }}>
-              <div className="text-4xl mb-3">📦</div>
+              <div className="flex justify-center mb-4">
+                <svg className="w-12 h-12 text-[var(--color-text-secondary)]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
               <h3 className="font-bold text-[var(--color-text-primary)] mb-1">Your note is empty</h3>
               <p className="text-sm text-gray-500 mb-5 max-w-sm mx-auto">
                 Click the "+ Add Block" button to populate this note with text, code snippets, or diagrams.
@@ -498,79 +505,78 @@ export default function EditNotePage() {
                     >
                       <div className="flex flex-col gap-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="flex flex-col gap-1">
-                            <label className="text-xs text-gray-400">Block Title</label>
-                            <input
-                              type="text"
-                              value={editSecTitle}
-                              onChange={(e) => setEditSecTitle(e.target.value)}
-                              required
-                              className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none"
-                            />
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <label className="text-xs text-gray-400">Content Type</label>
-                            <select
-                              value={editSecType}
-                              onChange={(e) => setEditSecType(e.target.value)}
-                              className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none"
-                            >
-                              <option value="TEXT">Text</option>
-                              <option value="CODE">Code Block</option>
-                              <option value="EXAMPLE">Interactive Example Box</option>
-                              <option value="IMAGE">Image Link URL</option>
-                              <option value="DIAGRAM">Diagram Notation</option>
-                            </select>
-                          </div>
-                        </div>
-
-                        {editSecType === 'CODE' && (
-                          <div className="flex flex-col gap-1">
-                            <label className="text-xs text-gray-400">Language</label>
-                            <select
-                              value={editSecLanguage}
-                              onChange={(e) => setEditSecLanguage(e.target.value)}
-                              className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none w-48"
-                            >
-                              <option value="javascript">JavaScript</option>
-                              <option value="typescript">TypeScript</option>
-                              <option value="python">Python</option>
-                              <option value="java">Java</option>
-                              <option value="cpp">C++</option>
-                              <option value="html">HTML</option>
-                              <option value="css">CSS</option>
-                              <option value="sql">SQL</option>
-                              <option value="bash">Bash/Terminal</option>
-                            </select>
-                          </div>
-                        )}
-
-                        <div className="flex flex-col gap-1">
-                          <label className="text-xs text-gray-400">Content Body</label>
-                          <textarea
-                            rows={5}
-                            value={editSecContent}
-                            onChange={(e) => setEditSecContent(e.target.value)}
+                          <Input
+                            id={`edit-sec-title-${section.id}`}
+                            type="text"
+                            label="Block Title"
+                            value={editSecTitle}
+                            onChange={(e) => setEditSecTitle(e.target.value)}
                             required
-                            className="px-3 py-2 text-sm rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none font-mono text-xs"
+                          />
+                          <Input
+                            id={`edit-sec-type-${section.id}`}
+                            type="select"
+                            label="Content Type"
+                            value={editSecType}
+                            onChange={(e) => setEditSecType(e.target.value)}
+                            options={[
+                              { value: 'TEXT', label: 'Text' },
+                              { value: 'CODE', label: 'Code Block' },
+                              { value: 'EXAMPLE', label: 'Interactive Example Box' },
+                              { value: 'IMAGE', label: 'Image Link URL' },
+                              { value: 'DIAGRAM', label: 'Diagram Notation' }
+                            ]}
+                            required
                           />
                         </div>
 
+                        {editSecType === 'CODE' && (
+                          <Input
+                            id={`edit-sec-language-${section.id}`}
+                            type="select"
+                            label="Language"
+                            value={editSecLanguage}
+                            onChange={(e) => setEditSecLanguage(e.target.value)}
+                            className="w-48"
+                            options={[
+                              { value: 'javascript', label: 'JavaScript' },
+                              { value: 'typescript', label: 'TypeScript' },
+                              { value: 'python', label: 'Python' },
+                              { value: 'java', label: 'Java' },
+                              { value: 'cpp', label: 'C++' },
+                              { value: 'html', label: 'HTML' },
+                              { value: 'css', label: 'CSS' },
+                              { value: 'sql', label: 'SQL' },
+                              { value: 'bash', label: 'Bash/Terminal' }
+                            ]}
+                            required
+                          />
+                        )}
+
+                        <Input
+                          id={`edit-sec-content-${section.id}`}
+                          type="textarea"
+                          label="Content Body"
+                          rows={5}
+                          value={editSecContent}
+                          onChange={(e) => setEditSecContent(e.target.value)}
+                          required
+                        />
+
                         <div className="flex justify-end gap-3 pt-2">
-                          <button
-                            type="button"
+                          <Button
+                            variant="secondary"
                             onClick={() => setEditingSectionId(null)}
-                            className="btn-secondary text-xs px-4 py-2"
                           >
                             Cancel
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             type="submit"
                             disabled={saving}
-                            className="btn-primary text-xs px-5 py-2"
+                            variant="primary"
                           >
                             Update Block
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </form>
@@ -580,7 +586,7 @@ export default function EditNotePage() {
                       {/* Section Header Controls */}
                       <div className="flex justify-between items-start flex-wrap gap-2">
                         <div>
-                          <span className="text-[10px] uppercase font-bold text-gray-400 bg-gray-800 px-2 py-0.5 rounded-full border border-gray-700">
+                          <span className="text-[10px] uppercase font-bold text-[var(--color-text-secondary)] bg-[var(--color-bg-secondary)] px-2 py-0.5 rounded-full border border-[var(--color-border)]">
                             {section.contentType} {section.contentType === 'CODE' && `(${section.language})`}
                           </span>
                           <h3 className="text-base font-bold text-[var(--color-text-primary)] mt-1">{section.title}</h3>
@@ -592,40 +598,48 @@ export default function EditNotePage() {
                           <button
                             onClick={() => handleReorder(section.id, idx, 'up')}
                             disabled={idx === 0 || saving}
-                            className="p-1.5 rounded hover:bg-gray-800 text-gray-400 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
+                            className="p-1.5 rounded hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] disabled:opacity-30 disabled:hover:bg-transparent"
                             title="Move Up"
                           >
-                            ▲
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
+                            </svg>
                           </button>
                           <button
                             onClick={() => handleReorder(section.id, idx, 'down')}
                             disabled={idx === sections.length - 1 || saving}
-                            className="p-1.5 rounded hover:bg-gray-800 text-gray-400 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
+                            className="p-1.5 rounded hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] disabled:opacity-30 disabled:hover:bg-transparent"
                             title="Move Down"
                           >
-                            ▼
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                            </svg>
                           </button>
 
                           {/* Edit & Delete Action Panel */}
                           <button
                             onClick={() => handleStartEditSection(section)}
-                            className="p-1.5 rounded hover:bg-gray-800 text-blue-400"
+                            className="p-1.5 rounded hover:bg-[var(--color-bg-secondary)] text-[var(--color-primary)]"
                             title="Edit Section"
                           >
-                            ✏️
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
                           </button>
                           <button
                             onClick={() => triggerDeleteSection(section.id)}
-                            className="p-1.5 rounded hover:bg-gray-800 text-red-400"
+                            className="p-1.5 rounded hover:bg-[var(--color-bg-secondary)] text-[var(--color-error)]"
                             title="Delete Section"
                           >
-                            🗑️
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
                           </button>
                         </div>
                       </div>
 
                       {/* Section Preview Block */}
-                      <div className="text-sm leading-relaxed" style={{ color: 'var(--color-text)' }}>
+                      <div className="text-sm leading-relaxed text-[var(--color-text-primary)]">
                         {section.contentType === 'CODE' ? (
                           <pre className="p-4 rounded-lg text-xs font-mono overflow-x-auto" style={{ background: 'var(--color-bg-elevated)', border: '1px solid var(--color-border)' }}>
                             <code className="text-[var(--color-text-primary)]">{section.content}</code>
@@ -637,7 +651,7 @@ export default function EditNotePage() {
                           </div>
                         ) : section.contentType === 'IMAGE' ? (
                           <div className="my-2 text-center">
-                            <img src={section.content} alt={section.title} className="max-h-60 max-w-full rounded-lg mx-auto border" style={{ borderColor: 'var(--color-border)' }} onError={(e) => { e.target.src='https://via.placeholder.com/600x300?text=Invalid+Image+URL'; }} />
+                            <img src={section.content} alt={section.title} className="max-h-60 max-w-full rounded-lg mx-auto border" style={{ borderColor: 'var(--color-border)' }} onError={(e) => { e.target.src = 'https://via.placeholder.com/600x300?text=Invalid+Image+URL'; }} />
                             <span className="text-[10px] text-gray-500 mt-1 block font-mono">{section.content}</span>
                           </div>
                         ) : (
@@ -656,7 +670,7 @@ export default function EditNotePage() {
         <div className="flex flex-col gap-6">
           <div className="glass-card p-6 flex flex-col gap-4">
             <div className="flex justify-between items-center pb-2 border-b border-[var(--color-border)]">
-              <h2 className="text-lg font-bold text-[var(--color-text-primary)]">⚙️ Note Settings</h2>
+              <h2 className="text-lg font-bold text-[var(--color-text-primary)]">Note Settings</h2>
               {!editingMetadata && (
                 <button
                   onClick={() => setEditingMetadata(true)}
@@ -669,99 +683,94 @@ export default function EditNotePage() {
 
             {editingMetadata ? (
               <form onSubmit={handleUpdateMetadata} className="flex flex-col gap-4 text-sm">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-medium text-gray-400">Note Title</label>
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required
-                    className="px-3 py-2 rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none text-sm"
-                  />
-                </div>
+                <Input
+                  id="metadata-title"
+                  type="text"
+                  label="Note Title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                />
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-medium text-gray-400">Excerpt / Short Info</label>
-                  <textarea
-                    rows={3}
-                    value={excerpt}
-                    onChange={(e) => setExcerpt(e.target.value)}
-                    className="px-3 py-2 rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none text-sm resize-none"
-                  />
-                </div>
+                <Input
+                  id="metadata-excerpt"
+                  type="textarea"
+                  label="Excerpt / Short Info"
+                  rows={3}
+                  value={excerpt}
+                  onChange={(e) => setExcerpt(e.target.value)}
+                  className="resize-none"
+                />
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-medium text-gray-400">Difficulty</label>
-                  <select
-                    value={difficulty}
-                    onChange={(e) => setDifficulty(e.target.value)}
-                    className="px-3 py-2 rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none text-sm"
-                  >
-                    <option value="EASY">Easy</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="HARD">Hard</option>
-                  </select>
-                </div>
+                <Input
+                  id="metadata-difficulty"
+                  type="select"
+                  label="Difficulty"
+                  value={difficulty}
+                  onChange={(e) => setDifficulty(e.target.value)}
+                  options={[
+                    { value: 'EASY', label: 'Easy' },
+                    { value: 'MEDIUM', label: 'Medium' },
+                    { value: 'HARD', label: 'Hard' }
+                  ]}
+                  required
+                />
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-medium text-gray-400">Tags (comma-separated)</label>
-                  <input
-                    type="text"
-                    value={tagsInput}
-                    onChange={(e) => setTagsInput(e.target.value)}
-                    className="px-3 py-2 rounded-lg text-[var(--color-text-primary)] bg-[var(--color-bg)] border-[var(--color-border)] outline-none text-sm"
-                  />
-                </div>
+                <Input
+                  id="metadata-tags"
+                  type="text"
+                  label="Tags (comma-separated)"
+                  value={tagsInput}
+                  onChange={(e) => setTagsInput(e.target.value)}
+                />
 
                 <div className="flex justify-end gap-2 pt-2">
-                  <button
-                    type="button"
+                  <Button
+                    variant="secondary"
                     onClick={() => setEditingMetadata(false)}
-                    className="px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-xs text-gray-300 hover:bg-gray-800"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="submit"
                     disabled={saving}
-                    className="px-4 py-1.5 rounded-lg btn-primary text-xs font-bold"
+                    variant="primary"
                   >
                     Save Settings
-                  </button>
+                  </Button>
                 </div>
               </form>
             ) : (
               <div className="flex flex-col gap-3 text-sm">
                 <div>
-                  <span className="text-xs text-gray-500 block">Title</span>
+                  <span className="text-xs text-[var(--color-text-secondary)] block">Title</span>
                   <span className="font-semibold text-[var(--color-text-primary)]">{note.title}</span>
                 </div>
                 <div>
-                  <span className="text-xs text-gray-500 block">Excerpt</span>
+                  <span className="text-xs text-[var(--color-text-secondary)] block">Excerpt</span>
                   <p style={{ color: 'var(--color-text-muted)' }}>{note.excerpt || 'No excerpt summary defined.'}</p>
                 </div>
                 <div>
-                  <span className="text-xs text-gray-500 block">Difficulty</span>
+                  <span className="text-xs text-[var(--color-text-secondary)] block">Difficulty</span>
                   <span
-                    className={`badge mt-1 ${
-                      note.difficulty === 'EASY'
+                    className={`badge mt-1 ${note.difficulty === 'EASY'
                         ? 'badge-easy'
                         : note.difficulty === 'MEDIUM'
-                        ? 'badge-medium'
-                        : 'badge-hard'
-                    }`}
+                          ? 'badge-medium'
+                          : 'badge-hard'
+                      }`}
                   >
                     {note.difficulty}
                   </span>
                 </div>
                 <div>
-                  <span className="text-xs text-gray-500 block">Tags</span>
+                  <span className="text-xs text-[var(--color-text-secondary)] block">Tags</span>
                   <div className="flex flex-wrap gap-1.5 mt-1.5">
                     {note.tags && note.tags.length > 0 ? (
                       note.tags.map((tag, i) => (
                         <span
                           key={i}
-                          className="text-[10px] px-2 py-0.5 rounded bg-gray-800 border text-gray-300"
+                          className="text-[10px] px-2 py-0.5 rounded bg-[var(--color-bg-secondary)] border text-[var(--color-text-secondary)]"
                           style={{ borderColor: 'var(--color-border)' }}
                         >
                           #{tag}
@@ -778,7 +787,7 @@ export default function EditNotePage() {
 
           {/* Quick Tips Panel */}
           <div className="glass-card p-6" style={{ background: 'rgba(108, 99, 241, 0.02)' }}>
-            <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-2">💡 Quick Tips</h3>
+            <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-2">Quick Tips</h3>
             <ul className="text-xs space-y-2 list-disc pl-4" style={{ color: 'var(--color-text-muted)' }}>
               <li>Add multiple sections to structure your notes step-by-step.</li>
               <li>Use code sections for code snippets (with syntax highlighting support).</li>

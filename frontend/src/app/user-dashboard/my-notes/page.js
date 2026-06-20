@@ -106,7 +106,7 @@ export default function MyNotesPage() {
 
       {error && (
         <div className="p-4 mb-6 rounded text-sm text-[var(--color-error)] bg-[var(--color-error)]/10 border border-[var(--color-error)]/20">
-          ⚠️ {error}
+          {error}
         </div>
       )}
 
@@ -200,7 +200,7 @@ export default function MyNotesPage() {
                 <div className="flex items-center gap-2">
                   <Link
                     href={`/user-dashboard/${note.id}/edit`}
-                    className="p-1.5 rounded hover:bg-gray-800 text-blue-400 hover:text-blue-300 transition-colors"
+                    className="p-1.5 rounded hover:bg-[var(--color-bg-secondary)] text-[var(--color-primary)] transition-colors"
                     title="Edit Note & Sections"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,7 +210,7 @@ export default function MyNotesPage() {
                   {note.status === 'PUBLISHED' && (
                     <Link
                       href={`/learning/${note.topic?.subject?.slug}/${note.topic?.slug}/${note.slug}`}
-                      className="p-1.5 rounded hover:bg-gray-800 text-purple-400 hover:text-purple-300 transition-colors"
+                      className="p-1.5 rounded hover:bg-[var(--color-bg-secondary)] text-indigo-500 dark:text-indigo-400 transition-colors"
                       title="View Live Note"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -221,7 +221,7 @@ export default function MyNotesPage() {
                   )}
                   <button
                     onClick={(e) => triggerDeleteConfirm(e, note.id)}
-                    className="p-1.5 rounded hover:bg-gray-800 text-red-500 hover:text-red-400 transition-colors"
+                    className="p-1.5 rounded hover:bg-[var(--color-bg-secondary)] text-[var(--color-error)] transition-colors"
                     title="Delete Note"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

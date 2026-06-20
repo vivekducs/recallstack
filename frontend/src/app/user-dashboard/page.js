@@ -76,7 +76,7 @@ export default function UserDashboardPage() {
 
       {error && (
         <div className="p-4 mb-6 rounded text-sm text-[var(--color-error)] bg-[var(--color-error)]/10 border border-[var(--color-error)]/20">
-          ⚠️ {error}
+          {error}
         </div>
       )}
 

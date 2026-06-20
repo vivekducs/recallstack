@@ -129,7 +129,7 @@ export default function CreateNotePage() {
 
   const subjectOptions = subjects.map(sub => ({
     value: sub.id,
-    label: `${sub.icon || '📚'} ${sub.name}`
+    label: sub.name
   }));
 
   const topicOptions = topics.length === 0 
@@ -161,7 +161,7 @@ export default function CreateNotePage() {
 
       {error && (
         <div className="p-4 mb-6 rounded-lg text-sm text-[var(--color-error)] border border-[var(--color-error)]/20 bg-[var(--color-error)]/10">
-          ⚠️ {error}
+          {error}
         </div>
       )}
 
