@@ -226,6 +226,25 @@ export default async function NotePage({ params }) {
                           rehypePlugins={[rehypeKatex]}
                           className="prose max-w-none prose-p:text-[var(--color-text-primary)] prose-headings:text-[var(--color-text-primary)] prose-strong:text-[var(--color-text-primary)] prose-li:text-[var(--color-text-primary)]"
                           components={{
+                            pre: ({ children }) => <div className="not-prose my-4">{children}</div>,
+                            code: ({ node, className, children, ...props }) => {
+                              const match = /language-(\w+)/.exec(className || '');
+                              const isBlock = match || String(children).includes('\n');
+                              
+                              if (isBlock) {
+                                return (
+                                  <CodeBlock 
+                                    language={match ? match[1] : 'text'} 
+                                    content={String(children).replace(/\n$/, '')} 
+                                  />
+                                );
+                              }
+                              return (
+                                <code className={`${className || ''} bg-[var(--color-bg-secondary)] px-1.5 py-0.5 rounded text-sm text-[var(--color-text-primary)]`} {...props}>
+                                  {children}
+                                </code>
+                              );
+                            },
                             a: ({ node, ...props }) => {
                               const isExternal = props.href?.startsWith('http');
                               if (isExternal) {
@@ -257,6 +276,25 @@ export default async function NotePage({ params }) {
                             rehypePlugins={[rehypeKatex]}
                             className="prose max-w-none prose-p:text-[var(--color-text-primary)] prose-headings:text-[var(--color-text-primary)] prose-strong:text-[var(--color-text-primary)] prose-li:text-[var(--color-text-primary)]"
                             components={{
+                              pre: ({ children }) => <div className="not-prose my-4">{children}</div>,
+                              code: ({ node, className, children, ...props }) => {
+                                const match = /language-(\w+)/.exec(className || '');
+                                const isBlock = match || String(children).includes('\n');
+                                
+                                if (isBlock) {
+                                  return (
+                                    <CodeBlock 
+                                      language={match ? match[1] : 'text'} 
+                                      content={String(children).replace(/\n$/, '')} 
+                                    />
+                                  );
+                                }
+                                return (
+                                  <code className={`${className || ''} bg-[var(--color-bg-secondary)] px-1.5 py-0.5 rounded text-sm text-[var(--color-text-primary)]`} {...props}>
+                                    {children}
+                                  </code>
+                                );
+                              },
                               a: ({ node, ...props }) => {
                                 const isExternal = props.href?.startsWith('http');
                                 if (isExternal) {
