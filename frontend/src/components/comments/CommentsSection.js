@@ -237,7 +237,7 @@ export default function CommentsSection({ noteId, noteAuthorId }) {
 
       {error && (
         <div className="p-4 mb-4 rounded bg-[var(--color-error)]/10 border border-[var(--color-error)]/20 text-sm text-[var(--color-error)]">
-          ⚠️ {error}
+          {error}
         </div>
       )}
 

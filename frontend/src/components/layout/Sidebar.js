@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import axios from 'axios';
+import SubjectIcon from '@/components/common/SubjectIcon';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -135,7 +136,7 @@ export default function Sidebar({ isOpen, onClose }) {
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="text-sm flex-shrink-0">
-                      {subject.icon || '📚'}
+                      <SubjectIcon icon={subject.icon} className="w-4 h-4 text-inherit" />
                     </span>
                     <span className="truncate">{subject.name}</span>
                   </div>

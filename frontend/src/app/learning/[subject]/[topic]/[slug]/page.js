@@ -67,6 +67,57 @@ export async function generateMetadata({ params }) {
   };
 }
 
+const renderContent = (content) => {
+  if (!content) return '';
+  const regex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = regex.exec(content)) !== null) {
+    const [fullMatch, text, url] = match;
+    const index = match.index;
+
+    if (index > lastIndex) {
+      parts.push(content.substring(lastIndex, index));
+    }
+
+    const isExternal = url.startsWith('http://') || url.startsWith('https://');
+
+    if (isExternal) {
+      parts.push(
+        <a 
+          key={index} 
+          href={url} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="font-semibold underline hover:text-[var(--color-primary-hover)] text-[var(--color-primary)]"
+        >
+          {text}
+        </a>
+      );
+    } else {
+      parts.push(
+        <Link 
+          key={index} 
+          href={url} 
+          className="font-semibold underline hover:text-[var(--color-primary-hover)] text-[var(--color-primary)]"
+        >
+          {text}
+        </Link>
+      );
+    }
+
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < content.length) {
+    parts.push(content.substring(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : content;
+};
+
 export default async function NotePage({ params }) {
   const note = await getNoteData(params.subject, params.topic, params.slug);
 
@@ -74,7 +125,11 @@ export default async function NotePage({ params }) {
     return (
       <main className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
         <div className="text-center">
-          <div className="text-6xl mb-4">🔍</div>
+          <div className="flex justify-center mb-4">
+            <svg className="w-16 h-16 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
           <p className="text-xl" style={{ color: 'var(--color-text-muted)' }}>Note not found.</p>
           <Link href={`/learning/${params.subject}/${params.topic}`} className="inline-block mt-4 text-sm font-medium" style={{ color: 'var(--color-primary)' }}>
             ← Back to Topic
@@ -211,7 +266,7 @@ export default async function NotePage({ params }) {
 
                     {section.contentType === 'TEXT' && (
                       <div className="whitespace-pre-wrap leading-relaxed mb-3" style={{ color: 'var(--color-text-primary)' }}>
-                        {section.content}
+                        {renderContent(section.content)}
                       </div>
                     )}
 
@@ -227,7 +282,7 @@ export default async function NotePage({ params }) {
                           <span className="text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>Example</span>
                         </div>
                         <div className="whitespace-pre-wrap" style={{ color: 'var(--color-text-primary)' }}>
-                          {section.content}
+                          {renderContent(section.content)}
                         </div>
                       </div>
                     )}

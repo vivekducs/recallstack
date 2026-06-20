@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getHomepageTitle } from '@/lib/seo';
 import JsonLd from '@/components/common/JsonLd';
 import Card from '@/components/common/Card';
+import SubjectIcon from '@/components/common/SubjectIcon';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://recallstack.com';
@@ -120,7 +121,7 @@ export default async function HomePage() {
                           color: subject.color || 'var(--color-primary)'
                         }}
                       >
-                        {subject.icon || '📚'}
+                        <SubjectIcon icon={subject.icon} className="w-5 h-5 text-inherit" />
                       </div>
                     </div>
 

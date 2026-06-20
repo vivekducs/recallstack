@@ -22,16 +22,16 @@ export default function Footer() {
             <h3 className="text-[var(--color-text-primary)] font-bold text-xs uppercase tracking-wider">Company</h3>
             <ul className="flex flex-col gap-2 text-xs">
               <li>
-                <Link href="/" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">About Us</Link>
+                <Link href="/about" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">About Us</Link>
               </li>
               <li>
-                <Link href="/" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">Privacy Policy</Link>
+                <Link href="/privacy" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">Privacy Policy</Link>
               </li>
               <li>
-                <Link href="/" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">Terms of Service</Link>
+                <Link href="/terms" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">Terms of Service</Link>
               </li>
               <li>
-                <Link href="/" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">Contact Us</Link>
+                <Link href="/contact" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">Contact Us</Link>
               </li>
             </ul>
           </div>
@@ -41,16 +41,16 @@ export default function Footer() {
             <h3 className="text-[var(--color-text-primary)] font-bold text-xs uppercase tracking-wider">Resources</h3>
             <ul className="flex flex-col gap-2 text-xs">
               <li>
-                <Link href="/" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">API Reference</Link>
+                <Link href="/docs" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">API Reference</Link>
               </li>
               <li>
-                <Link href="/" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">FAQ</Link>
+                <Link href="/faq" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">FAQ</Link>
               </li>
               <li>
-                <Link href="/" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">Blog</Link>
+                <Link href="/blog" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">Blog</Link>
               </li>
               <li>
-                <Link href="/" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">System Status</Link>
+                <Link href="/status" className="hover:text-[var(--color-text-primary)] hover:underline transition-colors">System Status</Link>
               </li>
             </ul>
           </div>

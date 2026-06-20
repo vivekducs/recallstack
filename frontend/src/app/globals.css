@@ -12,11 +12,15 @@
   --color-bg-secondary: #F5F5F5;
   --color-text-primary: #1A1A1A;
   --color-text-secondary: #666666;
+  --color-text-dim: #999999;
+  --color-text-muted: #666666;
+  --color-bg-elevated: #FAFAFA;
   --color-border: #CCCCCC;
   
   --color-success: #10B981;
   --color-warning: #F59E0B;
   --color-error: #EF4444;
+  --color-accent: #24A670;
 
   /* Density & Spacing Systems (Comfortable Default) */
   --spacing-sm: 8px;
@@ -65,11 +69,15 @@
     --color-bg-secondary: #1F1F1F;
     --color-text-primary: #EEEEEE;
     --color-text-secondary: #B0B0B0;
+    --color-text-dim: #777777;
+    --color-text-muted: #A0A0A0;
+    --color-bg-elevated: #242424;
     --color-border: #333333;
     
     --color-success: #34D399;
     --color-warning: #FCD34D;
     --color-error: #F87171;
+    --color-accent: #34D399;
   }
 }
 
