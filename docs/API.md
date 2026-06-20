@@ -82,7 +82,7 @@ This document details the REST API endpoints available in the RecallStack backen
       "name": "Data Structures & Algorithms",
       "slug": "dsa",
       "description": "Master fundamental DS and algorithms...",
-      "icon": "📊",
+      "icon": "Analytics",
       "color": "#6366f1",
       "topicsCount": 4,
       "notesCount": 1
@@ -100,7 +100,7 @@ This document details the REST API endpoints available in the RecallStack backen
     "name": "Data Structures & Algorithms",
     "slug": "dsa",
     "description": "...",
-    "icon": "📊",
+    "icon": "Analytics",
     "color": "#6366f1",
     "topicsCount": 4,
     "notesCount": 1,
@@ -126,7 +126,7 @@ This document details the REST API endpoints available in the RecallStack backen
     "name": "Web Development",
     "slug": "web-development",
     "description": "Learn full stack web dev...",
-    "icon": "🌐",
+    "icon": "Web Dev",
     "color": "#06b6d4"
   }
   ```
@@ -137,7 +137,7 @@ This document details the REST API endpoints available in the RecallStack backen
     "name": "Web Development",
     "slug": "web-development",
     "description": "...",
-    "icon": "🌐",
+    "icon": "Web Dev",
     "color": "#06b6d4",
     "topicsCount": 0,
     "notesCount": 0
