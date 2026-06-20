@@ -235,6 +235,7 @@ async function main() {
     { file: 'module3_apis_and_backend.md' },
     { file: 'module4_llm_fundamentals.md' },
     { file: 'module5_git_mastery.md' },
+    { file: 'module6_rag_fundamentals.md' },
   ];
 
   for (const mod of modules) {
