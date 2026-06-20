@@ -7,6 +7,44 @@ import { useRouter, usePathname } from 'next/navigation';
 import useAuth from '@/hooks/useAuth';
 import Card from '@/components/common/Card';
 
+function renderIcon(iconName) {
+  const classes = "w-4 h-4";
+  switch (iconName) {
+    case 'subjects':
+      return (
+        <svg className={classes} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+        </svg>
+      );
+    case 'users':
+      return (
+        <svg className={classes} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      );
+    case 'content':
+      return (
+        <svg className={classes} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      );
+    case 'moderation':
+      return (
+        <svg className={classes} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+      );
+    case 'analytics':
+      return (
+        <svg className={classes} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
   const { user, isAuthenticated, loading } = useAuth();
@@ -34,11 +72,11 @@ export default function AdminLayout({ children }) {
   }
 
   const menuItems = [
-    { name: 'Subjects & Topics', path: '/admin', icon: '📁' },
-    { name: 'Manage Users', path: '/admin/users', icon: '👤' },
-    { name: 'Manage Content', path: '/admin/content', icon: '📝' },
-    { name: 'Comment Moderation', path: '/admin/moderation', icon: '💬' },
-    { name: 'System Analytics', path: '/admin/analytics', icon: '📊' }
+    { name: 'Subjects & Topics', path: '/admin', iconName: 'subjects' },
+    { name: 'Manage Users', path: '/admin/users', iconName: 'users' },
+    { name: 'Manage Content', path: '/admin/content', iconName: 'content' },
+    { name: 'Comment Moderation', path: '/admin/moderation', iconName: 'moderation' },
+    { name: 'System Analytics', path: '/admin/analytics', iconName: 'analytics' }
   ];
 
   return (
@@ -63,7 +101,7 @@ export default function AdminLayout({ children }) {
                         : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] hover:text-[var(--color-text-primary)]'
                     }`}
                   >
-                    <span>{item.icon}</span>
+                    <span>{renderIcon(item.iconName)}</span>
                     <span>{item.name}</span>
                   </Link>
                 );

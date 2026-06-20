@@ -46,7 +46,7 @@ export default function AnalyticsDashboard() {
   if (error) {
     return (
       <div className="p-4 rounded text-sm text-[var(--color-error)] bg-[var(--color-error)]/10 border border-[var(--color-error)]/20">
-        ⚠️ {error}
+        {error}
       </div>
     );
   }

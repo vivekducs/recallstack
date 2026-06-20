@@ -122,13 +122,13 @@ export default function ManageUsersPage() {
 
       {error && (
         <div className="p-4 mb-6 rounded text-sm text-[var(--color-error)] bg-[var(--color-error)]/10 border border-[var(--color-error)]/20 animate-fade-in">
-          ⚠️ {error}
+          {error}
         </div>
       )}
       
       {success && (
         <div className="p-4 mb-6 rounded text-sm text-[var(--color-success)] bg-[var(--color-success)]/10 border border-[var(--color-success)]/20 animate-fade-in">
-          ✅ {success}
+          {success}
         </div>
       )}
 
