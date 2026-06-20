@@ -13,7 +13,7 @@ import Badge from '@/components/common/Badge';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function ManageUsersPage() {
-  const { getAuthHeaders, user: authUser } = useAuth();
+  const { token, getAuthHeaders, user: authUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -24,6 +24,7 @@ export default function ManageUsersPage() {
   const [success, setSuccess] = useState('');
   
   const fetchUsers = async () => {
+    if (!token) return;
     setLoading(true);
     setError('');
     try {
@@ -44,7 +45,7 @@ export default function ManageUsersPage() {
 
   useEffect(() => {
     fetchUsers();
-  }, [page]);
+  }, [page, token]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();

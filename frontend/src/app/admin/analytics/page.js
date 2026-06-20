@@ -10,12 +10,13 @@ import Badge from '@/components/common/Badge';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function AnalyticsDashboard() {
-  const { getAuthHeaders } = useAuth();
+  const { token, getAuthHeaders } = useAuth();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   const fetchStats = async () => {
+    if (!token) return;
     setLoading(true);
     setError('');
     try {
@@ -33,7 +34,7 @@ export default function AnalyticsDashboard() {
 
   useEffect(() => {
     fetchStats();
-  }, []);
+  }, [token]);
 
   if (loading) {
     return (

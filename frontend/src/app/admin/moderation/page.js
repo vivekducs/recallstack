@@ -11,7 +11,7 @@ import Table from '@/components/common/Table';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function ModerationPage() {
-  const { getAuthHeaders } = useAuth();
+  const { token, getAuthHeaders } = useAuth();
   const [comments, setComments] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -21,6 +21,7 @@ export default function ModerationPage() {
   const [success, setSuccess] = useState('');
 
   const fetchComments = async () => {
+    if (!token) return;
     setLoading(true);
     setError('');
     try {
@@ -41,7 +42,7 @@ export default function ModerationPage() {
 
   useEffect(() => {
     fetchComments();
-  }, [page]);
+  }, [page, token]);
 
   const handleApprove = async (id) => {
     setError(''); setSuccess('');

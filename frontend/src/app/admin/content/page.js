@@ -14,7 +14,7 @@ import Link from 'next/link';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function ContentManagementPage() {
-  const { getAuthHeaders } = useAuth();
+  const { token, getAuthHeaders } = useAuth();
   const [notes, setNotes] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -26,6 +26,7 @@ export default function ContentManagementPage() {
   const [success, setSuccess] = useState('');
 
   const fetchNotes = async () => {
+    if (!token) return;
     setLoading(true);
     setError('');
     try {
@@ -46,7 +47,7 @@ export default function ContentManagementPage() {
 
   useEffect(() => {
     fetchNotes();
-  }, [page, status]);
+  }, [page, status, token]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
