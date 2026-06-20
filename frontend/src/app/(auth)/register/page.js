@@ -56,7 +56,7 @@ export default function RegisterPage() {
 
         {error && (
           <div className="p-4 mb-6 rounded-lg text-sm text-[var(--color-error)] border border-[var(--color-error)]/20 bg-[var(--color-error)]/10">
-            ⚠️ {error}
+            {error}
           </div>
         )}
 

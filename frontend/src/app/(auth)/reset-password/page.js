@@ -69,7 +69,7 @@ function ResetPasswordForm() {
     return (
       <div className="w-full text-center py-6">
         <div className="p-4 mb-6 rounded-lg text-sm text-[var(--color-error)] border border-[var(--color-error)]/20 bg-[var(--color-error)]/10">
-          ⚠️ Reset token is invalid or missing. Please request a new password reset link.
+          Reset token is invalid or missing. Please request a new password reset link.
         </div>
         <Link href="/forgot-password" className="hover:underline font-semibold text-[var(--color-primary)]">
           Request new reset link
@@ -93,13 +93,13 @@ function ResetPasswordForm() {
 
         {error && (
           <div className="p-4 mb-6 rounded-lg text-sm text-[var(--color-error)] border border-[var(--color-error)]/20 bg-[var(--color-error)]/10">
-            ⚠️ {error}
+            {error}
           </div>
         )}
 
         {success && (
           <div className="p-4 mb-6 rounded-lg text-sm text-[var(--color-success)] border border-[var(--color-success)]/20 bg-[var(--color-success)]/10">
-            ✅ {success} Redirecting to login page...
+            {success} Redirecting to login page...
           </div>
         )}
 
