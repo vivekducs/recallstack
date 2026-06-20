@@ -7,7 +7,8 @@ import StarRating from '@/components/common/StarRating';
 import CommentsSection from '@/components/comments/CommentsSection';
 import JsonLd from '@/components/common/JsonLd';
 import { getNoteTitle } from '@/lib/seo';
-
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://recallstack.com';
 
@@ -67,56 +68,7 @@ export async function generateMetadata({ params }) {
   };
 }
 
-const renderContent = (content) => {
-  if (!content) return '';
-  const regex = /\[([^\]]+)\]\(([^)]+)\)/g;
-  const parts = [];
-  let lastIndex = 0;
-  let match;
 
-  while ((match = regex.exec(content)) !== null) {
-    const [fullMatch, text, url] = match;
-    const index = match.index;
-
-    if (index > lastIndex) {
-      parts.push(content.substring(lastIndex, index));
-    }
-
-    const isExternal = url.startsWith('http://') || url.startsWith('https://');
-
-    if (isExternal) {
-      parts.push(
-        <a 
-          key={index} 
-          href={url} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="font-semibold underline hover:text-[var(--color-primary-hover)] text-[var(--color-primary)]"
-        >
-          {text}
-        </a>
-      );
-    } else {
-      parts.push(
-        <Link 
-          key={index} 
-          href={url} 
-          className="font-semibold underline hover:text-[var(--color-primary-hover)] text-[var(--color-primary)]"
-        >
-          {text}
-        </Link>
-      );
-    }
-
-    lastIndex = regex.lastIndex;
-  }
-
-  if (lastIndex < content.length) {
-    parts.push(content.substring(lastIndex));
-  }
-
-  return parts.length > 0 ? parts : content;
-};
 
 export default async function NotePage({ params }) {
   const note = await getNoteData(params.subject, params.topic, params.slug);
@@ -265,8 +217,22 @@ export default async function NotePage({ params }) {
                     <h2 className="text-2xl font-bold mt-8 mb-3 text-[var(--color-text-primary)]">{section.title}</h2>
 
                     {section.contentType === 'TEXT' && (
-                      <div className="whitespace-pre-wrap leading-relaxed mb-3" style={{ color: 'var(--color-text-primary)' }}>
-                        {renderContent(section.content)}
+                      <div className="mb-3">
+                        <ReactMarkdown 
+                          remarkPlugins={[remarkGfm]}
+                          className="prose max-w-none prose-p:text-[var(--color-text-primary)] prose-headings:text-[var(--color-text-primary)] prose-strong:text-[var(--color-text-primary)] prose-li:text-[var(--color-text-primary)]"
+                          components={{
+                            a: ({node, ...props}) => {
+                              const isExternal = props.href?.startsWith('http');
+                              if (isExternal) {
+                                return <a {...props} target="_blank" rel="noopener noreferrer" className="font-semibold underline hover:text-[var(--color-primary-hover)] text-[var(--color-primary)]" />;
+                              }
+                              return <Link href={props.href || '#'} className="font-semibold underline hover:text-[var(--color-primary-hover)] text-[var(--color-primary)]">{props.children}</Link>;
+                            }
+                          }}
+                        >
+                          {section.content}
+                        </ReactMarkdown>
                       </div>
                     )}
 
@@ -281,8 +247,22 @@ export default async function NotePage({ params }) {
                         <div className="flex items-center gap-2 mb-3">
                           <span className="text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>Example</span>
                         </div>
-                        <div className="whitespace-pre-wrap" style={{ color: 'var(--color-text-primary)' }}>
-                          {renderContent(section.content)}
+                        <div>
+                          <ReactMarkdown 
+                            remarkPlugins={[remarkGfm]}
+                            className="prose max-w-none prose-p:text-[var(--color-text-primary)] prose-headings:text-[var(--color-text-primary)] prose-strong:text-[var(--color-text-primary)] prose-li:text-[var(--color-text-primary)]"
+                            components={{
+                              a: ({node, ...props}) => {
+                                const isExternal = props.href?.startsWith('http');
+                                if (isExternal) {
+                                  return <a {...props} target="_blank" rel="noopener noreferrer" className="font-semibold underline hover:text-[var(--color-primary-hover)] text-[var(--color-primary)]" />;
+                                }
+                                return <Link href={props.href || '#'} className="font-semibold underline hover:text-[var(--color-primary-hover)] text-[var(--color-primary)]">{props.children}</Link>;
+                              }
+                            }}
+                          >
+                            {section.content}
+                          </ReactMarkdown>
                         </div>
                       </div>
                     )}
