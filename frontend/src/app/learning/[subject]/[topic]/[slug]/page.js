@@ -9,6 +9,9 @@ import JsonLd from '@/components/common/JsonLd';
 import { getNoteTitle } from '@/lib/seo';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://recallstack.com';
 
@@ -219,7 +222,8 @@ export default async function NotePage({ params }) {
                     {section.contentType === 'TEXT' && (
                       <div className="mb-3">
                         <ReactMarkdown 
-                          remarkPlugins={[remarkGfm]}
+                          remarkPlugins={[remarkGfm, remarkMath]}
+                          rehypePlugins={[rehypeKatex]}
                           className="prose max-w-none prose-p:text-[var(--color-text-primary)] prose-headings:text-[var(--color-text-primary)] prose-strong:text-[var(--color-text-primary)] prose-li:text-[var(--color-text-primary)]"
                           components={{
                             a: ({node, ...props}) => {
@@ -249,7 +253,8 @@ export default async function NotePage({ params }) {
                         </div>
                         <div>
                           <ReactMarkdown 
-                            remarkPlugins={[remarkGfm]}
+                            remarkPlugins={[remarkGfm, remarkMath]}
+                            rehypePlugins={[rehypeKatex]}
                             className="prose max-w-none prose-p:text-[var(--color-text-primary)] prose-headings:text-[var(--color-text-primary)] prose-strong:text-[var(--color-text-primary)] prose-li:text-[var(--color-text-primary)]"
                             components={{
                               a: ({node, ...props}) => {
