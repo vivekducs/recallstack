@@ -1,6 +1,8 @@
 // frontend/src/components/common/Card.js
 'use client';
 
+import { useState, useRef } from 'react';
+
 export default function Card({
   children,
   onClick,
@@ -9,6 +11,18 @@ export default function Card({
   ...props
 }) {
   const isClickable = !!onClick;
+  const cardRef = useRef(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    setMousePosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
   
   // Use will-change-transform for best performance, deeper rounding for modern look, and refined backdrop blur.
   // We add 'group overflow-hidden' to clip the shine effect and trigger child hover states.
@@ -25,11 +39,24 @@ export default function Card({
 
   return (
     <div
+      ref={cardRef}
       onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className={`${baseStyle} ${selectedVariant} ${cursorStyle} ${className}`}
       style={{ padding: 'var(--density-padding, 16px)', ...props.style }}
       {...props}
     >
+      {/* Advanced Dynamic Mouse Spotlight Effect */}
+      <div
+        className="pointer-events-none absolute -inset-px z-0 transition-opacity duration-300 rounded-2xl"
+        style={{
+          opacity: isHovered ? 1 : 0,
+          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(96, 165, 250, 0.1), transparent 40%)`,
+        }}
+      />
+
       {/* Eye-catching glowing gradient that appears on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/0 via-[var(--color-primary)]/5 to-[var(--color-primary)]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
       
