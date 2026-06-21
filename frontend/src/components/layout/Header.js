@@ -73,12 +73,8 @@ export default function Header() {
 
   return (
     <header 
-      // Header: Fixed/Sticky, Full width. Desktop: 56px (h-14). Mobile: 48px (h-12).
-      // Background: White in light mode, Dark in dark mode.
-      className={`sticky top-0 z-50 w-full transition-all duration-200 border-b ${
-        scrolled 
-          ? 'bg-[var(--color-bg)] shadow-md border-[var(--color-border)]' 
-          : 'bg-[var(--color-bg)] border-transparent'
+      className={`sticky top-0 z-50 w-full transition-all duration-200 border-b backdrop-blur-md bg-white/70 dark:bg-neutral-900/70 border-black/[0.06] dark:border-white/[0.06] ${
+        scrolled ? 'shadow-[0_2px_12px_rgba(0,0,0,0.03)]' : ''
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 md:px-6 h-12 md:h-14 flex items-center justify-between">
@@ -106,7 +102,7 @@ export default function Header() {
               placeholder="Search notes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-[200px] h-[36px] bg-[var(--color-bg-secondary)] border border-[var(--color-border)] hover:border-[var(--color-text-secondary)] focus:border-[var(--color-primary)] rounded px-3 pr-8 text-xs text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)]/60 outline-none transition-all duration-150 focus:ring-2 focus:ring-[var(--color-primary)]/20"
+              className="w-[200px] h-[36px] bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] hover:border-black/[0.12] dark:hover:border-white/[0.12] focus:border-[var(--color-primary)] rounded-lg px-3 pr-8 text-xs text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)]/50 outline-none transition-all duration-200 focus:ring-4 focus:ring-[var(--color-primary)]/10 focus:bg-white dark:focus:bg-black"
             />
             <button type="submit" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,7 +116,7 @@ export default function Header() {
             <div className="relative" ref={dropdownRef}>
               <button 
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded bg-[var(--color-bg-secondary)] hover:bg-[var(--color-border)] border border-[var(--color-border)] text-xs font-semibold text-[var(--color-text-primary)] transition-all focus:ring-2 focus:ring-[var(--color-primary)]/50"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] hover:bg-black/[0.06] dark:hover:bg-white/[0.06] border border-black/[0.06] dark:border-white/[0.06] text-xs font-semibold text-[var(--color-text-primary)] transition-all duration-200 focus:ring-4 focus:ring-[var(--color-primary)]/10"
               >
                 <span>{user?.username || 'User'}</span>
                 {user?.role === 'ADMIN' && (
@@ -135,7 +131,7 @@ export default function Header() {
 
               {/* Dropdown Menu */}
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 rounded bg-[var(--color-bg-secondary)] border border-[var(--color-border)] shadow-xl py-1.5 text-xs z-50">
+                <div className="absolute right-0 mt-2 w-48 rounded-xl bg-white/95 dark:bg-neutral-900/95 backdrop-blur-md border border-black/[0.06] dark:border-white/[0.06] shadow-xl py-1.5 text-xs z-50">
                   <Link 
                     href="/profile" 
                     onClick={() => setDropdownOpen(false)}

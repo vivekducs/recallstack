@@ -127,10 +127,10 @@ export default function Sidebar({ isOpen, onClose }) {
                 <button
                   onClick={() => toggleSubject(subject.id, subject.slug)}
                   className={`
-                    w-full flex items-center justify-between py-3 px-4 rounded text-left transition-all duration-150 text-[14px] font-normal
+                    w-full flex items-center justify-between py-2.5 px-3 rounded-lg text-left transition-all duration-200 text-sm font-medium
                     ${isSubjectActive 
-                      ? 'bg-[var(--color-primary)] text-white font-semibold shadow-sm' 
-                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)]'
+                      ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-semibold border border-[var(--color-primary)]/20 shadow-sm' 
+                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'
                     }
                   `}
                 >
@@ -141,11 +141,11 @@ export default function Sidebar({ isOpen, onClose }) {
                     <span className="truncate">{subject.name}</span>
                   </div>
                   <div className="flex items-center gap-1.5 flex-shrink-0">
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${isSubjectActive ? 'bg-white/20 text-white' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)]'}`}>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${isSubjectActive ? 'bg-[var(--color-primary)]/20 text-[var(--color-primary)]' : 'bg-black/[0.03] dark:bg-white/[0.03] text-[var(--color-text-secondary)]'}`}>
                       {subject.topicsCount}
                     </span>
                     <svg 
-                      className={`w-3 h-3 transition-transform duration-200 ${isSubjectExpanded ? 'rotate-180' : ''} ${isSubjectActive ? 'text-white' : 'text-[var(--color-text-secondary)]'}`} 
+                      className={`w-3.5 h-3.5 transition-transform duration-250 ${isSubjectExpanded ? 'rotate-180' : ''} ${isSubjectActive ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)]'}`} 
                       fill="none" 
                       stroke="currentColor" 
                       viewBox="0 0 24 24"
@@ -157,7 +157,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
                 {/* Indent sub-items: 16px (pl-4) */}
                 {isSubjectExpanded && (
-                  <div className="pl-4 pr-1 py-0.5 flex flex-col gap-[2px] mt-[2px] border-l border-[var(--color-border)] ml-5">
+                  <div className="pl-3.5 pr-1 py-0.5 flex flex-col gap-[2px] mt-[2px] border-l border-black/[0.06] dark:border-white/[0.06] ml-4">
                     {isTopicLoading ? (
                       <div className="h-6 w-full bg-[var(--color-bg-secondary)]/50 animate-pulse rounded"></div>
                     ) : subjectTopics.length === 0 ? (
@@ -171,10 +171,10 @@ export default function Sidebar({ isOpen, onClose }) {
                             href={`/learning/${subject.slug}/${topic.slug}`}
                             onClick={onClose}
                             className={`
-                              w-full text-xs text-left py-2 px-3 rounded transition-all duration-150 flex items-center justify-between
+                              w-full text-xs text-left py-2 px-3 rounded-md transition-all duration-200 flex items-center justify-between
                               ${isTopicActive
-                                ? 'text-[var(--color-primary)] font-semibold bg-[var(--color-bg-secondary)] border-l-2 border-[var(--color-primary)] pl-2.5 rounded-l-none'
-                                : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)]'
+                                ? 'text-[var(--color-primary)] font-semibold bg-[var(--color-primary)]/5'
+                                : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-black/[0.02] dark:hover:bg-white/[0.02]'
                               }
                             `}
                           >
@@ -197,7 +197,7 @@ export default function Sidebar({ isOpen, onClose }) {
   return (
     <>
       {/* Desktop view: Width 240px (w-60), sticky top-14 (since header height is 56px) */}
-      <aside className="hidden lg:flex flex-col w-[240px] sticky top-14 h-[calc(100vh-3.5rem)] border-r border-[var(--color-border)] bg-[var(--color-bg)] overflow-y-auto px-4 py-6 flex-shrink-0">
+      <aside className="hidden lg:flex flex-col w-[240px] sticky top-14 h-[calc(100vh-3.5rem)] border-r border-black/[0.06] dark:border-white/[0.06] bg-transparent overflow-y-auto px-4 py-6 flex-shrink-0">
         {renderContent()}
       </aside>
 
@@ -208,7 +208,7 @@ export default function Sidebar({ isOpen, onClose }) {
             onClick={onClose}
             className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-200"
           ></div>
-          <div className="relative w-[240px] bg-[var(--color-bg)] border-r border-[var(--color-border)] p-4 flex flex-col h-full z-10 overflow-y-auto">
+          <div className="relative w-[240px] bg-[var(--color-bg)] border-r border-black/[0.06] dark:border-white/[0.06] p-4 flex flex-col h-full z-10 overflow-y-auto">
             {renderContent()}
           </div>
         </div>
