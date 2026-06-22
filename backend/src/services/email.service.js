@@ -158,38 +158,59 @@ class EmailService {
     const twentyFourHoursAgo = new Date();
     twentyFourHoursAgo.setDate(twentyFourHoursAgo.getDate() - 1);
 
+    const userIds = users.map(u => u.id);
+
+    // Batch fetch all approved comments created in the last 24 hours
+    const allComments = await prisma.comment.findMany({
+      where: {
+        createdAt: { gte: twentyFourHoursAgo },
+        status: 'APPROVED',
+        note: { authorId: { in: userIds } }
+      },
+      include: {
+        user: { select: { name: true } },
+        note: { select: { title: true, authorId: true } }
+      }
+    });
+
+    // Batch fetch all ratings created in the last 24 hours
+    const allRatings = await prisma.noteRating.findMany({
+      where: {
+        createdAt: { gte: twentyFourHoursAgo },
+        note: { authorId: { in: userIds } }
+      },
+      include: {
+        user: { select: { name: true } },
+        note: { select: { title: true, authorId: true } }
+      }
+    });
+
+    // Map comments and ratings to author IDs, avoiding self-activity
+    const commentsByAuthor = {};
+    const ratingsByAuthor = {};
+
+    for (const comment of allComments) {
+      if (comment.userId === comment.note.authorId) continue;
+      const authorId = comment.note.authorId;
+      if (!commentsByAuthor[authorId]) commentsByAuthor[authorId] = [];
+      commentsByAuthor[authorId].push(comment);
+    }
+
+    for (const rating of allRatings) {
+      if (rating.userId === rating.note.authorId) continue;
+      const authorId = rating.note.authorId;
+      if (!ratingsByAuthor[authorId]) ratingsByAuthor[authorId] = [];
+      ratingsByAuthor[authorId].push(rating);
+    }
+
     let sentCount = 0;
 
     for (const user of users) {
       const prefs = user.emailPreferences || {};
       if (prefs.digestFrequency !== 'daily') continue;
 
-      // 1. Fetch recent comments on user's notes
-      const newComments = await prisma.comment.findMany({
-        where: {
-          note: { authorId: user.id },
-          createdAt: { gte: twentyFourHoursAgo },
-          userId: { not: user.id },
-          status: 'APPROVED'
-        },
-        include: {
-          user: { select: { name: true } },
-          note: { select: { title: true } }
-        }
-      });
-
-      // 2. Fetch recent ratings on user's notes
-      const newRatings = await prisma.noteRating.findMany({
-        where: {
-          note: { authorId: user.id },
-          createdAt: { gte: twentyFourHoursAgo },
-          userId: { not: user.id }
-        },
-        include: {
-          user: { select: { name: true } },
-          note: { select: { title: true } }
-        }
-      });
+      const newComments = commentsByAuthor[user.id] || [];
+      const newRatings = ratingsByAuthor[user.id] || [];
 
       // If no new activities, don't send anything
       if (newComments.length === 0 && newRatings.length === 0) continue;

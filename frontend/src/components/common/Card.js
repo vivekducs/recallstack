@@ -1,7 +1,7 @@
 // frontend/src/components/common/Card.js
 'use client';
 
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 
 export default function Card({
   children,
@@ -12,16 +12,12 @@ export default function Card({
 }) {
   const isClickable = !!onClick;
   const cardRef = useRef(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseMove = (e) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
-    setMousePosition({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
+    cardRef.current.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+    cardRef.current.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
   };
   
   // Use will-change-transform for best performance, deeper rounding for modern look, and refined backdrop blur.
@@ -42,18 +38,15 @@ export default function Card({
       ref={cardRef}
       onClick={onClick}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       className={`${baseStyle} ${selectedVariant} ${cursorStyle} ${className}`}
       style={{ padding: 'var(--density-padding, 16px)', ...props.style }}
       {...props}
     >
       {/* Advanced Dynamic Mouse Spotlight Effect */}
       <div
-        className="pointer-events-none absolute -inset-px z-0 transition-opacity duration-300 rounded-2xl"
+        className="pointer-events-none absolute -inset-px z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"
         style={{
-          opacity: isHovered ? 1 : 0,
-          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(96, 165, 250, 0.1), transparent 40%)`,
+          background: `radial-gradient(600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(96, 165, 250, 0.1), transparent 40%)`,
         }}
       />
 

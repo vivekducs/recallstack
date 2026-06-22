@@ -35,9 +35,21 @@ class TrendingService {
       }
     });
 
-    // 3. Fetch all published notes to get their helpfulCount and overall fields
+    // Extract set of active note IDs to filter database queries
+    const activeNoteIds = new Set([
+      ...viewsData.map(v => v.noteId),
+      ...ratingsData.map(r => r.noteId)
+    ]);
+
+    // 3. Fetch only published notes that have activity or helpful status
     const notes = await prisma.note.findMany({
-      where: { status: 'PUBLISHED' },
+      where: {
+        status: 'PUBLISHED',
+        OR: [
+          { id: { in: [...activeNoteIds] } },
+          { helpfulCount: { gt: 0 } }
+        ]
+      },
       include: {
         author: { select: { name: true, username: true } },
         topic: {
@@ -50,15 +62,19 @@ class TrendingService {
       }
     });
 
-    // 4. Calculate score for each note based on weighting:
-    // views (40%) + ratings (40%) + helpful (20%)
-    const scoredNotes = notes.map(note => {
-      const viewsEntry = viewsData.find(v => v.noteId === note.id);
-      const viewsCount = viewsEntry ? (viewsEntry._sum.views || 0) : 0;
+    // Convert arrays into lookup Maps for O(1) performance
+    const viewsMap = new Map(viewsData.map(v => [v.noteId, v._sum.views || 0]));
+    const ratingsMap = new Map(ratingsData.map(r => [
+      r.noteId,
+      { count: r._count.rating || 0, avg: r._avg.rating || 0 }
+    ]));
 
-      const ratingsEntry = ratingsData.find(r => r.noteId === note.id);
-      const ratingCount = ratingsEntry ? (ratingsEntry._count.rating || 0) : 0;
-      const avgRating = ratingsEntry ? (ratingsEntry._avg.rating || 0) : 0;
+    // 4. Calculate score for each note based on weighting
+    const scoredNotes = notes.map(note => {
+      const viewsCount = viewsMap.get(note.id) || 0;
+      const ratingsEntry = ratingsMap.get(note.id) || { count: 0, avg: 0 };
+      const ratingCount = ratingsEntry.count;
+      const avgRating = ratingsEntry.avg;
 
       // Score calculation formula:
       // score = (viewsCount * 0.4) + ((avgRating * ratingCount) * 0.4) + (note.helpfulCount * 0.2)

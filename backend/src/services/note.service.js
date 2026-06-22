@@ -68,19 +68,19 @@ class NoteService {
       }
     }
 
-    // Increment view count for published notes
+    // Increment view count for published notes in the background
     if (note.status === 'PUBLISHED') {
       const today = new Date();
       today.setUTCHours(0, 0, 0, 0);
 
-      await prisma.$transaction([
+      prisma.$transaction([
         noteRepository.update(id, { views: { increment: 1 } }),
         prisma.noteAnalyticsDaily.upsert({
           where: { noteId_date: { noteId: id, date: today } },
           update: { views: { increment: 1 } },
           create: { noteId: id, date: today, views: 1 }
         })
-      ]);
+      ]).catch(err => console.error('Failed to increment views in background:', err));
     }
 
     return note;
