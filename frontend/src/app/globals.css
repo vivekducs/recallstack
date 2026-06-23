@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -94,7 +92,7 @@ html {
 }
 
 body {
-  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--color-bg);
   color: var(--color-text-primary);
   line-height: var(--density-line-height, 1.6);
@@ -103,7 +101,7 @@ body {
 }
 
 code, pre, .font-mono {
-  font-family: 'JetBrains Mono', Menlo, Monaco, Consolas, "Courier New", monospace !important;
+  font-family: var(--font-mono), Menlo, Monaco, Consolas, "Courier New", monospace !important;
 }
 
 /* Spacing and Focus utilities */

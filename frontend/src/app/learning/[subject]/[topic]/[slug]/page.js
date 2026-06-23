@@ -17,22 +17,10 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://recallstack.com';
 
 async function getNoteData(subjectSlug, topicSlug, noteSlug) {
   try {
-    const subjectRes = await fetch(`${API_URL}/subjects/${subjectSlug}`, { next: { revalidate: 60 } });
-    if (!subjectRes.ok) return null;
-    const subject = await subjectRes.json();
-
-    const topic = subject.topics?.find(t => t.slug === topicSlug);
-    if (!topic) return null;
-
-    const notesRes = await fetch(`${API_URL}/topics/${topic.id}/notes`, { next: { revalidate: 60 } });
-    if (!notesRes.ok) return null;
-    const notes = await notesRes.json();
-    const foundNote = notes.find(n => n.slug === noteSlug);
-    if (!foundNote) return null;
-
-    const noteDetailsRes = await fetch(`${API_URL}/notes/${foundNote.id}`, { next: { revalidate: 60 } });
-    if (!noteDetailsRes.ok) return null;
-    return await noteDetailsRes.json();
+    const res = await fetch(`${API_URL}/notes/lookup/${subjectSlug}/${topicSlug}/${noteSlug}`, { next: { revalidate: 60 } });
+    if (res.ok) {
+      return await res.json();
+    }
   } catch (err) {
     console.error('Failed to fetch note details on server:', err);
   }

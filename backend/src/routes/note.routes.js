@@ -13,6 +13,9 @@ router.get('/', noteController.getNotesByTopic);
 // GET /api/notes/user/my-notes (Authenticated - get user's own notes)
 router.get('/user/my-notes', authenticateToken, noteController.getMyNotes);
 
+// GET /api/notes/lookup/:subjectSlug/:topicSlug/:noteSlug (Public for published, owner/admin for drafts)
+router.get('/lookup/:subjectSlug/:topicSlug/:noteSlug', optionalAuth, noteController.getNoteBySlugs);
+
 // GET /api/notes/:id (Public for published, owner/admin for drafts)
 router.get('/:id', optionalAuth, noteController.getNoteById);
 

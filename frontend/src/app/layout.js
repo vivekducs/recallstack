@@ -1,5 +1,18 @@
+import { Outfit, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import Layout from '@/components/layout/Layout';
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sans',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-mono',
+});
 
 export const metadata = {
   title: 'RecallStack - Learn Once. Recall Anytime.',
@@ -19,7 +32,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${outfit.variable} ${jetbrainsMono.variable}`}>
       <body>
         <Layout>
           {children}

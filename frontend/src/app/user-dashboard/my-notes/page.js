@@ -1,59 +1,40 @@
-// frontend/src/app/user-dashboard/my-notes/page.js
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import useAuth from '@/hooks/useAuth';
 import Modal from '@/components/common/Modal';
 import Button from '@/components/common/Button';
+import useSWRInfinite from 'swr/infinite';
+import Skeleton, { CardSkeleton } from '@/components/common/Skeleton';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function MyNotesPage() {
   const { token, getAuthHeaders } = useAuth();
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('ALL'); // ALL, DRAFT, PUBLISHED
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [noteIdToDelete, setNoteIdToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
-  const [nextCursor, setNextCursor] = useState(null);
-  const [loadingMore, setLoadingMore] = useState(false);
 
-  const fetchMyNotes = async (cursor = null) => {
-    if (!token) return;
-    try {
-      if (!cursor) setLoading(true);
-      else setLoadingMore(true);
-      setError('');
-      
-      const params = new URLSearchParams();
-      if (cursor) params.append('cursor', cursor);
+  const fetcher = useCallback((url) => {
+    return axios.get(url, { headers: getAuthHeaders() }).then(res => res.data);
+  }, [getAuthHeaders]);
 
-      const res = await axios.get(`${API_URL}/notes/user/my-notes?${params.toString()}`, {
-        headers: getAuthHeaders(),
-      });
-      
-      if (cursor) {
-        setNotes(prev => [...prev, ...res.data.results]);
-      } else {
-        setNotes(res.data.results);
-      }
-      setNextCursor(res.data.nextCursor);
-    } catch (err) {
-      console.error('Failed to load my notes:', err);
-      setError('Could not load your notes. Please try again.');
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
+  const getKey = (pageIndex, previousPageData) => {
+    if (!token) return null;
+    if (previousPageData && !previousPageData.nextCursor) return null;
+    if (pageIndex === 0) return `${API_URL}/notes/user/my-notes`;
+    return `${API_URL}/notes/user/my-notes?cursor=${previousPageData.nextCursor}`;
   };
 
-  useEffect(() => {
-    fetchMyNotes();
-  }, [token]);
+  const { data, error, size, setSize, isValidating, mutate } = useSWRInfinite(getKey, fetcher);
+
+  const notes = data ? data.flatMap(page => page.results) : [];
+  const loading = !data && !error;
+  const loadingMore = size > 0 && data && typeof data[size - 1] === 'undefined';
+  const nextCursor = data ? data[data.length - 1]?.nextCursor : null;
 
   const triggerDeleteConfirm = (e, noteId) => {
     e.preventDefault();
@@ -69,7 +50,14 @@ export default function MyNotesPage() {
       await axios.delete(`${API_URL}/notes/${noteIdToDelete}`, {
         headers: getAuthHeaders(),
       });
-      setNotes(prev => prev.filter(note => note.id !== noteIdToDelete));
+      // Mutate local infinite list cache optimistically
+      mutate(
+        prevData => prevData.map(page => ({
+          ...page,
+          results: page.results.filter(note => note.id !== noteIdToDelete)
+        })),
+        false
+      );
       setDeleteModalOpen(false);
       setNoteIdToDelete(null);
     } catch (err) {
@@ -94,10 +82,36 @@ export default function MyNotesPage() {
     return note.status === activeTab;
   });
 
+  const displayError = error ? 'Could not load your notes. Please try again.' : '';
+
   if (loading) {
     return (
-      <div className="p-8 text-center animate-pulse text-[var(--color-text-secondary)]">
-        Loading your workspace notes...
+      <div>
+        {/* Header Action Row */}
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-b border-[var(--color-border)] pb-6">
+          <div>
+            <Skeleton variant="rect" width="180px" height="32px" className="mb-2" />
+            <Skeleton variant="text" width="340px" />
+          </div>
+          <div className="flex gap-3">
+            <Skeleton variant="rect" width="140px" height="38px" />
+          </div>
+        </header>
+
+        {/* Filtering Tabs */}
+        <div className="flex gap-2 mb-6 border-b pb-4 border-[var(--color-border)]">
+          <Skeleton variant="rect" width="80px" height="28px" />
+          <Skeleton variant="rect" width="80px" height="28px" />
+          <Skeleton variant="rect" width="80px" height="28px" />
+        </div>
+
+        {/* Notes Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+        </div>
       </div>
     );
   }
@@ -118,9 +132,9 @@ export default function MyNotesPage() {
         </Link>
       </header>
 
-      {error && (
+      {displayError && (
         <div className="p-4 mb-6 rounded text-sm text-[var(--color-error)] bg-[var(--color-error)]/10 border border-[var(--color-error)]/20">
-          {error}
+          {displayError}
         </div>
       )}
 
@@ -252,7 +266,7 @@ export default function MyNotesPage() {
       {nextCursor && (
         <div className="mt-8 text-center">
           <Button
-            onClick={() => fetchMyNotes(nextCursor)}
+            onClick={() => setSize(size + 1)}
             disabled={loadingMore}
             variant="secondary"
           >

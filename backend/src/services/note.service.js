@@ -65,6 +65,61 @@ class NoteService {
     };
   }
 
+  async getNoteBySlugs(subjectSlug, topicSlug, noteSlug, user) {
+    const note = await prisma.note.findFirst({
+      where: {
+        slug: noteSlug,
+        topic: {
+          slug: topicSlug,
+          subject: {
+            slug: subjectSlug
+          }
+        }
+      },
+      include: {
+        author: { select: { id: true, name: true, username: true } },
+        sections: { orderBy: { order: 'asc' } },
+        topic: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            subject: { select: { id: true, name: true, slug: true } }
+          }
+        }
+      }
+    });
+
+    if (!note) throw new Error('Note not found');
+
+    // Check authorization for drafts
+    if (note.status === 'DRAFT') {
+      if (!user || (user.userId !== note.authorId && user.role !== 'ADMIN')) {
+        const err = new Error('Cannot view draft notes');
+        err.status = 403;
+        throw err;
+      }
+    }
+
+    // Increment view count for published notes in the background
+    if (note.status === 'PUBLISHED') {
+      const id = note.id;
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+
+      prisma.$transaction([
+        noteRepository.update(id, { views: { increment: 1 } }),
+        prisma.noteAnalyticsDaily.upsert({
+          where: { noteId_date: { noteId: id, date: today } },
+          update: { views: { increment: 1 } },
+          create: { noteId: id, date: today, views: 1 }
+        })
+      ]).catch(err => console.error('Failed to increment views in background:', err));
+    }
+
+    return note;
+  }
+
   async getNoteById(id, user) {
     const note = await noteRepository.findById(id, {
       author: { select: { id: true, name: true, username: true } },

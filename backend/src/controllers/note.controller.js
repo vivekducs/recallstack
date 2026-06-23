@@ -22,6 +22,18 @@ class NoteController {
     }
   }
 
+  async getNoteBySlugs(req, res, next) {
+    try {
+      const { subjectSlug, topicSlug, noteSlug } = req.params;
+      const note = await noteService.getNoteBySlugs(subjectSlug, topicSlug, noteSlug, req.user);
+      res.json(note);
+    } catch (err) {
+      if (err.message === 'Note not found') return res.status(404).json({ error: err.message });
+      if (err.status) return res.status(err.status).json({ error: err.message });
+      next(err);
+    }
+  }
+
   async getNoteById(req, res, next) {
     try {
       const note = await noteService.getNoteById(req.params.id, req.user);
