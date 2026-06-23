@@ -1,7 +1,7 @@
 // frontend/src/app/robots.js
 
 export default function robots() {
-  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://recallstack.com';
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
   return {
     rules: [
       {

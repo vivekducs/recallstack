@@ -17,7 +17,7 @@ export default function StarRating({ noteId, initialAverage = 0, initialCount = 
 
   useEffect(() => {
     if (!readOnly && isAuthenticated) {
-      axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/notes/${noteId}/rating`, {
+      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/notes/${noteId}/rating`, {
         headers: getAuthHeaders()
       }).then(res => {
         setAverage(res.data.averageRating || 0);
@@ -50,14 +50,14 @@ export default function StarRating({ noteId, initialAverage = 0, initialCount = 
     
     try {
       if (isRemoving) {
-        const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/notes/${noteId}/rate`, {
+        const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/notes/${noteId}/rate`, {
           headers: getAuthHeaders()
         });
         setAverage(res.data.averageRating);
         setCount(res.data.ratingCount);
         showToast('Rating removed');
       } else {
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/notes/${noteId}/rate`, 
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/notes/${noteId}/rate`, 
           { rating: newValue },
           { headers: getAuthHeaders() }
         );

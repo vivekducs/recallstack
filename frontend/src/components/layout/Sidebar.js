@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import axios from 'axios';
 import SubjectIcon from '@/components/common/SubjectIcon';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname();

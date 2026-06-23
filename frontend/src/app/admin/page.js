@@ -10,7 +10,7 @@ import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import Badge from '@/components/common/Badge';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function AdminPage() {
   const router = useRouter();

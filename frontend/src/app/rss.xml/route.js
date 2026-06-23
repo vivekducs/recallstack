@@ -2,8 +2,8 @@
 import { SITE_NAME, SITE_TAGLINE } from '@/lib/seo';
 
 export async function GET() {
-  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://recallstack.com';
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   try {
     const res = await fetch(`${API_URL}/search/sitemap`, { next: { revalidate: 3600 } });

@@ -11,7 +11,9 @@ import Badge from '@/components/common/Badge';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import StarRating from '@/components/common/StarRating';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import useAuth from '@/hooks/useAuth';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function ProfilePage() {
   const params = useParams();
@@ -22,25 +24,13 @@ export default function ProfilePage() {
   const [error, setError] = useState('');
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState(null);
+  const { user, isAuthenticated } = useAuth();
+  const currentUserId = user?.id;
 
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const token = localStorage.getItem('token');
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
-        // Decode token to check if viewing own profile
-        if (token) {
-          try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            setCurrentUserId(payload.userId);
-          } catch (e) {
-            console.error('Failed to parse token');
-          }
-        }
-
-        const res = await axios.get(`${API_URL}/profiles/${username}`, { headers });
+        const res = await axios.get(`${API_URL}/profiles/${username}`);
         setProfile(res.data);
         setIsFollowing(res.data.isFollowing);
       } catch (err) {
@@ -54,8 +44,7 @@ export default function ProfilePage() {
   }, [username]);
 
   const handleFollowToggle = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    if (!isAuthenticated) {
       alert('Please log in to follow users');
       return;
     }
@@ -63,15 +52,11 @@ export default function ProfilePage() {
     setFollowLoading(true);
     try {
       if (isFollowing) {
-        await axios.delete(`${API_URL}/profiles/${username}/follow`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.delete(`${API_URL}/profiles/${username}/follow`);
         setIsFollowing(false);
         setProfile(p => ({ ...p, followersCount: Math.max(0, p.followersCount - 1) }));
       } else {
-        await axios.post(`${API_URL}/profiles/${username}/follow`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.post(`${API_URL}/profiles/${username}/follow`, {});
         setIsFollowing(true);
         setProfile(p => ({ ...p, followersCount: p.followersCount + 1 }));
       }

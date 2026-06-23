@@ -8,7 +8,7 @@ import Card from '@/components/common/Card';
 import Button from '@/components/common/Button';
 import Table from '@/components/common/Table';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function ModerationPage() {
   const { token, getAuthHeaders } = useAuth();

@@ -10,7 +10,7 @@ import Button from '@/components/common/Button';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import Badge from '@/components/common/Badge';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function RevisionsPage() {
   const params = useParams();
@@ -27,11 +27,8 @@ export default function RevisionsPage() {
   useEffect(() => {
     async function init() {
       try {
-        const token = localStorage.getItem('token');
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
         // 1. Fetch subject details to get topics list
-        const subjectRes = await axios.get(`${API_URL}/subjects/${subject}`, { headers });
+        const subjectRes = await axios.get(`${API_URL}/subjects/${subject}`);
         const subjectData = subjectRes.data;
 
         // 2. Find matching topic slug
@@ -41,7 +38,7 @@ export default function RevisionsPage() {
         }
 
         // 3. Fetch notes for this topic
-        const notesRes = await axios.get(`${API_URL}/topics/${matchedTopic.id}/notes`, { headers });
+        const notesRes = await axios.get(`${API_URL}/topics/${matchedTopic.id}/notes`);
         const notes = notesRes.data;
 
         // 4. Find matching note slug
@@ -51,11 +48,11 @@ export default function RevisionsPage() {
         }
 
         // 5. Fetch full note details by note CUID (matchedNote.id)
-        const noteRes = await axios.get(`${API_URL}/notes/${matchedNote.id}`, { headers });
+        const noteRes = await axios.get(`${API_URL}/notes/${matchedNote.id}`);
         setNoteData(noteRes.data);
 
         // 6. Fetch revisions by note CUID (matchedNote.id)
-        const revRes = await axios.get(`${API_URL}/notes/${matchedNote.id}/revisions`, { headers });
+        const revRes = await axios.get(`${API_URL}/notes/${matchedNote.id}/revisions`);
         setRevisions(revRes.data);
       } catch (err) {
         console.error(err);
@@ -71,9 +68,7 @@ export default function RevisionsPage() {
 
   const fetchSnapshot = async (revisionId) => {
     try {
-      const token = localStorage.getItem('token');
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await axios.get(`${API_URL}/notes/${noteData.id}/revisions/${revisionId}`, { headers });
+      const res = await axios.get(`${API_URL}/notes/${noteData.id}/revisions/${revisionId}`);
       
       if (!res.data.snapshot) {
         alert('No snapshot data is available for this revision.');
@@ -96,10 +91,7 @@ export default function RevisionsPage() {
 
     setRestoring(true);
     try {
-      const token = localStorage.getItem('token');
-      const headers = { Authorization: `Bearer ${token}` };
-      
-      await axios.post(`${API_URL}/notes/${noteData.id}/revisions/${selectedSnapshot.id}/restore`, {}, { headers });
+      await axios.post(`${API_URL}/notes/${noteData.id}/revisions/${selectedSnapshot.id}/restore`, {});
       
       alert('Note successfully restored!');
       router.push(`/learning/${subject}/${topic}/${note}`);

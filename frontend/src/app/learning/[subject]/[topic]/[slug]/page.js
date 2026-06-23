@@ -12,8 +12,8 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://recallstack.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 async function getNoteData(subjectSlug, topicSlug, noteSlug) {
   try {

@@ -7,7 +7,7 @@ import useAuth from '@/hooks/useAuth';
 import Card from '@/components/common/Card';
 import Badge from '@/components/common/Badge';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function AnalyticsDashboard() {
   const { token, getAuthHeaders } = useAuth();

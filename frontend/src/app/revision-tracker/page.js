@@ -7,7 +7,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import Card from '@/components/common/Card';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 function RevisionTimeline() {
   const searchParams = useSearchParams();

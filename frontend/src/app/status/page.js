@@ -22,7 +22,7 @@ export default function StatusPage() {
   });
 
   useEffect(() => {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     const checkSystemStatus = async () => {
       const startTime = performance.now();
@@ -109,11 +109,10 @@ export default function StatusPage() {
     <div className="max-w-3xl mx-auto py-12">
       {/* Global Status Banner */}
       <header className="mb-10 text-center">
-        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold mb-4 tracking-wide shadow-sm border ${
-          overallStatus === 'Operational'
-            ? 'bg-[var(--color-success)]/10 border-[var(--color-success)]/30 text-[var(--color-success)]'
-            : 'bg-[var(--color-danger)]/10 border-[var(--color-danger)]/30 text-[var(--color-danger)]'
-        }`}>
+        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold mb-4 tracking-wide shadow-sm border ${overallStatus === 'Operational'
+          ? 'bg-[var(--color-success)]/10 border-[var(--color-success)]/30 text-[var(--color-success)]'
+          : 'bg-[var(--color-danger)]/10 border-[var(--color-danger)]/30 text-[var(--color-danger)]'
+          }`}>
           {overallStatus === 'Operational' ? (
             <>
               <svg className="w-4 h-4 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -168,11 +167,10 @@ export default function StatusPage() {
                 <span className="text-[11px] text-[var(--color-text-secondary)]/80 block mt-0.5">{comp.desc}</span>
               </div>
               <div className="text-right">
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded border ${
-                  comp.status === 'Operational'
-                    ? 'text-[var(--color-success)] bg-[var(--color-success)]/10 border-[var(--color-success)]/20'
-                    : 'text-[var(--color-danger)] bg-[var(--color-danger)]/10 border-[var(--color-danger)]/20'
-                }`}>
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded border ${comp.status === 'Operational'
+                  ? 'text-[var(--color-success)] bg-[var(--color-success)]/10 border-[var(--color-success)]/20'
+                  : 'text-[var(--color-danger)] bg-[var(--color-danger)]/10 border-[var(--color-danger)]/20'
+                  }`}>
                   {comp.status}
                 </span>
                 <span className="text-[10px] text-[var(--color-text-secondary)] block mt-1 font-mono">Uptime: {comp.uptime}</span>

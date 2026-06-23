@@ -9,7 +9,7 @@ import Badge from '@/components/common/Badge';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import StarRating from '@/components/common/StarRating';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function TrendingPage() {
   const [notes, setNotes] = useState([]);

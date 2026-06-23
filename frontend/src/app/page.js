@@ -5,8 +5,8 @@ import JsonLd from '@/components/common/JsonLd';
 import Card from '@/components/common/Card';
 import SubjectIcon from '@/components/common/SubjectIcon';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://recallstack.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const metadata = {
   title: getHomepageTitle(),

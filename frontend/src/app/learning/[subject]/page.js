@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { getSubjectTitle } from '@/lib/seo';
 import JsonLd from '@/components/common/JsonLd';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://recallstack.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 async function getSubjectData(slug) {
   try {

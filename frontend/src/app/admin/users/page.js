@@ -10,7 +10,7 @@ import Button from '@/components/common/Button';
 import Table from '@/components/common/Table';
 import Badge from '@/components/common/Badge';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function ManageUsersPage() {
   const { token, getAuthHeaders, user: authUser } = useAuth();

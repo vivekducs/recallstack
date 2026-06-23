@@ -11,7 +11,7 @@ import Table from '@/components/common/Table';
 import Badge from '@/components/common/Badge';
 import Link from 'next/link';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function ContentManagementPage() {
   const { token, getAuthHeaders } = useAuth();

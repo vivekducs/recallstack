@@ -9,7 +9,7 @@ import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Breadcrumb from '@/components/common/Breadcrumb';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function ProfileSettingsPage() {
   const { token, getAuthHeaders } = useAuth();
