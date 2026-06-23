@@ -1,0 +1,69 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, master, dev ]
+  pull_request:
+    branches: [ main, master, dev ]
+
+jobs:
+  backend-test:
+    name: Backend CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: recallstack/backend/package-lock.json
+
+      - name: Install Backend Dependencies
+        run: |
+          cd recallstack/backend
+          npm ci
+
+      - name: Run Prisma Generate
+        run: |
+          cd recallstack/backend
+          npx prisma generate
+
+      - name: Run Backend Tests
+        run: |
+          cd recallstack/backend
+          npm test
+
+  frontend-build:
+    name: Frontend CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: recallstack/frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd recallstack/frontend
+          npm ci
+
+      - name: Lint Frontend
+        run: |
+          cd recallstack/frontend
+          npm run lint
+
+      - name: Build Frontend
+        run: |
+          cd recallstack/frontend
+          npm run build
+        env:
+          NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
