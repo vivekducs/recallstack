@@ -1,6 +1,7 @@
 // backend/src/services/comment.service.js
 const prisma = require('../config/database');
 const emailService = require('./email.service');
+const logger = require('../utils/logger');
 
 class CommentService {
   async getCommentsByNote(noteId, user) {
@@ -85,7 +86,7 @@ class CommentService {
 
     if (userId !== note.authorId) {
       emailService.sendCommentNotification(note.author, comment.user, note.title, comment.content)
-        .catch(err => console.error('Email failed:', err));
+        .catch(err => logger.error('Email failed:', err));
     }
 
     if (parentId) {
@@ -95,9 +96,9 @@ class CommentService {
       }).then(parentComment => {
         if (parentComment && parentComment.userId !== userId) {
           emailService.sendReplyNotification(parentComment.user, comment.user, note.title, comment.content)
-            .catch(err => console.error('Reply email failed:', err));
+            .catch(err => logger.error('Reply email failed:', err));
         }
-      }).catch(err => console.error('Failed to fetch parent comment for notification:', err));
+      }).catch(err => logger.error('Failed to fetch parent comment for notification:', err));
     }
 
     return comment;

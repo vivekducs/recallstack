@@ -4,6 +4,7 @@ const sectionRepository = require('../repositories/section.repository');
 const noteRepository = require('../repositories/note.repository');
 const revisionRepository = require('../repositories/revision.repository');
 const { updateNoteReadingTime } = require('../utils/readingTime');
+const logger = require('../utils/logger');
 
 class SectionService {
   async logNoteRevision(noteId, userId) {
@@ -25,7 +26,7 @@ class SectionService {
         })
       ]);
     } catch (err) {
-      console.error('Failed to log note revision:', err);
+      logger.error('Failed to log note revision:', err);
     }
   }
 

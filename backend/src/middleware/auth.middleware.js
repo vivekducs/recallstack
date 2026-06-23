@@ -5,7 +5,11 @@ const { verifyToken } = require('../utils/jwt');
 // ========== MIDDLEWARE: VERIFY TOKEN ==========
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // "Bearer TOKEN"
+  let token = authHeader && authHeader.split(' ')[1]; // "Bearer TOKEN"
+
+  if (!token && req.cookies) {
+    token = req.cookies.token;
+  }
 
   if (!token) {
     return res.status(401).json({ error: 'No token provided' });
@@ -24,7 +28,11 @@ function authenticateToken(req, res, next) {
 // Attaches user if token present, but doesn't require it
 function optionalAuth(req, res, next) {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  let token = authHeader && authHeader.split(' ')[1];
+
+  if (!token && req.cookies) {
+    token = req.cookies.token;
+  }
 
   if (!token) {
     req.user = null;

@@ -1,7 +1,7 @@
 // backend/src/middleware/errorHandler.middleware.js
 const logger = require('../utils/logger');
 
-function errorHandler(err, req, res, next) {
+function errorHandler(err, req, res, _next) {
   logger.error(`${req.method} ${req.url} - Code: ${err.code || 'N/A'} - Message: ${err.message}`, {
     stack: err.stack,
     code: err.code

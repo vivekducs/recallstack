@@ -3,6 +3,7 @@ const userRepository = require('../repositories/user.repository');
 const emailService = require('./email.service');
 const { hashPassword, comparePassword } = require('../utils/bcrypt');
 const { generateToken } = require('../utils/jwt');
+const logger = require('../utils/logger');
 
 class AuthService {
   async register(data) {
@@ -46,7 +47,7 @@ class AuthService {
 
     // Send welcome email asynchronously
     emailService.sendWelcomeEmail(user).catch(err => {
-      console.error('[AuthService] Welcome email failed to send:', err);
+      logger.error('[AuthService] Welcome email failed to send:', err);
     });
 
     const token = generateToken(user.id, user.role);
@@ -146,7 +147,7 @@ class AuthService {
 
     // Send email asynchronously
     emailService.sendPasswordResetEmail(user, resetUrl).catch(err => {
-      console.error('[AuthService] Reset email failed to send:', err);
+      logger.error('[AuthService] Reset email failed to send:', err);
     });
 
     return { success: true, message: 'If that email is registered, a password reset link has been sent.' };

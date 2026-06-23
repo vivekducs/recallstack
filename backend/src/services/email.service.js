@@ -17,18 +17,24 @@ class EmailService {
       this.transporter = nodemailer.createTransport(emailConfig.smtp);
     }
     this.defaultFrom = emailConfig.defaults.from;
+    this.templateCache = new Map();
   }
 
   async getTemplate(templateName, replacements = {}) {
     try {
-      const templatePath = path.join(__dirname, '..', 'templates', templateName);
-      let content = await fs.readFile(templatePath, 'utf8');
-      
-      for (const [key, value] of Object.entries(replacements)) {
-        content = content.replace(new RegExp(`{{${key}}}`, 'g'), value !== undefined && value !== null ? value : '');
+      let content = this.templateCache.get(templateName);
+      if (!content) {
+        const templatePath = path.join(__dirname, '..', 'templates', templateName);
+        content = await fs.readFile(templatePath, 'utf8');
+        this.templateCache.set(templateName, content);
       }
       
-      return content;
+      let replacedContent = content;
+      for (const [key, value] of Object.entries(replacements)) {
+        replacedContent = replacedContent.replace(new RegExp(`{{${key}}}`, 'g'), value !== undefined && value !== null ? value : '');
+      }
+      
+      return replacedContent;
     } catch (error) {
       logger.error(`[EmailService] Error loading template ${templateName}:`, error);
       throw error;

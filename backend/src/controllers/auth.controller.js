@@ -5,6 +5,12 @@ class AuthController {
   async register(req, res, next) {
     try {
       const data = await authService.register(req.body);
+      res.cookie('token', data.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
       res.status(201).json(data);
     } catch (err) {
       if (err.status) return res.status(err.status).json({ error: err.message });
@@ -15,9 +21,28 @@ class AuthController {
   async login(req, res, next) {
     try {
       const data = await authService.login(req.body);
+      res.cookie('token', data.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
       res.json(data);
     } catch (err) {
       if (err.status) return res.status(err.status).json({ error: err.message });
+      next(err);
+    }
+  }
+
+  async logout(req, res, next) {
+    try {
+      res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      });
+      res.json({ success: true, message: 'Logged out successfully' });
+    } catch (err) {
       next(err);
     }
   }

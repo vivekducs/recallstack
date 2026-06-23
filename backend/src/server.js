@@ -2,31 +2,32 @@
 require('dotenv').config();
 const app = require('./app');
 const prisma = require('./config/database');
+const logger = require('./utils/logger');
 
 const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, () => {
-  console.log(`RecallStack API running on port ${PORT}`);
-  console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`RecallStack API running on port ${PORT}`);
+  logger.info(`   Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
 // Handle graceful shutdown
 const gracefulShutdown = (signal) => {
-  console.log(`Received ${signal}. Shutting down gracefully...`);
+  logger.info(`Received ${signal}. Shutting down gracefully...`);
   
   server.close(async (err) => {
     if (err) {
-      console.error('Error closing HTTP server:', err);
+      logger.error('Error closing HTTP server:', err);
       process.exit(1);
     }
-    console.log('HTTP server closed.');
+    logger.info('HTTP server closed.');
     
     try {
       await prisma.$disconnect();
-      console.log('Database client disconnected.');
+      logger.info('Database client disconnected.');
       process.exit(0);
     } catch (dbErr) {
-      console.error('Error disconnecting database client:', dbErr);
+      logger.error('Error disconnecting database client:', dbErr);
       process.exit(1);
     }
   });

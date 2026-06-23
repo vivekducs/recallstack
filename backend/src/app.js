@@ -2,7 +2,11 @@
 
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
+
+const prisma = require('./config/database');
+const logger = require('./utils/logger');
 
 const errorHandler = require('./middleware/errorHandler.middleware');
 const authRoutes = require('./routes/auth.routes');
@@ -25,10 +29,12 @@ const securityHeaders = require('./middleware/cors.middleware');
 const app = express();
 
 // Middleware
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://recallstack.vercel.app'
-];
+app.use(cookieParser());
+
+const allowedOrigins = [];
+if (process.env.NODE_ENV === 'development') {
+  allowedOrigins.push('http://localhost:3000');
+}
 if (process.env.FRONTEND_URL) {
   const envOrigins = process.env.FRONTEND_URL.split(',').map(o => o.trim());
   allowedOrigins.push(...envOrigins);
@@ -42,8 +48,22 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 
 // Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+app.get('/api/health', async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ 
+      status: 'ok', 
+      database: 'connected', 
+      timestamp: new Date().toISOString() 
+    });
+  } catch (err) {
+    logger.error('Health check database query failed:', err);
+    res.status(503).json({ 
+      status: 'error', 
+      database: 'disconnected', 
+      timestamp: new Date().toISOString() 
+    });
+  }
 });
 
 // Rate Limiting

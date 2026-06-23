@@ -19,6 +19,9 @@ router.post('/register', validate(registerSchema), authController.register);
 // POST /api/auth/login
 router.post('/login', validate(loginSchema), authController.login);
 
+// POST /api/auth/logout
+router.post('/logout', authController.logout);
+
 // GET /api/auth/me (Protected)
 router.get('/me', authenticateToken, authController.getMe);
 

@@ -1,5 +1,12 @@
 // backend/src/services/search.service.js
 const prisma = require('../config/database');
+const { redisClient, isRedisAvailable } = require('../config/redis');
+const logger = require('../utils/logger');
+
+let localSitemapCache = null;
+let localSitemapCacheExpiry = 0;
+const SITEMAP_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+const SITEMAP_CACHE_TTL_SEC = 3600; // 1 hour
 
 class SearchService {
   async searchNotes(query) {
@@ -83,13 +90,55 @@ class SearchService {
   }
 
   async getSitemap() {
-    return await prisma.subject.findMany({
-      include: {
+    const cacheKey = 'cache:sitemap';
+
+    // 1. Try Redis cache
+    if (isRedisAvailable()) {
+      try {
+        const cachedData = await redisClient.get(cacheKey);
+        if (cachedData) {
+          logger.info('[SearchService] Sitemap fetched from Redis cache');
+          return JSON.parse(cachedData);
+        }
+      } catch (err) {
+        logger.error('[SearchService] Redis sitemap cache get failed:', err);
+      }
+    } else {
+      // 2. Try in-memory cache fallback
+      const now = Date.now();
+      if (localSitemapCache && now < localSitemapCacheExpiry) {
+        logger.info('[SearchService] Sitemap fetched from in-memory cache');
+        return localSitemapCache;
+      }
+    }
+
+    // Cache miss: query the database with optimal fields select
+    logger.info('[SearchService] Sitemap cache miss. Querying database...');
+    const data = await prisma.subject.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        updatedAt: true,
+        order: true,
         topics: {
-          include: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            updatedAt: true,
+            order: true,
             notes: {
               where: { status: 'PUBLISHED' },
-              include: { author: { select: { name: true } } },
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+                excerpt: true,
+                publishedAt: true,
+                updatedAt: true,
+                author: { select: { name: true } }
+              },
               orderBy: { publishedAt: 'desc' }
             }
           },
@@ -98,6 +147,20 @@ class SearchService {
       },
       orderBy: { order: 'asc' }
     });
+
+    // 3. Save cache
+    if (isRedisAvailable()) {
+      try {
+        await redisClient.set(cacheKey, JSON.stringify(data), 'EX', SITEMAP_CACHE_TTL_SEC);
+      } catch (err) {
+        logger.error('[SearchService] Redis sitemap cache set failed:', err);
+      }
+    } else {
+      localSitemapCache = data;
+      localSitemapCacheExpiry = Date.now() + SITEMAP_CACHE_TTL_MS;
+    }
+
+    return data;
   }
 }
 

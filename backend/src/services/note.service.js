@@ -4,6 +4,7 @@ const noteRepository = require('../repositories/note.repository');
 const userRepository = require('../repositories/user.repository');
 const emailService = require('./email.service');
 const slugify = require('../utils/slugify');
+const logger = require('../utils/logger');
 
 class NoteService {
   async getNotesByTopic(topicId) {
@@ -114,7 +115,7 @@ class NoteService {
           update: { views: { increment: 1 } },
           create: { noteId: id, date: today, views: 1 }
         })
-      ]).catch(err => console.error('Failed to increment views in background:', err));
+      ]).catch(err => logger.error('Failed to increment views in background:', err));
     }
 
     return note;
@@ -157,7 +158,7 @@ class NoteService {
           update: { views: { increment: 1 } },
           create: { noteId: id, date: today, views: 1 }
         })
-      ]).catch(err => console.error('Failed to increment views in background:', err));
+      ]).catch(err => logger.error('Failed to increment views in background:', err));
     }
 
     return note;
@@ -372,7 +373,7 @@ class NoteService {
 
     if (rater && note.authorId !== userId) {
       emailService.sendRatingNotification(note.author, rater, note.title, rating)
-        .catch(err => console.error('Rating email failed:', err));
+        .catch(err => logger.error('Rating email failed:', err));
     }
 
     return {

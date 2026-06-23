@@ -1,4 +1,6 @@
 // backend/src/middleware/rateLimit.middleware.js
+const { redisClient, isRedisAvailable } = require('../config/redis');
+const logger = require('../utils/logger');
 
 const rateLimitCache = new Map();
 
@@ -22,7 +24,7 @@ if (gcTimer.unref) {
 }
 
 function rateLimiter(limit = 100, windowMs = 15 * 60 * 1000) {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     if (process.env.NODE_ENV === 'test') {
       return next();
     }
@@ -33,6 +35,33 @@ function rateLimiter(limit = 100, windowMs = 15 * 60 * 1000) {
       : req.ip || req.socket.remoteAddress;
 
     const now = Date.now();
+
+    // Try Redis rate limiter if available
+    if (isRedisAvailable()) {
+      const key = `rate_limit:${ip}`;
+      try {
+        const pipeline = redisClient.multi();
+        pipeline.zadd(key, now, now);
+        pipeline.zremrangebyscore(key, 0, now - windowMs);
+        pipeline.zcard(key);
+        pipeline.pexpire(key, windowMs);
+        
+        const results = await pipeline.exec();
+        // results is array of [err, result]. The zcard result is at index 2.
+        const requestCount = results[2][1];
+
+        if (requestCount > limit) {
+          return res.status(429).json({
+            error: 'Too many requests, please try again later.'
+          });
+        }
+        return next();
+      } catch (err) {
+        logger.error('[RateLimiter] Redis rate limiting failed, falling back to memory:', err);
+      }
+    }
+
+    // In-memory sliding window rate limiter fallback
     let clientRecord = rateLimitCache.get(ip);
     
     if (!clientRecord) {
