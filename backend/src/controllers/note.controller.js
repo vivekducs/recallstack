@@ -14,7 +14,8 @@ class NoteController {
 
   async getMyNotes(req, res, next) {
     try {
-      const notes = await noteService.getMyNotes(req.user.userId);
+      const { cursor, limit } = req.query;
+      const notes = await noteService.getMyNotes(req.user.userId, cursor, limit);
       res.json(notes);
     } catch (err) {
       next(err);

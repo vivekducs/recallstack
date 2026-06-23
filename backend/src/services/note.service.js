@@ -27,9 +27,12 @@ class NoteService {
     });
   }
 
-  async getMyNotes(userId) {
-    return await noteRepository.findMany({
+  async getMyNotes(userId, cursor, limit = 20) {
+    const limitNum = parseInt(limit) || 20;
+    
+    const options = {
       where: { authorId: userId },
+      take: limitNum + 1,
       include: {
         topic: {
           select: {
@@ -40,7 +43,26 @@ class NoteService {
         }
       },
       orderBy: { updatedAt: 'desc' }
-    });
+    };
+
+    if (cursor) {
+      options.cursor = { id: cursor };
+      options.skip = 1;
+    }
+
+    const notes = await noteRepository.findMany(options);
+    
+    let nextCursor = null;
+    if (notes.length > limitNum) {
+      const nextItem = notes.pop();
+      nextCursor = nextItem.id;
+    }
+
+    return {
+      results: notes,
+      nextCursor,
+      limit: limitNum
+    };
   }
 
   async getNoteById(id, user) {

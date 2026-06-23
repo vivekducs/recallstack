@@ -4,6 +4,7 @@ const fs = require('fs/promises');
 const path = require('path');
 const prisma = require('../config/database');
 const emailConfig = require('../config/email');
+const logger = require('../utils/logger');
 
 class EmailService {
   constructor() {
@@ -29,7 +30,7 @@ class EmailService {
       
       return content;
     } catch (error) {
-      console.error(`[EmailService] Error loading template ${templateName}:`, error);
+      logger.error(`[EmailService] Error loading template ${templateName}:`, error);
       throw error;
     }
   }
@@ -47,12 +48,9 @@ class EmailService {
         html
       });
 
-      console.log(`\n========== EMAIL MOCK SENT TO: ${user.email} ==========`);
-      console.log(`Subject: Welcome to RecallStack!`);
-      console.log(info.message.toString());
-      console.log(`==========================================================\n`);
+      logger.info(`\n========== EMAIL MOCK SENT TO: ${user.email} ==========\nSubject: Welcome to RecallStack!\n${info.message.toString()}\n==========================================================\n`);
     } catch (err) {
-      console.error('[EmailService] Failed to send welcome email:', err);
+      logger.error('[EmailService] Failed to send welcome email:', err);
     }
   }
 
@@ -60,7 +58,7 @@ class EmailService {
     // Check preferences
     const prefs = noteAuthor.emailPreferences || {};
     if (prefs.newComment === false) {
-      console.log(`[EmailService] Skipped sending to ${noteAuthor.email}: user disabled newComment notifications.`);
+      logger.info(`[EmailService] Skipped sending to ${noteAuthor.email}: user disabled newComment notifications.`);
       return;
     }
 
@@ -79,20 +77,17 @@ class EmailService {
         html
       });
 
-      console.log(`\n========== EMAIL MOCK SENT TO: ${noteAuthor.email} ==========`);
-      console.log(`Subject: New Comment on "${noteTitle}"`);
-      console.log(info.message.toString());
-      console.log(`==========================================================\n`);
+      logger.info(`\n========== EMAIL MOCK SENT TO: ${noteAuthor.email} ==========\nSubject: New Comment on "${noteTitle}"\n${info.message.toString()}\n==========================================================\n`);
 
     } catch (err) {
-      console.error('[EmailService] Failed to send comment email:', err);
+      logger.error('[EmailService] Failed to send comment email:', err);
     }
   }
 
   async sendReplyNotification(commentAuthor, replyAuthor, noteTitle, replyContent) {
     const prefs = commentAuthor.emailPreferences || {};
     if (prefs.newReply === false) {
-      console.log(`[EmailService] Skipped sending to ${commentAuthor.email}: user disabled newReply notifications.`);
+      logger.info(`[EmailService] Skipped sending to ${commentAuthor.email}: user disabled newReply notifications.`);
       return;
     }
 
@@ -111,19 +106,16 @@ class EmailService {
         html
       });
 
-      console.log(`\n========== EMAIL MOCK SENT TO: ${commentAuthor.email} ==========`);
-      console.log(`Subject: New Reply on "${noteTitle}"`);
-      console.log(info.message.toString());
-      console.log(`==========================================================\n`);
+      logger.info(`\n========== EMAIL MOCK SENT TO: ${commentAuthor.email} ==========\nSubject: New Reply on "${noteTitle}"\n${info.message.toString()}\n==========================================================\n`);
     } catch (err) {
-      console.error('[EmailService] Failed to send reply email:', err);
+      logger.error('[EmailService] Failed to send reply email:', err);
     }
   }
 
   async sendRatingNotification(noteAuthor, rater, noteTitle, rating) {
     const prefs = noteAuthor.emailPreferences || {};
     if (prefs.helpful === false) {
-      console.log(`[EmailService] Skipped sending to ${noteAuthor.email}: user disabled helpful rating notifications.`);
+      logger.info(`[EmailService] Skipped sending to ${noteAuthor.email}: user disabled helpful rating notifications.`);
       return;
     }
 
@@ -142,17 +134,14 @@ class EmailService {
         html
       });
 
-      console.log(`\n========== EMAIL MOCK SENT TO: ${noteAuthor.email} ==========`);
-      console.log(`Subject: Your note "${noteTitle}" was rated`);
-      console.log(info.message.toString());
-      console.log(`==========================================================\n`);
+      logger.info(`\n========== EMAIL MOCK SENT TO: ${noteAuthor.email} ==========\nSubject: Your note "${noteTitle}" was rated\n${info.message.toString()}\n==========================================================\n`);
     } catch (err) {
-      console.error('[EmailService] Failed to send rating email:', err);
+      logger.error('[EmailService] Failed to send rating email:', err);
     }
   }
 
   async sendDailyDigest() {
-    console.log('[EmailService] Starting daily digest aggregation...');
+    logger.info('[EmailService] Starting daily digest aggregation...');
     const users = await prisma.user.findMany();
 
     const twentyFourHoursAgo = new Date();
@@ -248,12 +237,10 @@ class EmailService {
           html
         });
 
-        console.log(`\n========== EMAIL MOCK DIGEST SENT TO: ${user.email} ==========`);
-        console.log(info.message.toString());
-        console.log(`==============================================================\n`);
+        logger.info(`\n========== EMAIL MOCK DIGEST SENT TO: ${user.email} ==========\n${info.message.toString()}\n==============================================================\n`);
         sentCount++;
       } catch (err) {
-        console.error(`[EmailService] Failed to send digest to ${user.email}:`, err);
+        logger.error(`[EmailService] Failed to send digest to ${user.email}:`, err);
       }
     }
 
@@ -274,13 +261,9 @@ class EmailService {
         html
       });
 
-      console.log(`\n========== EMAIL MOCK PASSWORD RESET SENT TO: ${user.email} ==========`);
-      console.log(`Subject: Reset your RecallStack Password`);
-      console.log(`Link: ${resetUrl}`);
-      console.log(info.message.toString());
-      console.log(`========================================================================\n`);
+      logger.info(`\n========== EMAIL MOCK PASSWORD RESET SENT TO: ${user.email} ==========\nSubject: Reset your RecallStack Password\nLink: ${resetUrl}\n${info.message.toString()}\n========================================================================\n`);
     } catch (err) {
-      console.error('[EmailService] Failed to send password reset email:', err);
+      logger.error('[EmailService] Failed to send password reset email:', err);
       throw err;
     }
   }
