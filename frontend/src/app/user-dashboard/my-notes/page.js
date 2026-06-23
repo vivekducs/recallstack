@@ -19,21 +19,35 @@ export default function MyNotesPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [noteIdToDelete, setNoteIdToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  const fetchMyNotes = async () => {
+  const fetchMyNotes = async (cursor = null) => {
     if (!token) return;
     try {
-      setLoading(true);
+      if (!cursor) setLoading(true);
+      else setLoadingMore(true);
       setError('');
-      const res = await axios.get(`${API_URL}/notes/user/my-notes`, {
+      
+      const params = new URLSearchParams();
+      if (cursor) params.append('cursor', cursor);
+
+      const res = await axios.get(`${API_URL}/notes/user/my-notes?${params.toString()}`, {
         headers: getAuthHeaders(),
       });
-      setNotes(res.data);
+      
+      if (cursor) {
+        setNotes(prev => [...prev, ...res.data.results]);
+      } else {
+        setNotes(res.data.results);
+      }
+      setNextCursor(res.data.nextCursor);
     } catch (err) {
       console.error('Failed to load my notes:', err);
       setError('Could not load your notes. Please try again.');
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
@@ -232,6 +246,18 @@ export default function MyNotesPage() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {nextCursor && (
+        <div className="mt-8 text-center">
+          <Button
+            onClick={() => fetchMyNotes(nextCursor)}
+            disabled={loadingMore}
+            variant="secondary"
+          >
+            {loadingMore ? 'Loading...' : 'Load More Notes'}
+          </Button>
         </div>
       )}
 

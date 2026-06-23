@@ -23,14 +23,14 @@ export default function AnalyticsDashboard() {
       setLoading(true);
       setError('');
       
-      // Fetch both dashboard stats and user notes
+      // Fetch both dashboard stats and user notes (with a large limit to get all for analytics)
       const [statsRes, notesRes] = await Promise.all([
         axios.get(`${API_URL}/analytics/dashboard`, { headers: getAuthHeaders() }),
-        axios.get(`${API_URL}/notes/user/my-notes`, { headers: getAuthHeaders() })
+        axios.get(`${API_URL}/notes/user/my-notes?limit=1000`, { headers: getAuthHeaders() })
       ]);
       
       setSummary(statsRes.data.summary);
-      setNotes(notesRes.data);
+      setNotes(notesRes.data.results);
     } catch (err) {
       console.error('Failed to load analytics metrics:', err);
       setError('Could not load detailed metrics. Please try again later.');
