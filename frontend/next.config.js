@@ -14,8 +14,15 @@ const nextConfig = {
   },
   async headers() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-    const apiUrlWithSlash = apiUrl ? (apiUrl.endsWith('/') ? apiUrl : `${apiUrl}/`) : '';
-    const connectSrc = `connect-src 'self' http://localhost:5000 ${apiUrl} ${apiUrlWithSlash}`.trim();
+    let apiOrigin = '';
+    try {
+      if (apiUrl) {
+        apiOrigin = new URL(apiUrl).origin;
+      }
+    } catch (e) {
+      console.warn('Invalid NEXT_PUBLIC_API_URL for CSP headers:', apiUrl);
+    }
+    const connectSrc = `connect-src 'self' http://localhost:5000 ${apiUrl} ${apiOrigin}`.trim();
     return [
       {
         source: '/:path*',
