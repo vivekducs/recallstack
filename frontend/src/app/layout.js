@@ -1,6 +1,7 @@
 import { Outfit, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import Layout from '@/components/layout/Layout';
+import { AuthProvider } from '@/hooks/useAuth';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -37,9 +38,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${outfit.variable} ${jetbrainsMono.variable}`}>
       <body>
-        <Layout>
-          {children}
-        </Layout>
+        <AuthProvider>
+          <Layout>
+            {children}
+          </Layout>
+        </AuthProvider>
       </body>
     </html>
   );
