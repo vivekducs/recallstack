@@ -14,7 +14,8 @@ const nextConfig = {
   },
   async headers() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-    const connectSrc = `connect-src 'self' http://localhost:5000 ${apiUrl}`.trim();
+    const apiUrlWithSlash = apiUrl ? (apiUrl.endsWith('/') ? apiUrl : `${apiUrl}/`) : '';
+    const connectSrc = `connect-src 'self' http://localhost:5000 ${apiUrl} ${apiUrlWithSlash}`.trim();
     return [
       {
         source: '/:path*',
