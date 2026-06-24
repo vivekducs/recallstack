@@ -43,6 +43,12 @@ export default async function sitemap() {
         changeFrequency: 'daily',
         priority: 1.0,
       },
+      {
+        url: `${BASE_URL}/roadmap`,
+        lastModified: new Date(),
+        changeFrequency: 'daily',
+        priority: 0.95,
+      },
       ...subjectUrls,
       ...topicUrls,
       ...noteUrls,
@@ -56,6 +62,12 @@ export default async function sitemap() {
         lastModified: new Date(),
         changeFrequency: 'daily',
         priority: 1.0,
+      },
+      {
+        url: `${BASE_URL}/roadmap`,
+        lastModified: new Date(),
+        changeFrequency: 'daily',
+        priority: 0.95,
       }
     ];
   }

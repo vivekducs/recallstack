@@ -11,10 +11,13 @@
   "dependencies": {
     "@tailwindcss/typography": "0.5.20",
     "axios": "1.6.0",
+    "framer-motion": "^12.41.0",
     "highlight.js": "11.9.0",
+    "lucide-react": "^1.21.0",
     "next": "14.2.30",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-is": "^19.2.7",
     "react-markdown": "10.1.0",
     "recharts": "3.8.1",
     "rehype-katex": "7.0.1",

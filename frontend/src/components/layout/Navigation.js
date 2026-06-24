@@ -11,6 +11,7 @@ export default function Navigation({ vertical = false, onItemClick }) {
 
   const links = [
     { name: 'Learn', href: '/' },
+    { name: 'Roadmap', href: '/roadmap' },
     { name: 'Search', href: '/search' },
   ];
 

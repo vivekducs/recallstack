@@ -18,3 +18,8 @@ export function getTopicTitle(topicName, subjectName) {
 export function getNoteTitle(noteTitle, topicName) {
   return `${noteTitle} — ${topicName} — ${SITE_NAME}`;
 }
+
+export function getRoadmapTitle() {
+  return `AI Engineering Roadmap — ${SITE_NAME}`;
+}
+
