@@ -24,7 +24,10 @@ class NoteService {
         author: { select: { id: true, name: true } },
         publishedAt: true
       },
-      orderBy: { publishedAt: 'desc' }
+      orderBy: [
+        { order: 'asc' },
+        { createdAt: 'asc' }
+      ]
     });
   }
 
@@ -186,7 +189,8 @@ class NoteService {
       topicId,
       authorId: userId,
       status: 'DRAFT',
-      readingTime: 0
+      readingTime: 0,
+      order: data.order || 0
     });
   }
 
@@ -207,6 +211,7 @@ class NoteService {
     if (data.excerpt !== undefined) updateData.excerpt = data.excerpt;
     if (data.difficulty !== undefined) updateData.difficulty = data.difficulty;
     if (data.tags !== undefined) updateData.tags = data.tags;
+    if (data.order !== undefined) updateData.order = data.order;
 
     return await noteRepository.update(id, updateData);
   }

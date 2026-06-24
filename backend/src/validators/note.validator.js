@@ -5,14 +5,16 @@ const createNoteSchema = {
   topicId: { required: true, type: 'string', minLength: 5 },
   excerpt: { required: false, type: 'string', maxLength: 250 },
   difficulty: { required: false, type: 'string', enum: ['EASY', 'MEDIUM', 'HARD'] },
-  tags: { required: false, type: 'array' }
+  tags: { required: false, type: 'array' },
+  order: { required: false, type: 'integer' }
 };
 
 const updateNoteSchema = {
   title: { required: false, type: 'string', minLength: 3, maxLength: 100 },
   excerpt: { required: false, type: 'string', maxLength: 250 },
   difficulty: { required: false, type: 'string', enum: ['EASY', 'MEDIUM', 'HARD'] },
-  tags: { required: false, type: 'array' }
+  tags: { required: false, type: 'array' },
+  order: { required: false, type: 'integer' }
 };
 
 const rateNoteSchema = {

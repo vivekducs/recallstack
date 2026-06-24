@@ -341,6 +341,33 @@ export default function EditNotePage() {
                Publish Note
              </button>
           )}
+          {note.status === 'PUBLISHED' && (
+            <button
+               onClick={async () => {
+                 try {
+                   const res = await axios.post(
+                     `${API_URL}/notes`,
+                     {
+                       title: `${note.title} (Part 2)`,
+                       excerpt: '',
+                       difficulty: note.difficulty,
+                       tags: note.tags,
+                       topicId: note.topic?.id || note.topicId,
+                       order: (note.order || 0) + 1
+                     },
+                     { headers: getAuthHeaders() }
+                   );
+                   router.push(`/user-dashboard/${res.data.id}/edit`);
+                 } catch (err) {
+                   console.error('Failed to create next chapter:', err);
+                   setError('Failed to create next chapter draft.');
+                 }
+               }}
+               className="btn-primary font-bold"
+             >
+               + Add Next Chapter
+             </button>
+          )}
           <Link
             href={
               note.status === 'PUBLISHED'
