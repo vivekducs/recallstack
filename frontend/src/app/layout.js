@@ -27,7 +27,10 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'RecallStack',
     description: 'Learn Once. Recall Anytime.',
-  }
+  },
+  verification: {
+    google: 'iHMxX8ri5vZrSNRo5i-s7rTjvn0eS8BpG379LJw9bJY',
+  },
 };
 
 export default function RootLayout({ children }) {
