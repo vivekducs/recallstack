@@ -19,21 +19,21 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: recallstack/backend/package-lock.json
+          cache-dependency-path: backend/package-lock.json
 
       - name: Install Backend Dependencies
         run: |
-          cd recallstack/backend
+          cd backend
           npm ci
 
       - name: Run Prisma Generate
         run: |
-          cd recallstack/backend
+          cd backend
           npx prisma generate
 
       - name: Run Backend Tests
         run: |
-          cd recallstack/backend
+          cd backend
           npm test
 
   frontend-build:
@@ -48,21 +48,21 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: recallstack/frontend/package-lock.json
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Install Frontend Dependencies
         run: |
-          cd recallstack/frontend
+          cd frontend
           npm ci
 
       - name: Lint Frontend
         run: |
-          cd recallstack/frontend
+          cd frontend
           npm run lint
 
       - name: Build Frontend
         run: |
-          cd recallstack/frontend
+          cd frontend
           npm run build
         env:
           NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
