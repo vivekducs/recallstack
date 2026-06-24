@@ -1,8 +1,8 @@
 // frontend/src/app/sitemap.js
 
 export default async function sitemap() {
-  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://recallstack.vercel.app';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://recallstack.onrender.com/api';
 
   try {
     const res = await fetch(`${API_URL}/search/sitemap`, { next: { revalidate: 3600 } });
