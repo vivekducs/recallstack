@@ -13,6 +13,8 @@ const nextConfig = {
     ];
   },
   async headers() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+    const connectSrc = `connect-src 'self' http://localhost:5000 ${apiUrl}`.trim();
     return [
       {
         source: '/:path*',
@@ -35,7 +37,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' blob: data: https:; connect-src 'self' http://localhost:5000; frame-ancestors 'none';",
+            value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' blob: data: https:; ${connectSrc}; frame-ancestors 'none';`,
           },
         ],
       },
