@@ -34,6 +34,8 @@ model User {
   ratings       NoteRating[]
   followers     Follows[] @relation("Following")
   following     Follows[] @relation("Followers")
+  roadmapProgress RoadmapProgress[]
+  roadmapNotes    RoadmapNote[]
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -284,4 +286,53 @@ model RevisionHistory {
   @@index([noteId])
   @@index([userId])
   @@map("revision_history")
+}
+
+// ==================== ROADMAP DATA ====================
+
+model RoadmapProgress {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId        String
+  completed     Boolean  @default(false)
+  needsRevision Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, itemId])
+  @@index([userId])
+  @@map("roadmap_progress")
+}
+
+model RoadmapNote {
+  id        String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId    String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, itemId])
+  @@index([userId])
+  @@map("roadmap_notes")
+}
+
+model RoadmapResource {
+  id        String   @id @default(cuid())
+  itemId    String
+  title     String
+  url       String
+  type      RoadmapResourceType @default(YOUTUBE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([itemId])
+  @@map("roadmap_resources")
+}
+
+enum RoadmapResourceType {
+  YOUTUBE
+  BLOG
 }

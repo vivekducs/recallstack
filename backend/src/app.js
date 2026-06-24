@@ -23,6 +23,7 @@ const emailRoutes = require('./routes/email.routes');
 const profileRoutes = require('./routes/profile.routes');
 const trendingRoutes = require('./routes/trending.routes');
 const adminRoutes = require('./routes/admin.routes');
+const roadmapRoutes = require('./routes/roadmap.routes');
 const rateLimiter = require('./middleware/rateLimit.middleware');
 const securityHeaders = require('./middleware/cors.middleware');
 
@@ -93,6 +94,7 @@ app.use('/api/email', emailRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/trending', trendingRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/roadmap', roadmapRoutes);
 
 // Global error handler
 app.use(errorHandler);
