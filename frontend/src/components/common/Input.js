@@ -12,7 +12,7 @@ export default function Input({
   ...props
 }) {
   // Height: 36-40px. Padding: 8-10px horizontal. Border: 1px solid. Border radius: 4px.
-  const baseInputStyle = 'w-full rounded-lg bg-white/40 dark:bg-black/20 border border-black/[0.08] dark:border-white/[0.08] text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)]/50 outline-none transition-all duration-200 ease-out focus:ring-4 focus:ring-[var(--color-primary)]/10 focus:border-[var(--color-primary)] focus:bg-white dark:focus:bg-black disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseInputStyle = 'w-full rounded-lg bg-white/40 dark:bg-black/20 border border-black/[0.08] dark:border-white/[0.08] text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] placeholder:opacity-50 outline-none transition-all duration-200 ease-out focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-blue-400/10 focus:border-[var(--color-primary)] focus:bg-white dark:focus:bg-black disabled:opacity-50 disabled:cursor-not-allowed';
   
   const textareaStyle = 'min-h-[100px] h-auto py-2 resize-y';
 

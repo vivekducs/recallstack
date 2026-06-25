@@ -22,7 +22,7 @@ export default function SearchBar({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className="w-full px-2.5 h-[38px] rounded-[4px] bg-[var(--color-bg-secondary)] border border-[var(--color-border)] text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)]/70 placeholder:italic outline-none transition-all duration-150 focus:ring-2 focus:ring-[var(--color-primary)]/50 focus:border-[var(--color-primary)]"
+        className="w-full px-2.5 h-[38px] rounded-[4px] bg-[var(--color-bg-secondary)] border border-[var(--color-border)] text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] placeholder:opacity-70 placeholder:italic outline-none transition-all duration-150 focus:ring-2 focus:ring-blue-500/50 dark:focus:ring-blue-400/50 focus:border-[var(--color-primary)]"
         {...props}
       />
       {/* Icon: Magnifying glass on right */}
