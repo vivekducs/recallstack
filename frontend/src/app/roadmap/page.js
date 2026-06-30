@@ -2,7 +2,7 @@
 import { getStructuredRoadmap } from '@/lib/roadmapParser';
 import { getRoadmapTitle } from '@/lib/seo';
 import JsonLd from '@/components/common/JsonLd';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, ExternalLink } from 'lucide-react';
 import RoadmapDashboard from './RoadmapClient';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -82,6 +82,48 @@ export default async function RoadmapPage() {
             <p className="text-base text-[var(--color-text-secondary)] leading-relaxed font-medium">
               Master machine learning fundamentals, transformers, fine-tuning, RAG, Agentic crews, and MLOps deployment. Track your daily checklist, flag revision topics, and add custom study notes.
             </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
+              <span className="text-sm font-medium text-[var(--color-text-secondary)]">
+                Roadmap by{' '}
+                <a
+                  href="https://vivekducs.is-a.dev/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-bold text-[var(--color-primary)] hover:text-[var(--color-accent)] transition-colors inline-flex items-center gap-1 hover:underline"
+                >
+                  Vivek Kumar
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </span>
+              <span className="text-[var(--color-border)] hidden sm:inline">|</span>
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-[var(--color-text-secondary)]">Connect with Vivek:</span>
+                <a
+                  href="https://vivekducs.is-a.dev/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 rounded-xl border border-black/[0.06] dark:border-white/[0.06] bg-white/50 dark:bg-neutral-900/50 text-xs font-semibold text-[var(--color-text-primary)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-all flex items-center gap-1.5 shadow-sm hover:shadow-[0_0_15px_rgba(59,130,246,0.1)] active:scale-95 duration-200"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  Portfolio
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/vivekducs/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 rounded-xl border border-[#0077b5]/20 bg-[#0077b5]/5 text-xs font-semibold text-[#0077b5] dark:text-[#3babeb] hover:bg-[#0077b5]/10 hover:border-[#0077b5]/40 transition-all flex items-center gap-1.5 shadow-sm active:scale-95 duration-200"
+                >
+                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                  </svg>
+                  LinkedIn
+                </a>
+              </div>
+            </div>
           </header>
 
           {/* Main Interactive Dashboard */}
